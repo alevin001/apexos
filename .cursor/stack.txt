@@ -1,0 +1,11 @@
+ChatGPT
+Role: Architecture, governance, drift prevention
+
+Cursor
+Role: Implementation and code generation
+
+GitHub
+Role: Source control and history
+
+Supabase
+Role: System of record

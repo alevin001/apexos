@@ -1,0 +1,10 @@
+Decision Log
+
+Purpose:
+Track implementation decisions made during development.
+
+Rules:
+- Doctrine overrides architecture.
+- Architecture overrides implementation.
+- No undocumented architecture changes.
+- Record major implementation decisions.

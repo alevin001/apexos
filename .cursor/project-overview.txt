@@ -1,0 +1,18 @@
+# ApexOS
+
+Purpose:
+Build a doctrine-driven executive operating system.
+
+Architecture is authoritative.
+
+Implementation may support architecture.
+
+Implementation may not redefine architecture.
+
+ChatGPT = Architecture and governance.
+
+Cursor = Implementation.
+
+GitHub = Source control.
+
+Supabase = System of record.

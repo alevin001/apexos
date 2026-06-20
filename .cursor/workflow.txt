@@ -1,0 +1,12 @@
+ApexOS Development Workflow
+
+1. Define architecture in ChatGPT
+2. Review for governance and drift
+3. Create implementation plan
+4. Build in Cursor
+5. Commit to GitHub
+6. Validate against architecture
+7. Deploy supporting infrastructure to Supabase
+
+Implementation may support architecture.
+Implementation may not redefine architecture.
