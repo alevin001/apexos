@@ -72,6 +72,9 @@ ApexOS/
 │   ├── templates/             # Artifact templates (Build 07)
 │   ├── workflows/             # Operational workflows (Build 07)
 │   └── governance/            # Layer-specific governance (Build 07)
+├── supabase/                  # Supabase implementation — schema, migrations, docs (Build 08)
+│   ├── migrations/            # Versioned SQL migrations
+│   └── config.toml            # Supabase CLI configuration
 └── governance/                # Governance layer — integrity, fidelity, and drift protection
 ```
 
@@ -83,7 +86,7 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Builds 01–07 (repository structure, knowledge layer, memory layer, context and retrieval, inference, recommendation, outcome and results) are complete. Subsequent builds translate remaining layers into digital implementation artifacts.
+See `build/ApexOS V1 Build Plan.txt`. Builds 01–08 (repository structure through Supabase integration) are complete. Build 09 implements the end-to-end executive loop with ingestion and application services.
 
 ## Governance Rules
 
