@@ -165,6 +165,8 @@ Retrieval accesses knowledge through `retrieval/knowledge/`. Retrieval ranking s
 
 Knowledge retrieval goal (Technical Architecture v0.1): retrieve knowledge that improves interpretation, recommendations, communication, leadership effectiveness, and outcomes.
 
+See `retrieval/REPOSITORY-GUIDE.md` and `retrieval/workflows/evidence-assembly.md`.
+
 ## Legacy Materials
 
 Pre-Build 02 materials live in `docs/knowledge base/`. Do not delete legacy files during migration. Follow `workflows/migrate-legacy-materials.md`.
@@ -179,4 +181,5 @@ FAB-002 (Knowledge Repository Architecture) remains open in the Architecture & D
 |-------|-------|--------|
 | Build 02 | Repository organization, templates, workflows | Complete |
 | Build 03 | Memory layer artifacts | Complete |
+| Build 04 | Context and retrieval design | Complete |
 | Build 07 | Supabase / portable data structures | Pending |

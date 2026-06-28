@@ -16,3 +16,27 @@ Leadership disagreements, strategic decisions, personnel issues, organizational 
 ## Flow Entry Point
 
 All context evaluation begins from a situation and flows through context domains before retrieval and inference.
+
+## Artifact Conventions (Build 04)
+
+| Item | Convention |
+|------|------------|
+| Intake template | `../templates/context-evaluation.md` |
+| Package template | `../templates/context-package.md` |
+| Naming | `ctx-sit-{slug}.md`, `ctx-eval-{slug}.md`, `ctx-pkg-{slug}.md` |
+| ID prefix | `CTX-SIT-`, `CTX-EVAL-`, `CTX-PKG-` |
+| Registry | `../INDEX.md` |
+
+## Workflows
+
+| Workflow | Purpose |
+|----------|---------|
+| `../workflows/situation-intake.md` | Capture situation definition |
+| `../workflows/context-assembly.md` | Evaluate domains and hand off to retrieval |
+
+## Does Not Store
+
+- Distilled intelligence (see `memory/situation/`)
+- Assembled evidence (see `retrieval/context-package/`)
+
+See `../REPOSITORY-GUIDE.md`.

@@ -183,8 +183,8 @@ See `governance/source-fidelity/memory-layer.md` and `memory/workflows/review-me
 | Layer | Relationship |
 |-------|--------------|
 | `knowledge/` | Source material — never duplicate into memory |
-| `context/` | Determines which memory is relevant for a situation |
-| `retrieval/memory/` | Retrieves from memory categories as evidence |
+| `context/` | Determines which memory is relevant for a situation — see `context/REPOSITORY-GUIDE.md` |
+| `retrieval/memory/` | Retrieves from memory categories as evidence — see `retrieval/REPOSITORY-GUIDE.md` |
 | `outcomes/` | Validates memory; provides outcome capture and confidence recalibration |
 | `inference/pattern-recognition/` | Inferential process — distinct from pattern memory storage |
 | `governance/` | Memory drift detection, fidelity, review controls |
@@ -204,6 +204,7 @@ See `governance/source-fidelity/memory-layer.md` and `memory/workflows/review-me
 | Build | Scope | Status |
 |-------|-------|--------|
 | Build 03 | Memory layer artifacts | Complete |
-| Build 04 | Context and retrieval design | Pending |
+| Build 04 | Context and retrieval design | Complete |
+| Build 05 | Inference and recommendation design | Pending |
 | Build 06 | Outcome and learning design | Pending |
 | Build 07 | Supabase / portable data structures | Pending |

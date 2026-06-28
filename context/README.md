@@ -16,10 +16,23 @@ This folder implements the Context Layer — determining what information is mos
 - **Build Plan:** `build/ApexOS V1 Build Plan.txt` (Context Layer)
 - **Index:** `architecture/99 - ApexOS - Minimum Viable Index v2.0.docx` (DOC-004, LAD-006, AF-005)
 
+## Build 04 Status
+
+**Complete.** Repository organization, templates, workflows, governance, and registry are defined.
+
+| Artifact | Purpose |
+|----------|---------|
+| `REPOSITORY-GUIDE.md` | Organization rules, naming, boundaries, lifecycle |
+| `INDEX.md` | Human-readable registry of context evaluations |
+| `docs/` | Context domains, packages, weighting, lifecycle, governance, traceability |
+| `templates/` | Context evaluation, weighting, relevance specification, review |
+| `workflows/` | Situation intake, assembly, review, refresh, promotion |
+| `governance/` | Fidelity checklist, drift detection, architecture mapping |
+
 ## Situation-Centered Model
 
 ```
-Situation → Evaluate Context Domains → Load Relevant Context → Weight By Relevance → Context Evaluation → Improved Interpretation
+Situation → Evaluate Context Domains → Load Relevant Context → Weight By Relevance → Context Evaluation → Retrieval
 ```
 
 ## Context Domains
@@ -37,22 +50,46 @@ Situation → Evaluate Context Domains → Load Relevant Context → Weight By R
 
 ## Build Plan Functional Areas
 
-The Build Plan lists three functional areas that span context domains:
-
-- Situation assembly
-- Context construction
-- Relevant information selection
-
-These processes are implemented across the context domains above, not as separate storage categories. Build 04 will define how these functions operate across domains.
+| Functional Area | Workflow |
+|-----------------|----------|
+| Situation assembly | `workflows/situation-intake.md` |
+| Context construction | `workflows/context-assembly.md` |
+| Relevant information selection | `docs/context-weighting.md` |
 
 ## Context Weighting
 
 Context is not weighted by recency alone. Weighting signals: situation relevance, outcome/results impact, pattern strength, strategic significance, relationship significance, recency (as one factor among many).
 
+See `docs/context-weighting.md`.
+
 ## Primary Output
 
-Improved interpretation — enabling better decisions, communication, relationships, alignment, and outcomes/results.
+Context produces a **relevance specification** for retrieval handoff — not assembled evidence. The assembled Context Package is created in `retrieval/context-package/`.
 
-## Implementation Scope
+See `docs/context-packages.md`.
 
-Build 04 will translate Context Architecture into implementation artifacts.
+## Relationship to Other Layers
+
+| Layer | Relationship |
+|-------|--------------|
+| `memory/` | Distilled intelligence — context references, does not duplicate |
+| `knowledge/` | Source material — flagged for retrieval targeting |
+| `retrieval/` | Executes relevance determinations; assembles Context Package |
+| `governance/source-fidelity/context-layer.md` | Context fidelity and drift controls |
+
+## Quick Start
+
+1. Read `REPOSITORY-GUIDE.md`
+2. Execute `workflows/situation-intake.md`
+3. Execute `workflows/context-assembly.md`
+4. Hand off to `retrieval/workflows/retrieval-pipeline.md`
+5. Register in `INDEX.md`
+
+## Governance
+
+- Never store distilled intelligence in context artifacts
+- Never assemble evidence in context — that is retrieval responsibility
+- Context weighting must use multiple signals — not recency alone
+- Run `governance/context-fidelity-checklist.md` before retrieval handoff
+
+See `governance/source-fidelity/context-layer.md`.

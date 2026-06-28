@@ -2,17 +2,27 @@
 
 ## Responsibility
 
-Provide alignment against mission, objectives, priorities, doctrine, and desired outcomes. Serves as an anchor against strategic drift.
+Understand alignment against mission, objectives, priorities, and doctrine for the current situation.
 
 ## Architecture Reference
 
 - **Primary:** `architecture/4 - ApexOS - Context Architecture v1.0.docx` (Strategic Context)
-- **Charter:** `architecture/1 - ApexOS - Project Charter v1.0.docx` (Section 10 — Strategic Vision, Identity & Organizational Direction)
 
-## Contents Include
+## Artifact Conventions (Build 04)
 
-Mission, vision, strategic priorities, major initiatives, long-term objectives, desired outcomes/results.
+| Item | Convention |
+|------|------------|
+| Domain supplement | `../templates/context-evaluation.md` |
+| Naming | `ctx-strategic-{slug}.md` |
+| ID prefix | `CTX-STR-` |
+| Registry | `../INDEX.md` |
 
-## Architectural Finding
+## Workflows
 
-ApexOS should not optimize local situations at the expense of strategic alignment.
+Evaluate during `../workflows/context-assembly.md`. Reference `knowledge/doctrine/` and strategic knowledge by path.
+
+## Does Not Store
+
+- Doctrine content (see `knowledge/doctrine/` — references Charter, no duplication)
+
+See `../docs/context-domains.md` and `../REPOSITORY-GUIDE.md`.

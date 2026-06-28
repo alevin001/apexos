@@ -50,7 +50,16 @@ ApexOS/
 │   └── workflows/             # Operational workflows (Build 02)
 ├── memory/                    # Memory layer — distilled intelligence by category
 ├── context/                   # Context layer — relevance determination by domain
+│   ├── docs/                  # Implementation documentation (Build 04)
+│   ├── templates/             # Artifact templates (Build 04)
+│   ├── workflows/             # Operational workflows (Build 04)
+│   └── governance/            # Layer-specific governance (Build 04)
 ├── retrieval/                 # Retrieval layer — evidence assembly
+│   ├── requests/              # Retrieval request artifacts (Build 04)
+│   ├── docs/                  # Implementation documentation (Build 04)
+│   ├── templates/             # Artifact templates (Build 04)
+│   ├── workflows/             # Operational workflows (Build 04)
+│   └── governance/            # Layer-specific governance (Build 04)
 ├── inference/                 # Inference layer — evidence to interpretation
 ├── recommendation/            # Recommendation layer — interpretation to decision support
 ├── outcomes/                  # Outcome & Results layer — validation and learning
@@ -65,7 +74,7 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Builds 01–03 (repository structure, knowledge layer, memory layer) are complete. Subsequent builds translate remaining layers into implementation artifacts.
+See `build/ApexOS V1 Build Plan.txt`. Builds 01–04 (repository structure, knowledge layer, memory layer, context and retrieval) are complete. Subsequent builds translate remaining layers into implementation artifacts.
 
 ## Governance Rules
 

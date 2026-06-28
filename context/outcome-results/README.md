@@ -2,16 +2,30 @@
 
 ## Responsibility
 
-Provide evidence of what actually occurred during context evaluation.
+Evaluate which past outcomes and results are relevant to interpreting the current situation.
 
 ## Architecture Reference
 
 - **Primary:** `architecture/4 - ApexOS - Context Architecture v1.0.docx` (Outcome/Results Context)
 
-## Contents Include
+## Artifact Conventions (Build 04)
 
-Positive outcomes, negative outcomes, measured results, observed consequences.
+| Item | Convention |
+|------|------------|
+| Domain supplement | `../templates/context-evaluation.md` |
+| Naming | `ctx-outcome-{slug}.md` |
+| ID prefix | `CTX-OUT-` |
+| Registry | `../INDEX.md` |
 
-## Architectural Finding
+## Workflows
 
-Validates recommendations, patterns, decisions, and assumptions. Outcome/Results remain the primary evidence layer.
+Evaluate during `../workflows/context-assembly.md`. Reference `memory/outcome-results/` by path.
+
+Review context relevance after outcomes via `../workflows/context-review.md`.
+
+## Does Not Store
+
+- Outcome/results memory (see `memory/outcome-results/`)
+- Outcome validation architecture (see `outcomes/`)
+
+See `../docs/context-domains.md` and `../REPOSITORY-GUIDE.md`.

@@ -15,3 +15,34 @@ Reduce confirmation bias, executive blind spots, organizational blind spots, and
 ## Evidence First Principle
 
 Retrieval should maximize evidence quality before inference occurs (LAD-008).
+
+See `../governance/evidence-first-checklist.md`.
+
+## Artifact Location
+
+| Artifact | Location | Template |
+|----------|----------|----------|
+| Evidence package | `evidence/` | `../templates/evidence-package.md` |
+| Contradictory evidence | `evidence/` | `../templates/contradictory-evidence.md` |
+
+Naming: `ret-evd-{slug}.md`, `ret-con-{slug}.md`
+
+## Workflows
+
+| Workflow | Purpose |
+|----------|---------|
+| `../workflows/evidence-assembly.md` | Locate, rank, and assemble evidence |
+| `../workflows/contradictory-evidence-workflow.md` | Seek and document contradictory evidence |
+
+## Documentation
+
+See `../docs/evidence-assembly.md` and `../docs/contradictory-evidence.md`.
+
+## Registry
+
+Register evidence packages in `../INDEX.md`.
+
+## Does Not Store
+
+- Inference or recommendations
+- Duplicated source or memory content — link by path only

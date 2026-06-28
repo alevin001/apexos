@@ -62,4 +62,12 @@ Artifact frontmatter fields (defined in `knowledge/templates/`) support retrieva
 
 ## Build Status
 
-Build 02 defines knowledge organization that retrieval will target. Retrieval implementation workflows are deferred to Build 04 (Context & Retrieval Design).
+Build 02 defines knowledge organization that retrieval targets. Full retrieval implementation workflows are defined in Build 04.
+
+| Workflow | Location |
+|----------|----------|
+| Evidence assembly | `retrieval/workflows/evidence-assembly.md` |
+| Retrieval pipeline | `retrieval/workflows/retrieval-pipeline.md` |
+| Package delivery | `retrieval/workflows/package-delivery.md` |
+
+See `../REPOSITORY-GUIDE.md` and `../workflows/evidence-assembly.md`.

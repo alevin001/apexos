@@ -16,6 +16,20 @@ Retrieval executes the relevance determinations established by Context Architect
 - **Build Plan:** `build/ApexOS V1 Build Plan.txt` (Retrieval Layer)
 - **Index:** `architecture/99 - ApexOS - Minimum Viable Index v2.0.docx` (DOC-005, LAD-007, LAD-008, AF-006, AF-008)
 
+## Build 04 Status
+
+**Complete.** Repository organization, templates, workflows, governance, and registry are defined.
+
+| Artifact | Purpose |
+|----------|---------|
+| `REPOSITORY-GUIDE.md` | Organization rules, naming, boundaries, ranking |
+| `INDEX.md` | Human-readable registry of retrieval artifacts |
+| `requests/` | Retrieval request artifacts linked from context |
+| `docs/` | Objectives, evidence assembly, ranking, package assembly, contradictory evidence |
+| `templates/` | Retrieval request, evidence package, contradictory evidence, review |
+| `workflows/` | Pipeline, evidence assembly, validation, package delivery |
+| `governance/` | Evidence first checklist, retrieval fidelity checklist, architecture mapping |
+
 ## Core Principle
 
 Retrieval exists to locate and assemble the **smallest set** of information most likely to improve executive effectiveness. Retrieval is not search — retrieval is evidence assembly.
@@ -32,6 +46,7 @@ Situation → Context Determines Relevance → Retrieval Locates Evidence → Ev
 
 | Folder | Responsibility |
 |--------|----------------|
+| `requests/` | Retrieval request artifacts scoped from context handoff |
 | `knowledge/` | Retrieve knowledge that improves interpretation and recommendations |
 | `memory/` | Retrieve evidence from memory categories |
 | `evidence/` | Assemble supporting, contradictory, and alternative-perspective evidence |
@@ -42,20 +57,52 @@ Situation → Context Determines Relevance → Retrieval Locates Evidence → Ev
 
 Evidence precedes inference. Inference does not precede evidence (LAD-008, AF-007).
 
+See `governance/evidence-first-checklist.md`.
+
 ## Contradictory Evidence Principle
 
 Retrieval must include supporting evidence, contradictory evidence, alternative perspectives, and competing interpretations (AF-008).
 
+See `workflows/contradictory-evidence-workflow.md`.
+
 ## Context Package Assembly
 
-- **Critical Context** — must be understood before interpretation
-- **Supporting Context** — improves confidence and understanding
-- **Available Context** — useful but not immediately necessary
+| Tier | Purpose |
+|------|---------|
+| Critical Context | Must be understood before interpretation |
+| Supporting Context | Improves confidence and understanding |
+| Available Context | Useful but not immediately necessary |
+
+See `docs/context-package-assembly.md` and `workflows/package-delivery.md`.
 
 ## Primary Output
 
 A Context Package containing relevant evidence, perspectives, outcomes/results, patterns, relationships, and strategic considerations prepared for interpretation.
 
-## Implementation Scope
+## Relationship to Other Layers
 
-Build 04 will translate Retrieval Architecture into implementation artifacts.
+| Layer | Relationship |
+|-------|--------------|
+| `context/` | Provides relevance specification — retrieval executes, does not override |
+| `knowledge/` | Knowledge retrieval targets |
+| `memory/` | Memory retrieval targets |
+| `inference/` | Consumes Context Package — does not influence evidence selection |
+| `governance/source-fidelity/retrieval-layer.md` | Retrieval fidelity and drift controls |
+
+## Quick Start
+
+1. Read `REPOSITORY-GUIDE.md`
+2. Receive context handoff from `context/workflows/context-assembly.md`
+3. Execute `workflows/retrieval-pipeline.md`
+4. Validate via `workflows/retrieval-validation.md`
+5. Deliver via `workflows/package-delivery.md`
+6. Register in `INDEX.md`
+
+## Governance
+
+- Evidence precedes inference — validate before delivery
+- Include contradictory evidence — document absence if none found
+- Link all evidence to source paths — never duplicate content
+- Run `governance/retrieval-fidelity-checklist.md` before package delivery
+
+See `governance/source-fidelity/retrieval-layer.md`.

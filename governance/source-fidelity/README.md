@@ -27,3 +27,5 @@ Architecture documents, Charter doctrine, knowledge sources, frameworks, and all
 |-------|----------|
 | Knowledge | `knowledge-layer.md` — source files, frameworks, reference materials, doctrine indices (Build 02) |
 | Memory | `memory-layer.md` — observations, memory categories, promotion, pattern validation, drift (Build 03) |
+| Context | `context-layer.md` — relevance determination, weighting, handoff, context drift (Build 04) |
+| Retrieval | `retrieval-layer.md` — evidence assembly, contradictory evidence, package delivery, retrieval drift (Build 04) |
