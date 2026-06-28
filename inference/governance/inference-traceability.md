@@ -21,7 +21,7 @@ Context relevance specification
       → Context Package
         → Inference component artifacts
           → Interpretation Package
-            → Recommendation (future)
+            → Recommendation Package
               → Outcomes (validation)
 ```
 

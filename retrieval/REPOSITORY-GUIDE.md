@@ -196,5 +196,5 @@ See `retrieval/governance/` and `governance/source-fidelity/retrieval-layer.md`.
 |-------|-------|--------|
 | Build 04 | Retrieval layer artifacts | Complete |
 | Build 05 | Inference layer artifacts | Complete |
-| Build 06 | Outcome and learning design | Pending |
-| Build 07 | Supabase / portable data structures | Pending |
+| Build 06 | Recommendation layer artifacts | Complete |
+| Build 07 | Outcome and learning design / Supabase | Pending |

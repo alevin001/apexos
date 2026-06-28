@@ -64,7 +64,10 @@ ApexOS/
 │   ├── templates/             # Artifact templates (Build 05)
 │   ├── workflows/             # Operational workflows (Build 05)
 │   └── governance/            # Layer-specific governance (Build 05)
-├── recommendation/            # Recommendation layer — interpretation to decision support
+├── recommendation/            # Recommendation layer — interpretation to decision support (Build 06)
+│   ├── templates/             # Artifact templates (Build 06)
+│   ├── workflows/             # Operational workflows (Build 06)
+│   └── governance/            # Layer-specific governance (Build 06)
 ├── outcomes/                  # Outcome & Results layer — validation and learning
 └── governance/                # Governance layer — integrity, fidelity, and drift protection
 ```
@@ -77,7 +80,7 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Builds 01–05 (repository structure, knowledge layer, memory layer, context and retrieval, inference) are complete. Subsequent builds translate remaining layers into implementation artifacts.
+See `build/ApexOS V1 Build Plan.txt`. Builds 01–06 (repository structure, knowledge layer, memory layer, context and retrieval, inference, recommendation) are complete. Subsequent builds translate remaining layers into implementation artifacts.
 
 ## Governance Rules
 

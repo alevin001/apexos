@@ -16,8 +16,8 @@ Translate Inference Architecture into repository implementation artifacts:
 ## Out of Scope (Preserved for Later Builds)
 
 - Database schemas, SQL, application code (Build 07)
-- Recommendation implementation (future build)
-- Outcome validation architecture workflows (Build 06)
+- Recommendation implementation (Build 06)
+- Outcome validation architecture workflows (Build 07)
 - Digital system implementation (Build 07)
 
 ## Artifacts Created — Inference Layer
@@ -73,7 +73,7 @@ Translate Inference Architecture into repository implementation artifacts:
 
 ## Next Build
 
-**Build 06 — Outcome & Learning Design**
+**Build 06 — Recommendation**
 
 Translate Outcome Architecture into implementation artifacts.
 

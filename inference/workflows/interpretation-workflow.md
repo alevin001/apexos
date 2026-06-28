@@ -148,6 +148,6 @@ Update `inference/INDEX.md`:
 
 ## Next Steps
 
-- Recommendation: `recommendation/` (future build)
+- Recommendation: `recommendation/workflows/recommendation-workflow.md`
 - After outcomes: inference review cycle
 - If evidence gaps found: new retrieval request via `retrieval/`

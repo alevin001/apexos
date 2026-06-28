@@ -183,4 +183,5 @@ FAB-002 (Knowledge Repository Architecture) remains open in the Architecture & D
 | Build 03 | Memory layer artifacts | Complete |
 | Build 04 | Context and retrieval design | Complete |
 | Build 05 | Inference layer artifacts | Complete |
+| Build 06 | Recommendation layer artifacts | Complete |
 | Build 07 | Supabase / portable data structures | Pending |

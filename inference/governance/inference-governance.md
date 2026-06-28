@@ -16,7 +16,7 @@ Applies to all content in `inference/`:
 - Component artifacts (`reasoning/`, `hypothesis-generation/`)
 - Inference reviews
 
-Retrieval controls in `governance/source-fidelity/retrieval-layer.md` govern evidence assembly. Recommendation controls will govern decision support in a future build.
+Retrieval controls in `governance/source-fidelity/retrieval-layer.md` govern evidence assembly. Recommendation controls in `governance/source-fidelity/recommendation-layer.md` govern decision support.
 
 ## Governance Principles (Inference Architecture)
 

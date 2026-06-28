@@ -11,7 +11,7 @@ Maintain explainability across ApexOS — why information was retrieved, why con
 
 ## Scope
 
-Applies to all layers: memory, context, retrieval, inference, recommendations, outcomes, and knowledge.
+Applies to all layers: memory, context, retrieval, inference, recommendation, outcomes, and knowledge.
 
 ## Knowledge Traceability
 
@@ -76,6 +76,21 @@ Inference artifacts use frontmatter fields for traceability (Build 05):
 - `transformation_log` — record of interpretation changes
 
 See `inference/templates/`, `inference/REPOSITORY-GUIDE.md`, `inference/governance/inference-traceability.md`, and `governance/source-fidelity/inference-layer.md`.
+
+## Recommendation Traceability
+
+Recommendation artifacts use frontmatter fields for traceability (Build 06):
+
+- `interpretation_package` — link to handed-off Interpretation Package from inference
+- `context_package` — link to assembled Context Package for full evidence chain
+- `retrieval_request` — link to retrieval request for chain continuity
+- `context_reference` — link to context relevance specification
+- `component_artifacts` — links to objective alignment, option generation, doctrine evaluation, and other component artifacts
+- `doctrine_references` — links to doctrine sources for evaluation
+- `confidence_summary` / `uncertainty_flags` — recommendation confidence and uncertainty state
+- `transformation_log` — record of recommendation changes
+
+See `recommendation/templates/`, `recommendation/REPOSITORY-GUIDE.md`, `recommendation/governance/recommendation-traceability.md`, and `governance/source-fidelity/recommendation-layer.md`.
 
 ## Objective
 
