@@ -64,6 +64,19 @@ Retrieval artifacts use frontmatter fields for traceability (Build 04):
 
 See `retrieval/templates/`, `retrieval/REPOSITORY-GUIDE.md`, `retrieval/docs/retrieval-traceability.md`, and `governance/source-fidelity/retrieval-layer.md`.
 
+## Inference Traceability
+
+Inference artifacts use frontmatter fields for traceability (Build 05):
+
+- `context_package` — link to assembled Context Package from retrieval
+- `retrieval_request` — link to retrieval request for chain continuity
+- `context_reference` — link to context relevance specification
+- `component_artifacts` — links to evidence assessment, assumption register, and other component artifacts
+- `confidence_summary` / `uncertainty_flags` — confidence and uncertainty state
+- `transformation_log` — record of interpretation changes
+
+See `inference/templates/`, `inference/REPOSITORY-GUIDE.md`, `inference/governance/inference-traceability.md`, and `governance/source-fidelity/inference-layer.md`.
+
 ## Objective
 
 Sufficient transparency to support trust, validation, and improvement — not perfect explainability.

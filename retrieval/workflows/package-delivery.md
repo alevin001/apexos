@@ -90,4 +90,4 @@ When inference completes or outcomes are available:
 
 ## Next Step
 
-Inference layer (Build 05). After outcomes: retrieval review and optional context review.
+Inference layer (Build 05). Execute `inference/workflows/interpretation-workflow.md`. After outcomes: retrieval review and optional context review.

@@ -94,6 +94,6 @@ Do not begin inference within this workflow — inference is a separate layer.
 
 ## Next Steps
 
-- Inference: `inference/` (Build 05)
+- Inference: `inference/workflows/interpretation-workflow.md`
 - After outcomes: `retrieval-validation.md` review cycle
 - If relevance gaps found: `context/workflows/context-review.md`

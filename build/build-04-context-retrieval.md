@@ -86,9 +86,9 @@ Translate Context Architecture and Retrieval Architecture into repository implem
 
 ## Next Build
 
-**Build 05 — Inference & Recommendation Design**
+**Build 05 — Inference**
 
-Translate Inference and Recommendation Architecture into implementation artifacts.
+Translate Inference Architecture into implementation artifacts.
 
 ## Validation Checklist
 
