@@ -74,4 +74,4 @@ Foundation objects (`executives`, `persons`, `relationships`, `situations`, `dec
 
 ## Next Build
 
-**Build 09 — End-to-End Executive Loop** wires ingestion, application logic, and the first runnable executive scenario. See `build/build-09-transition-package.md`.
+**Build 10 — Application Layer & Executive Interface** wires the executive UI, auth, and CI. See `build/build-10-transition-package.md`.

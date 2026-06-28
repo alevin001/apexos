@@ -152,10 +152,11 @@ Append to existing array; never replace silently (LAD-011).
 
 ## Build 09 Deliverables
 
-- `scripts/ingest/` — TypeScript or Python ingestion CLI
-- `scripts/ingest/parse-frontmatter.ts`
-- `scripts/ingest/resolve-links.ts`
-- Integration with Supabase client (`service_role` for batch ingest)
+- `scripts/ingest/` — TypeScript ingestion CLI (implemented)
+- `scripts/loop/` — traceability, validation, and review engines
+- `scenarios/leadership-conflict-q2/` — complete executive scenario
+- `supabase/seed.sql` — optional foundation seed
+- See `INGESTION-FLOW.md` for pipeline documentation
 
 ## Error Handling
 

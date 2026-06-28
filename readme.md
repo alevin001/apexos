@@ -86,7 +86,17 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Builds 01–08 (repository structure through Supabase integration) are complete. Build 09 implements the end-to-end executive loop with ingestion and application services.
+See `build/ApexOS V1 Build Plan.txt`. Builds 01–09 (repository structure through end-to-end executive loop) are complete. Build 10 implements the application layer and executive interface.
+
+## Build 09 — Executive Loop
+
+The first working executive operating loop connects repository artifacts to Supabase via the ingestion pipeline in `scripts/`. See `EXECUTIVE-LOOP.md` for setup and execution.
+
+```bash
+cd scripts && npm install && npm run loop:scenario
+```
+
+On Windows, npm scripts use `node --use-system-ca` for TLS. Set `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` from the Supabase Dashboard (Project Settings → API → service_role).
 
 ## Governance Rules
 

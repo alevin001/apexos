@@ -1,0 +1,25 @@
+{
+  "scenario_id": "SCN-001",
+  "title": "Q2 Leadership Conflict — End-to-End Executive Loop",
+  "description": "Complete executive scenario: leadership conflict through validation and learning.",
+  "ingestion_order": [
+    "foundations/executive.md",
+    "foundations/person-jane-smith.md",
+    "foundations/relationship-exec-jane.md",
+    "foundations/situation-leadership-conflict-q2.md",
+    "knowledge/sample-leadership-transcript.meta.md",
+    "memory/situation-leadership-conflict.md",
+    "context/ctx-pkg-leadership-conflict-q2.md",
+    "retrieval/ret-req-leadership-conflict-q2.md",
+    "retrieval/ret-evd-leadership-conflict-q2.md",
+    "retrieval/ret-ctx-leadership-conflict-q2.md",
+    "inference/inf-int-leadership-conflict-q2.md",
+    "inference/inf-evd-leadership-conflict-q2.md",
+    "recommendation/rec-pkg-leadership-conflict-q2.md",
+    "recommendation/rec-opt-leadership-conflict-q2.md",
+    "outcomes/out-cap-leadership-conflict-q2.md",
+    "outcomes/val-pkg-leadership-conflict-q2.md",
+    "outcomes/out-rec-val-leadership-conflict-q2.md",
+    "outcomes/out-lrn-leadership-conflict-q2.md"
+  ]
+}

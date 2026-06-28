@@ -1,0 +1,7 @@
+.env.local
+.env
+.tools/
+node_modules/
+scripts/node_modules/
+scripts/dist/
+*.log
