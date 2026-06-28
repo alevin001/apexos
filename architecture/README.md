@@ -54,6 +54,16 @@ Architecture diagrams are stored alongside documents:
 - `Image - 4 - Reasoning Pipeline.png`
 - `Image - 5 - Evidence to Truth Model.png`
 
+## Storage
+
+Build 02 defines storage conventions in `STORAGE-GUIDE.md`:
+
+- How architecture documents are stored and named
+- How future architecture documents are added (amendment rule)
+- How architecture documents relate to the Knowledge Layer
+
+Architecture documents are authoritative source documents. They are not knowledge inventory — see `knowledge/REPOSITORY-GUIDE.md` for that separation.
+
 ## Fidelity
 
 These documents are protected by fidelity preservation and no-silent-transformation principles. See `governance/source-fidelity/`.

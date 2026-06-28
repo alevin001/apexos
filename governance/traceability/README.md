@@ -11,7 +11,17 @@ Maintain explainability across ApexOS — why information was retrieved, why con
 
 ## Scope
 
-Applies to all layers: memory, context, retrieval, inference, recommendations, and outcomes.
+Applies to all layers: memory, context, retrieval, inference, recommendations, outcomes, and knowledge.
+
+## Knowledge Traceability
+
+Knowledge artifacts use frontmatter fields for traceability (Build 02):
+
+- `source` / `derived_from` — origin of content
+- `transformation_log` — record of any derivation or modification
+- `related_frameworks` / `related_concepts` — linked artifacts
+
+See `knowledge/templates/` and `governance/source-fidelity/knowledge-layer.md`.
 
 ## Objective
 

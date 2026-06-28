@@ -20,3 +20,7 @@ Drift often begins through seemingly harmless simplification. Small changes in w
 ## Applies To
 
 Architecture documents, Charter doctrine, knowledge sources, frameworks, and all authoritative content in `architecture/` and `knowledge/`.
+
+## Knowledge Layer Controls
+
+Build 02 defines knowledge-specific fidelity rules in `knowledge-layer.md` — covering source files, frameworks, reference materials, and doctrine indices.

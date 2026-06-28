@@ -41,7 +41,13 @@ ApexOS/
 ├── build/                     # Build sequence and plans
 ├── docs/                      # General documentation and legacy reference materials
 ├── foundations/               # Core object model and executive learning loop
-├── knowledge/                 # Knowledge layer — doctrine, frameworks, reference, sources
+├── knowledge/                 # Knowledge layer — doctrine, frameworks, reference, source_material
+│   ├── doctrine/              # Doctrine indices (references Charter — no duplication)
+│   ├── frameworks/            # Frameworks and concept artifacts
+│   ├── reference/             # Derived reference materials
+│   ├── source_material/       # Primary source documents
+│   ├── templates/             # Artifact templates (Build 02)
+│   └── workflows/             # Operational workflows (Build 02)
 ├── memory/                    # Memory layer — distilled intelligence by category
 ├── context/                   # Context layer — relevance determination by domain
 ├── retrieval/                 # Retrieval layer — evidence assembly
@@ -59,7 +65,7 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Build 01 (this structure) is complete. Subsequent builds translate each layer into implementation artifacts.
+See `build/ApexOS V1 Build Plan.txt`. Build 01 (repository structure) and Build 02 (knowledge layer) are complete. Subsequent builds translate remaining layers into implementation artifacts.
 
 ## Governance Rules
 
