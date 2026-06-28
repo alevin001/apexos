@@ -23,6 +23,20 @@ Knowledge artifacts use frontmatter fields for traceability (Build 02):
 
 See `knowledge/templates/` and `governance/source-fidelity/knowledge-layer.md`.
 
+## Memory Traceability
+
+Memory artifacts use frontmatter fields for traceability (Build 03):
+
+- `originating_knowledge` — link to knowledge layer source
+- `promoted_from` — link to observation or prior memory artifact
+- `related_outcomes` / `outcome_references` — link to outcome evidence
+- `supporting_observations` / `supporting_outcomes` — pattern evidence chain
+- `transformation_log` — record of derivation or modification
+
+Promotion records in `memory/promotion/` provide reviewable audit trails for all promotions.
+
+See `memory/templates/`, `memory/REPOSITORY-GUIDE.md`, and `governance/source-fidelity/memory-layer.md`.
+
 ## Objective
 
 Sufficient transparency to support trust, validation, and improvement — not perfect explainability.

@@ -13,6 +13,17 @@ Stores both positive and negative outcomes/results. Outcome/Results Memory provi
 
 Positive outcomes, negative outcomes, measured results, observed consequences.
 
+## Template and Conventions
+
+| Item | Path |
+|------|------|
+| Template | `templates/outcome-results-memory.md` |
+| Outcome reference | `templates/outcome-reference.md` |
+| Naming | `{outcome-slug}.md` |
+| ID prefix | `MEM-OUT-` |
+| Add workflow | `workflows/add-memory.md` |
+| Link to other memory | `workflows/link-outcome-reference.md` |
+
 ## Distinction from Outcomes Layer
 
 This folder stores **memory** (what ApexOS knows about past results). The `outcomes/` layer implements **validation architecture** (capture, learning, feedback loops, confidence adjustment). Both are required; they serve different functions.
@@ -20,3 +31,7 @@ This folder stores **memory** (what ApexOS knows about past results). The `outco
 ## Validation Layer Role
 
 Outcome/Results serves as the validation layer for all ApexOS objects (LAD-004).
+
+## Governance
+
+See `governance/source-fidelity/memory-layer.md`. Register artifacts in `INDEX.md`.

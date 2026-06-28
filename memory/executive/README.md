@@ -12,6 +12,15 @@ Maintains understanding of the system operator — not just who the executive is
 
 Purpose, mission, values, leadership tendencies, communication tendencies, recurring blind spots, recurring strengths, emotional patterns, stress patterns, executive state indicators.
 
+## Template and Conventions
+
+| Item | Path |
+|------|------|
+| Template | `templates/executive-memory.md` |
+| Naming | `{aspect-or-topic}.md` |
+| ID prefix | `MEM-EXE-` |
+| Add workflow | `workflows/add-memory.md` or `workflows/promote-to-memory.md` |
+
 ## Related Context Domain
 
 `context/executive/` — current executive state for a given situation.
@@ -19,3 +28,7 @@ Purpose, mission, values, leadership tendencies, communication tendencies, recur
 ## Related Retrieval Target
 
 `retrieval/memory/` retrieves executive memory as evidence.
+
+## Governance
+
+See `governance/source-fidelity/memory-layer.md`. Register artifacts in `INDEX.md`.

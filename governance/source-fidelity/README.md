@@ -21,6 +21,9 @@ Drift often begins through seemingly harmless simplification. Small changes in w
 
 Architecture documents, Charter doctrine, knowledge sources, frameworks, and all authoritative content in `architecture/` and `knowledge/`.
 
-## Knowledge Layer Controls
+## Layer-Specific Controls
 
-Build 02 defines knowledge-specific fidelity rules in `knowledge-layer.md` — covering source files, frameworks, reference materials, and doctrine indices.
+| Layer | Controls |
+|-------|----------|
+| Knowledge | `knowledge-layer.md` — source files, frameworks, reference materials, doctrine indices (Build 02) |
+| Memory | `memory-layer.md` — observations, memory categories, promotion, pattern validation, drift (Build 03) |

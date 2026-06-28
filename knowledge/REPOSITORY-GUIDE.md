@@ -84,7 +84,7 @@ Atomic ideas linked to frameworks, situations, and outcomes. Stored as markdown 
 
 ## Source vs Memory Boundary
 
-Memory Architecture defines a strict boundary. Build 02 establishes repository rules; Build 03 implements memory artifacts.
+Memory Architecture defines a strict boundary. Build 02 establishes repository rules; Build 03 implements memory artifacts. See `memory/REPOSITORY-GUIDE.md`.
 
 ```
 Source Information  →  Observation  →  Memory  →  Pattern  →  Reinforcement
@@ -178,5 +178,5 @@ FAB-002 (Knowledge Repository Architecture) remains open in the Architecture & D
 | Build | Scope | Status |
 |-------|-------|--------|
 | Build 02 | Repository organization, templates, workflows | Complete |
-| Build 03 | Memory layer artifacts | Pending |
+| Build 03 | Memory layer artifacts | Complete |
 | Build 07 | Supabase / portable data structures | Pending |

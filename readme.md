@@ -65,7 +65,7 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Build 01 (repository structure) and Build 02 (knowledge layer) are complete. Subsequent builds translate remaining layers into implementation artifacts.
+See `build/ApexOS V1 Build Plan.txt`. Builds 01–03 (repository structure, knowledge layer, memory layer) are complete. Subsequent builds translate remaining layers into implementation artifacts.
 
 ## Governance Rules
 

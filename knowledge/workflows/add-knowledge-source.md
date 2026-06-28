@@ -57,7 +57,7 @@ Assign an ID (e.g., `SRC-001`).
 
 ### 6. Assess memory promotion (optional)
 
-If distilled intelligence should be extracted, do **not** store it in `knowledge/`. Note intended memory promotion in metadata (`memory_promotion` field). Build 03 defines memory artifact creation.
+If distilled intelligence should be extracted, do **not** store it in `knowledge/`. Note intended memory promotion in metadata (`memory_promotion` field). Use `memory/workflows/create-observation.md` to begin the promotion pipeline.
 
 ## Governance Checklist
 

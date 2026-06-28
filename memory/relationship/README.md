@@ -13,6 +13,19 @@ Tracks the evolution of leadership relationships over time. This is one of the h
 
 Trust, alignment, influence effectiveness, communication effectiveness, recurring friction, recurring success patterns, motivational drivers, resistance patterns.
 
+## Template and Conventions
+
+| Item | Path |
+|------|------|
+| Template | `templates/relationship-memory.md` |
+| Naming | `{person-a}-{person-b}.md` |
+| ID prefix | `MEM-REL-` |
+| Add workflow | `workflows/add-memory.md` or `workflows/promote-to-memory.md` |
+
 ## Related Context Domain
 
 `context/relationship/` — how two individuals interact in the current situation.
+
+## Governance
+
+See `governance/source-fidelity/memory-layer.md`. Register artifacts in `INDEX.md`.

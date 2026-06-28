@@ -16,7 +16,7 @@ Step-by-step workflows for operating the Knowledge Layer. These are manual, foun
 1. Reference architecture documents before adding content.
 2. Update `INDEX.md` after every addition or change.
 3. Preserve source fidelity (LAD-010, LAD-011).
-4. Do not store distilled memory in `knowledge/` — use `memory/` (Build 03).
+4. Do not store distilled memory in `knowledge/` — use `memory/workflows/` (Build 03 complete).
 5. Do not duplicate Charter doctrine — reference it from `doctrine/` indices.
 
 ## AI-Assisted Development

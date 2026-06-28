@@ -51,7 +51,7 @@ Knowledge exists to improve decisions, not merely preserve information.
 |-------|--------------|
 | `architecture/` | Authoritative architecture documents — not knowledge inventory |
 | `docs/knowledge base/` | Legacy materials — migrate via `workflows/migrate-legacy-materials.md` |
-| `memory/` | Distilled intelligence — Build 03; do not store in `knowledge/` |
+| `memory/` | Distilled intelligence — see `memory/REPOSITORY-GUIDE.md`; do not store in `knowledge/` |
 | `retrieval/knowledge/` | Retrieves from this layer |
 | `governance/source-fidelity/` | Protects knowledge fidelity (LAD-010, LAD-011) |
 
@@ -60,10 +60,18 @@ Knowledge exists to improve decisions, not merely preserve information.
 ```
 Source Information  →  Observation  →  Memory  →  Pattern  →  Reinforcement
      ↑                                        ↑
-source_material/                           memory/ (Build 03)
+source_material/  →  memory/observations/  →  memory/{category}/
 ```
 
-Raw sources stay in `source_material/`. Distilled intelligence belongs in `memory/`.
+Raw sources stay in `source_material/`. Distilled intelligence belongs in `memory/`. See `memory/REPOSITORY-GUIDE.md` and `memory/workflows/`.
+
+## Relationship to Memory Layer
+
+Build 03 defines memory artifacts. When knowledge sources yield executive intelligence:
+
+1. Set `memory_promotion` in source metadata
+2. Create observation via `memory/workflows/create-observation.md`
+3. Promote via `memory/workflows/promote-to-memory.md`
 
 ## Quick Start
 

@@ -17,3 +17,27 @@ Successful leadership patterns, failed leadership patterns, communication patter
 ## Validation
 
 Patterns must be reinforced or weakened based on observed outcomes (AF-016). Pattern existence does not guarantee future effectiveness.
+
+**Patterns are not memories until validated.** Do not promote single observations to this folder. Use `workflows/promote-to-pattern.md`.
+
+## Distinction
+
+| Concept | Location |
+|---------|----------|
+| Pattern memory | This folder — stored validated learning |
+| Pattern recognition | `inference/pattern-recognition/` — inferential process |
+| Pattern validation | `outcomes/` — validation architecture (Build 06) |
+
+## Template and Conventions
+
+| Item | Path |
+|------|------|
+| Template | `templates/pattern-memory.md` |
+| Naming | `{pattern-slug}.md` |
+| ID prefix | `MEM-PAT-` |
+| Promotion workflow | `workflows/promote-to-pattern.md` only |
+| Review workflow | `workflows/review-memory.md` |
+
+## Governance
+
+See `governance/source-fidelity/memory-layer.md`. Register artifacts in `INDEX.md`.
