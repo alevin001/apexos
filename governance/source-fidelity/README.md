@@ -1,0 +1,22 @@
+# Source Fidelity
+
+## Responsibility
+
+Preserve the fidelity of authoritative information — meaning, structure, emphasis, hierarchy, examples, evaluative questions, and rationale.
+
+## Architecture Reference
+
+- **Primary:** `architecture/6 - ApexOS - Governance Architecture v1.0.docx` (Fidelity Preservation Principle, No Silent Transformation Principle)
+- **Index:** `architecture/99 - ApexOS - Minimum Viable Index v2.0.docx` (LAD-010, LAD-011, AF-010)
+
+## Protected Transformations
+
+Summarization, consolidation, omission, paraphrasing, restructuring, and reinterpretation require explicit visibility and approval.
+
+## Architectural Finding
+
+Drift often begins through seemingly harmless simplification. Small changes in wording, structure, emphasis, rationale, and examples can accumulate into material divergence (AF-010).
+
+## Applies To
+
+Architecture documents, Charter doctrine, knowledge sources, frameworks, and all authoritative content in `architecture/` and `knowledge/`.
