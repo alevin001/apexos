@@ -81,7 +81,7 @@ Each category must remain traceable and distinguishable in artifacts:
 When outcome evidence becomes available:
 
 1. Create inference review artifact: `{package-basename}.review.md`
-2. Link to outcome evidence in `outcomes/`
+2. Link to outcome evidence via `outcomes/workflows/outcome-pipeline-workflow.md`
 3. Update `review_status` on Interpretation Package
 4. Register in `INDEX.md` Inference Reviews
 5. Trigger confidence recalibration if warranted

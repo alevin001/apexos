@@ -141,7 +141,7 @@ Location: `decision-support/`
 
 ## Recommendation Structures (Repository Conventions)
 
-Portable markdown structures with YAML frontmatter. Build 07 may map these fields to database columns without changing logical structure.
+Portable markdown structures with YAML frontmatter. Build 08 may map these fields to database columns without changing logical structure.
 
 ### Common Fields (All Recommendation Artifacts)
 
@@ -250,4 +250,5 @@ See `recommendation/governance/` and `governance/source-fidelity/recommendation-
 | Build | Scope | Status |
 |-------|-------|--------|
 | Build 06 | Recommendation layer artifacts | Complete |
-| Build 07 | Supabase / portable data structures | Pending |
+| Build 07 | Outcome layer artifacts | Complete |
+| Build 08 | Supabase / portable data structures | Pending |

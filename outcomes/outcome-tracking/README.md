@@ -1,4 +1,4 @@
-# Outcome Capture
+# Outcome Tracking
 
 ## Responsibility
 
@@ -14,12 +14,26 @@ What recommendation was made, what decision was made, what action was taken, whe
 
 ## Category Separation
 
-Actions, observations, interpretations, and outcomes/results must remain separate.
+Actions, observations, interpretations, recommendations, decisions, and outcomes/results must remain separate.
 
 ## High-Value Evidence
 
-The correlation Recommendation → Decision → Action Taken → Outcome/Results provides stronger learning than outcome information alone (LAD-016).
+The correlation Recommendation → Decision → Action Taken → Outcome/Results provides stronger learning than outcome information alone (LAD-016, AF-017).
 
 ## Capture Methods
 
 Executive follow-up, structured reflection, scheduled validation reviews, organizational reporting, outcome measurement systems, observed behavioral and organizational changes.
+
+## Artifact Conventions
+
+| Template | Naming | Location |
+|----------|--------|----------|
+| `templates/outcome-capture-template.md` | `out-cap-{short-slug}.md` | This folder |
+
+## Workflow
+
+Execute `workflows/outcome-capture-workflow.md`.
+
+## Distinction from Memory
+
+Outcome capture records observed action and results for validation. Durable outcome evidence promoted after validation lives in `memory/outcome-results/`.

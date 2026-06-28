@@ -16,7 +16,7 @@ Applies to all content in `recommendation/`:
 - Component artifacts (`options/`, `recommendations/`, `tradeoffs/`, `decision-support/`)
 - Recommendation reviews
 
-Inference controls in `inference/governance/` govern interpretation. Outcome controls will govern validation in Build 07.
+Inference controls in `inference/governance/` govern interpretation. Outcome controls in `outcomes/governance/` govern validation.
 
 ## Governance Principles (Recommendation Architecture)
 

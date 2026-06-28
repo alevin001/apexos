@@ -26,7 +26,7 @@ Patterns must be reinforced or weakened based on observed outcomes (AF-016). Pat
 |---------|----------|
 | Pattern memory | This folder — stored validated learning |
 | Pattern recognition | `inference/pattern-recognition/` — inferential process |
-| Pattern validation | `outcomes/` — validation architecture (Build 06) |
+| Pattern validation | `outcomes/` — validation architecture (Build 07) |
 
 ## Template and Conventions
 

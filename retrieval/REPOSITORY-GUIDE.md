@@ -100,7 +100,7 @@ Recency may influence retrieval. Recency should not dominate retrieval.
 
 ## Retrieval Structures (Repository Conventions)
 
-Portable markdown structures with YAML frontmatter. Build 07 may map these fields to database columns without changing logical structure.
+Portable markdown structures with YAML frontmatter. Build 08 may map these fields to database columns without changing logical structure.
 
 ### Common Fields (All Retrieval Artifacts)
 
@@ -197,4 +197,5 @@ See `retrieval/governance/` and `governance/source-fidelity/retrieval-layer.md`.
 | Build 04 | Retrieval layer artifacts | Complete |
 | Build 05 | Inference layer artifacts | Complete |
 | Build 06 | Recommendation layer artifacts | Complete |
-| Build 07 | Outcome and learning design / Supabase | Pending |
+| Build 07 | Outcome layer artifacts | Complete |
+| Build 08 | Supabase / portable data structures | Pending |

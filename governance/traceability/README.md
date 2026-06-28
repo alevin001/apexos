@@ -92,6 +92,26 @@ Recommendation artifacts use frontmatter fields for traceability (Build 06):
 
 See `recommendation/templates/`, `recommendation/REPOSITORY-GUIDE.md`, `recommendation/governance/recommendation-traceability.md`, and `governance/source-fidelity/recommendation-layer.md`.
 
+## Outcome Traceability
+
+Outcome artifacts use frontmatter fields for traceability (Build 07):
+
+- `recommendation_package` — link to delivered Recommendation Package from recommendation
+- `outcome_capture` — link to action and observed result record
+- `interpretation_package` — link for full chain continuity
+- `context_package` — link for evidence chain
+- `executive_decision_reference` — external decision reference
+- `component_artifacts` — links to validation component artifacts
+- `pattern_references` — links to pattern memory under evaluation
+- `learning_promoted` — link to validated learning update
+- `promoted_to_memory` — link to memory artifact after promotion
+- `validation_summary` — overall validation outcome
+- `transformation_log` — append-only record of validation changes
+
+Full chain: Context → Retrieval → Inference → Recommendation → Outcome → Validated Learning → Memory Promotion
+
+See `outcomes/templates/`, `outcomes/REPOSITORY-GUIDE.md`, `outcomes/governance/outcome-traceability.md`, and `governance/source-fidelity/outcome-layer.md`.
+
 ## Objective
 
 Sufficient transparency to support trust, validation, and improvement — not perfect explainability.

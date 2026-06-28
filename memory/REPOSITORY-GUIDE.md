@@ -95,7 +95,7 @@ Promotion must remain **reviewable**. Record every promotion in `memory/promotio
 
 ## Memory Structures (Repository Conventions)
 
-Portable markdown structures with YAML frontmatter. Build 07 may map these fields to database columns without changing logical structure.
+Portable markdown structures with YAML frontmatter. Build 08 may map these fields to database columns without changing logical structure.
 
 ### Common Fields (All Memory Artifacts)
 
@@ -207,4 +207,5 @@ See `governance/source-fidelity/memory-layer.md` and `memory/workflows/review-me
 | Build 04 | Context and retrieval design | Complete |
 | Build 05 | Inference layer artifacts | Complete |
 | Build 06 | Recommendation layer artifacts | Complete |
-| Build 07 | Outcome and learning design / Supabase | Pending |
+| Build 07 | Outcome layer artifacts | Complete |
+| Build 08 | Supabase / portable data structures | Pending |

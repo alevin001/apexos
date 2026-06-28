@@ -175,6 +175,6 @@ Update `recommendation/INDEX.md`:
 ## Next Steps
 
 - Executive decision and action
-- Outcome capture: `outcomes/` (Build 07 scope for outcome implementation)
+- Outcome capture: `outcomes/workflows/outcome-pipeline-workflow.md`
 - After outcomes: recommendation review cycle
 - If inference gaps found: return to `inference/` — do not re-infer in recommendation

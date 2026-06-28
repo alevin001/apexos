@@ -22,7 +22,7 @@ Applies to all content in `recommendation/`:
 - Recommendation confidence artifacts (`decision-support/`)
 - Recommendation reviews
 
-Inference controls in `inference-layer.md` govern interpretation. Outcome controls will govern validation in Build 07.
+Inference controls in `inference-layer.md` govern interpretation. Outcome controls in `outcome-layer.md` govern validation.
 
 ## Core Recommendation Governance Rules
 

@@ -1,8 +1,8 @@
-# Feedback Loops
+# Follow-Up
 
 ## Responsibility
 
-Proactive outcome follow-up and validation cycles that strengthen learning where learning value justifies the effort.
+Proactive executive follow-up and validation cycles that strengthen learning where learning value justifies the effort.
 
 ## Architecture Reference
 
@@ -19,3 +19,17 @@ Major leadership decisions, organizational changes, strategic initiatives, confl
 ## Principle
 
 The objective is not to create unnecessary follow-up. The objective is to improve learning where learning value is significant.
+
+## Artifact Conventions
+
+| Template | Naming | Location |
+|----------|--------|----------|
+| `templates/executive-follow-up-template.md` | `out-fup-{short-slug}.md` | This folder |
+
+## Workflow
+
+Execute `workflows/executive-follow-up-workflow.md`.
+
+## Relationship to Outcome Capture
+
+Follow-up may trigger or supplement outcome capture when outcomes are not yet observable or require scheduled re-validation.

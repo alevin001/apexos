@@ -31,3 +31,4 @@ Architecture documents, Charter doctrine, knowledge sources, frameworks, and all
 | Retrieval | `retrieval-layer.md` — evidence assembly, contradictory evidence, package delivery, retrieval drift (Build 04) |
 | Inference | `inference-layer.md` — evidence interpretation, category separation, assumption transparency, inference drift (Build 05) |
 | Recommendation | `recommendation-layer.md` — decision support generation, doctrine alignment, executive agency, recommendation drift (Build 06) |
+| Outcome | `outcome-layer.md` — outcome validation, historical integrity, learning promotion, outcome drift (Build 07) |

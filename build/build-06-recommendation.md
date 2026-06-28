@@ -73,9 +73,9 @@ Translate Recommendation Architecture v1.0 into repository implementation artifa
 
 ## Next Build
 
-**Build 07 — Outcome & Learning Design / Supabase Implementation**
+**Build 07 — Outcome & Results** (Complete — see `build/build-07-outcome.md`)
 
-Translate Outcome Architecture into implementation artifacts.
+**Build 08 — Supabase / Digital Implementation**
 
 ## Validation Checklist
 
