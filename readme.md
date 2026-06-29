@@ -75,6 +75,9 @@ ApexOS/
 ├── supabase/                  # Supabase implementation — schema, migrations, docs (Build 08)
 │   ├── migrations/            # Versioned SQL migrations
 │   └── config.toml            # Supabase CLI configuration
+├── apps/
+│   └── executive-ui/          # Executive interface (Build 10)
+├── scripts/                   # Ingestion and validation runtime (Build 09)
 └── governance/                # Governance layer — integrity, fidelity, and drift protection
 ```
 
@@ -86,7 +89,17 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Builds 01–09 (repository structure through end-to-end executive loop) are complete. Build 10 implements the application layer and executive interface.
+See `build/ApexOS V1 Build Plan.txt`. Builds 01–09 (repository structure through end-to-end executive loop) are complete. **Build 10** implements the executive interface in `apps/executive-ui/`.
+
+## Build 10 — Executive Interface
+
+The first usable executive application exposes the validated runtime through a thin web UI. See `apps/executive-ui/docs/README.md`.
+
+```bash
+cd apps/executive-ui && npm install && npm run dev
+```
+
+Open http://localhost:3010. Requires repo root `.env.local` with `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
 
 ## Build 09 — Executive Loop
 
