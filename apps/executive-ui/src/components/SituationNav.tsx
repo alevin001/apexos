@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const WORKSPACE_TABS = [
   { segment: "", label: "Overview" },
+  { segment: "provenance", label: "Glass Box" },
   { segment: "evidence", label: "Evidence" },
   { segment: "reasoning", label: "Reasoning" },
   { segment: "decision", label: "Decision" },

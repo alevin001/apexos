@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { SituationNav } from "@/components/SituationNav";
 import { ArchiveButton } from "@/components/ArchiveButton";
+import { RuntimeObservabilityBar } from "@/components/RuntimeObservabilityBar";
 import { PipelineStageBar, TraceLink, MarkdownBody } from "@/components/Section";
 import { getSituationPipeline } from "@/services/pipeline-service";
+import { getRuntimeObservability } from "@/services/provenance-service";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +16,10 @@ export default async function SituationOverviewPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const pipeline = await getSituationPipeline(slug);
+  const [pipeline, observability] = await Promise.all([
+    getSituationPipeline(slug),
+    getRuntimeObservability(slug),
+  ]);
   if (!pipeline) notFound();
 
   const { situation, chain, stages, contextSpec, recommendationPackage, outcomeCapture } = pipeline;
@@ -25,7 +31,22 @@ export default async function SituationOverviewPage({
         {situation.status !== "archived" && <ArchiveButton slug={slug} />}
       </div>
 
+      {observability && <RuntimeObservabilityBar metrics={observability} />}
+
       <PipelineStageBar stages={stages} />
+
+      {chain && (
+        <section className="section glass-box-cta">
+          <h2 className="section-title">Decision Provenance</h2>
+          <p>
+            Inspect the complete reasoning pipeline — why evidence was retrieved, what supports
+            or contradicts conclusions, and how learning will occur.
+          </p>
+          <Link href={`/situations/${slug}/provenance`} className="glass-box-link">
+            Open Glass Box →
+          </Link>
+        </section>
+      )}
 
       <section className="section">
         <h2 className="section-title">Situation</h2>

@@ -531,3 +531,344 @@ code {
   border-radius: var(--radius);
   margin-bottom: 1rem;
 }
+
+/* Runtime Observability (Build 10A) */
+.observability-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.observability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.observability-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.observability-pipeline-status {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius);
+}
+
+.observability-pipeline-status.status-complete {
+  color: var(--success);
+  background: rgba(61, 214, 140, 0.1);
+}
+
+.observability-pipeline-status.status-partial {
+  color: var(--warning);
+  background: rgba(245, 166, 35, 0.1);
+}
+
+.observability-pipeline-status.status-none {
+  color: var(--muted);
+  background: var(--surface-2);
+}
+
+.observability-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.5rem;
+}
+
+.observability-metric {
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.6rem;
+}
+
+.metric-label {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+.metric-value {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 0.15rem;
+  word-break: break-word;
+}
+
+.observability-flags {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.flags-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.uncertainty-flag {
+  font-size: 0.7rem;
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--warning);
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  text-transform: capitalize;
+}
+
+/* Executive Glass Box (Build 10A) */
+.glass-box-intro p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.glass-box-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.glass-box-cta p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.glass-box-link {
+  display: inline-block;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.glass-box-pipeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.glass-box-stage-wrapper {
+  position: relative;
+}
+
+.pipeline-connector {
+  width: 2px;
+  height: 1rem;
+  background: var(--accent-dim);
+  margin: 0 auto;
+}
+
+.glass-box-stage {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.glass-box-stage.complete {
+  border-left: 3px solid var(--accent-dim);
+}
+
+.glass-box-stage.pending {
+  border-left: 3px solid var(--border);
+  opacity: 0.85;
+}
+
+.glass-box-stage.expanded {
+  border-color: var(--accent-dim);
+}
+
+.glass-box-stage-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+}
+
+.glass-box-stage-header:hover {
+  background: var(--surface-2);
+}
+
+.stage-indicator {
+  flex-shrink: 0;
+}
+
+.stage-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stage-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.stage-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stage-header-top h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.stage-status-badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.stage-status-badge.complete {
+  background: rgba(61, 214, 140, 0.15);
+  color: var(--success);
+}
+
+.stage-status-badge.pending {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.stage-summary {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.stage-external-id {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  color: var(--muted);
+  background: none;
+  padding: 0;
+}
+
+.expand-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  color: var(--muted);
+  width: 1.5rem;
+  text-align: center;
+}
+
+.glass-box-stage-body {
+  padding: 0 1rem 1rem 3.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.provenance-insights h4 {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.insight-list {
+  margin: 0;
+}
+
+.insight-item {
+  margin-bottom: 0.75rem;
+}
+
+.insight-item dt {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.15rem;
+}
+
+.insight-item dd {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.provenance-body h5,
+.provenance-artifacts h5,
+.provenance-log h5 {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.artifact-detail {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.artifact-detail summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.artifact-detail .badge {
+  margin-left: 0.5rem;
+}
+
+.provenance-log ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.provenance-log li {
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 0.2rem 0;
+}
+
+.log-date {
+  font-family: var(--mono);
+  margin-right: 0.5rem;
+}
+
+.log-action {
+  color: var(--accent);
+}
+
+.stage-deep-link {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}

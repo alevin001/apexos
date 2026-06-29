@@ -89,7 +89,21 @@ Situation → Context → Retrieval → Evidence Assembly → Inference → Reco
 
 ## Build Sequence
 
-See `build/ApexOS V1 Build Plan.txt`. Builds 01–09 (repository structure through end-to-end executive loop) are complete. **Build 10** implements the executive interface in `apps/executive-ui/`.
+See `build/ApexOS V1 Build Plan.txt`. Builds 01–09 (repository structure through end-to-end executive loop) are complete. **Build 10** implements the executive interface in `apps/executive-ui/`. **Build 10A** adds the Executive Glass Box (decision provenance) and operational readiness stabilization.
+
+## Build 10A — Executive Glass Box
+
+MVP stabilization milestone: decision provenance visualization, runtime observability, and operational readiness. See `build/build-10a-executive-glass-box.md`.
+
+```bash
+# Validate runtime
+cd scripts && npm install && npm run loop:scenario
+
+# Start executive UI
+cd apps/executive-ui && npm install && npm run dev
+```
+
+Open http://localhost:3010/situations/leadership-conflict-q2/provenance for the Glass Box experience.
 
 ## Build 10 — Executive Interface
 

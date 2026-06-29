@@ -41,8 +41,8 @@ export function AppShell({
         {children}
       </main>
       <footer className="app-footer">
-        <span>Build 10 — Executive Interface</span>
-        <span className="footer-note">Runtime boundaries preserved · No inference in UI</span>
+        <span>Build 10A — Executive Glass Box</span>
+        <span className="footer-note">Decision provenance visible · Runtime boundaries preserved</span>
       </footer>
     </div>
   );

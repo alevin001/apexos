@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "ingest": "node --use-system-ca ./node_modules/tsx/dist/cli.mjs ingest/index.ts",
-    "ingest:scenario": "node --use-system-ca ./node_modules/tsx/dist/cli.mjs ingest/index.ts --scenario leadership-conflict-q2",
-    "loop": "node --use-system-ca ./node_modules/tsx/dist/cli.mjs loop/executive-loop.ts",
-    "loop:scenario": "node --use-system-ca ./node_modules/tsx/dist/cli.mjs loop/executive-loop.ts --scenario leadership-conflict-q2",
-    "validate": "node --use-system-ca ./node_modules/tsx/dist/cli.mjs loop/validation.ts",
-    "trace": "node --use-system-ca ./node_modules/tsx/dist/cli.mjs loop/traceability.ts",
-    "reviews": "node --use-system-ca ./node_modules/tsx/dist/cli.mjs loop/reviews.ts"
+    "ingest": "node run.mjs ingest/index.ts",
+    "ingest:scenario": "node run.mjs ingest/index.ts --scenario leadership-conflict-q2",
+    "loop": "node run.mjs loop/executive-loop.ts",
+    "loop:scenario": "node run.mjs loop/executive-loop.ts --scenario leadership-conflict-q2",
+    "validate": "node run.mjs loop/validation.ts",
+    "trace": "node run.mjs loop/traceability.ts",
+    "reviews": "node run.mjs loop/reviews.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",

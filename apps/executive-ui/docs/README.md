@@ -1,6 +1,6 @@
 # ApexOS Executive UI
 
-Build 10 executive interface — a thin web layer over the validated Supabase runtime.
+Build 10 executive interface — a thin web layer over the validated Supabase runtime. **Build 10A** adds the Executive Glass Box for decision provenance.
 
 ## Purpose
 
@@ -16,12 +16,17 @@ The UI reads pipeline artifacts from Supabase and captures executive decisions a
 
 ```bash
 # From repo root — ensure .env.local has SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY
-cd apps/executive-ui
+# Validate runtime first (Windows: use scripts/install.ps1)
+cd scripts && npm install && npm run loop:scenario
+
+cd ../apps/executive-ui
 npm install
 npm run dev
 ```
 
 Open http://localhost:3010
+
+On Windows, npm scripts use `node --use-system-ca` for TLS to Supabase.
 
 ## Prerequisites
 
@@ -35,7 +40,8 @@ Open http://localhost:3010
 |-------|---------|
 | `/` | Executive Home — recent situations, follow ups, recommendations, outcomes |
 | `/situations` | Create and list situations |
-| `/situations/[slug]` | Situation workspace — pipeline overview and traceability |
+| `/situations/[slug]` | Situation workspace — pipeline overview, observability, traceability |
+| `/situations/[slug]/provenance` | **Glass Box** — full decision provenance pipeline (Build 10A) |
 | `/situations/[slug]/evidence` | Evidence viewer — layers displayed separately |
 | `/situations/[slug]/reasoning` | Reasoning viewer — full inference pipeline |
 | `/situations/[slug]/decision` | Decision capture — Accepted / Modified / Rejected |

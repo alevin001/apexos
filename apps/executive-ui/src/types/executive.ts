@@ -143,3 +143,53 @@ export interface SituationPipeline {
   recommendationPackage: Record<string, unknown> | null;
   outcomeCapture: Record<string, unknown> | null;
 }
+
+export interface ProvenanceInsight {
+  question: string;
+  answer: string;
+}
+
+export interface ProvenanceArtifact {
+  external_id: string;
+  title: string;
+  type?: string;
+  status?: string;
+  body_md?: string | null;
+}
+
+export interface ProvenanceStageData {
+  id: string;
+  label: string;
+  externalId: string;
+  status: string;
+  complete: boolean;
+  summary: string;
+  insights: ProvenanceInsight[];
+  artifacts: ProvenanceArtifact[];
+  body_md?: string | null;
+  transformation_log?: Record<string, unknown>[];
+  relatedPath?: string;
+}
+
+export interface DecisionProvenanceView {
+  situationSlug: string;
+  situationTitle: string;
+  stages: ProvenanceStageData[];
+  chain: TraceabilityChain | null;
+}
+
+export interface RuntimeObservability {
+  activeSituation: string;
+  situationStatus: string;
+  contextCount: number;
+  evidenceCount: number;
+  contradictoryEvidenceCount: number;
+  assumptionCount: number;
+  interpretationConfidence: string | null;
+  recommendationConfidence: string | null;
+  uncertaintyFlags: string[];
+  completedStages: number;
+  totalStages: number;
+  currentStage: string;
+  pipelineStatus: "complete" | "partial" | "none";
+}
