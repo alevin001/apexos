@@ -51,9 +51,18 @@ Learning (learning_updates)
 
 ### Write Path — Situation
 
-1. Executive creates situation via form
+1. Executive creates situation via form **or describes situation in conversation (Build 11)**
 2. `situation-service` inserts into `situations` table
-3. Pipeline processing requires ingestion (Build 09 scripts) — UI does not orchestrate
+3. Conversation adapter invokes `runtime-invocation-service` which runs Build 09 ingestion and reads pipeline artifacts
+
+### Write Path — Conversation (Build 11)
+
+1. Executive describes situation in natural language on home page
+2. `executive-conversation-adapter` classifies, extracts Situation Package, clarifies if needed
+3. Situation created via `situation-service`
+4. `runtime-invocation-service` invokes ingestion and links pipeline
+5. Response composed conversationally; Glass Box linked
+6. Decision and outcome captured through existing services
 
 ## Historical Integrity
 

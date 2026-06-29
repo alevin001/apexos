@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const NAV = [
-  { href: "/", label: "Home" },
+  { href: "/", label: "Conversation" },
   { href: "/situations", label: "Situations" },
 ];
 
@@ -41,8 +41,8 @@ export function AppShell({
         {children}
       </main>
       <footer className="app-footer">
-        <span>Build 10A — Executive Glass Box</span>
-        <span className="footer-note">Decision provenance visible · Runtime boundaries preserved</span>
+        <span>Build 11 — Executive Conversation Interface</span>
+        <span className="footer-note">Natural language in · Runtime pipeline · Glass Box transparency</span>
       </footer>
     </div>
   );

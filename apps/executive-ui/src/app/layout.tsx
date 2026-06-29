@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ApexOS Executive",
-  description: "Executive interface for ApexOS — Build 10",
+  description: "Executive conversation interface for ApexOS — Build 11",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

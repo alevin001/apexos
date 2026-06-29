@@ -1,6 +1,6 @@
 {
   "name": "apexos-executive-ui",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "private": true,
   "scripts": {
     "dev": "node --use-system-ca ./node_modules/next/dist/bin/next dev -p 3010",
