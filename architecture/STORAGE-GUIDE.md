@@ -27,13 +27,19 @@ architecture/
 ├── 7 - ApexOS - Inference Architecture v1.0.docx    # DOC-007
 ├── 8 - ApexOS - Recommendation Architecture v1.0.docx # DOC-008
 ├── 9 - ApexOS - Outcome & Results Architect v1.0.docx # DOC-009
-├── 99 - ApexOS - Minimum Viable Index v2.0.docx     # Index
+├── 99 - ApexOS - Minimum Viable Index v2.0.docx     # Index (authoritative)
+├── INDEX.md                                         # Index traceability (Build 11B)
 ├── Image - 0 - Overview.png                         # Diagrams
 ├── ...
 └── README.md
 ```
 
 Technical architecture lives separately in `technical_architecture/`.
+
+| Document | File |
+|----------|------|
+| Technical Architecture v0.1 | `ApexOS - Technical Architecture v0.1_Founder_Draft.docx` (TECH-001) |
+| Runtime Integration Architecture | `runtime-integration-architecture.md` (TECH-002, Build 11B) |
 
 ## Document Hierarchy
 

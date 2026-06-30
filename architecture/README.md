@@ -20,6 +20,16 @@ Implementation may support architecture. Implementation may not redefine archite
 | DOC-008 | Recommendation Architecture v1.0 | `8 - ApexOS - Recommendation Architecture v1.0.docx` |
 | DOC-009 | Outcome/Results Architecture v1.0 | `9 - ApexOS - Outcome & Results Architect v1.0.docx` |
 | Index | Architecture & Doctrine Index v2.0 | `99 - ApexOS - Minimum Viable Index v2.0.docx` |
+| Index (traceability) | Architecture & Doctrine Index — Markdown | `INDEX.md` |
+
+## Technical Architecture (Implementation)
+
+| ID | Document | File |
+|----|----------|------|
+| TECH-001 | Technical Architecture v0.1 (Founder Draft) | `../technical_architecture/ApexOS - Technical Architecture v0.1_Founder_Draft.docx` |
+| TECH-002 | Runtime Integration Architecture (Build 11B) | `../technical_architecture/runtime-integration-architecture.md` |
+
+TECH-002 clarifies how ChatGPT and the Runtime Engine cooperate during implementation. It does not modify conceptual architecture (DOC-001 through DOC-009).
 
 ## Architecture Map
 
@@ -34,6 +44,15 @@ Layer 2 — Core Architecture
   ├── Inference
   ├── Recommendation
   └── Outcome/Results
+Technical Architecture (implementation guidance)
+  ├── TECH-001 — Technical Architecture v0.1
+  └── TECH-002 — Runtime Integration Architecture
+```
+
+Runtime integration (TECH-002):
+
+```
+Executive → ChatGPT → ApexOS Runtime Engine → Supabase / Knowledge Repository
 ```
 
 ## Governance Rules

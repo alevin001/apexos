@@ -27,6 +27,8 @@ All implementation decisions must reference these documents before proceeding:
 | Outcome & Results Architecture v1.0 | `architecture/9 - ApexOS - Outcome & Results Architect v1.0.docx` |
 | Architecture & Doctrine Index v2.0 | `architecture/99 - ApexOS - Minimum Viable Index v2.0.docx` |
 | Technical Architecture v0.1 | `technical_architecture/ApexOS - Technical Architecture v0.1_Founder_Draft.docx` |
+| Runtime Integration Architecture (Build 11B) | `technical_architecture/runtime-integration-architecture.md` |
+| Architecture Index (traceability) | `architecture/INDEX.md` |
 
 The Charter remains the highest authority. Architecture supports doctrine and may not redefine doctrine.
 
