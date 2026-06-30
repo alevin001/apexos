@@ -1,9 +1,9 @@
-# Executive Experience Design v1.0
+# Executive Experience Design v1.1
 
 **Document ID:** PROD-001  
 **Status:** Authoritative — Product Experience Specification  
 **Date:** 2026-06-30  
-**Context:** Post–Build 11 product realization; implementation paused pending alignment with this document
+**Context:** Post–Build 11A product realization; v1.1 clarifies ambient executive intelligence and client independence
 
 ---
 
@@ -23,7 +23,7 @@ This document governs **how an executive experiences ApexOS**. It does not redef
 
 The Executive Experience Design defines the intended product experience for ApexOS — the way an executive interacts with the system, what they see, what remains hidden, and how conversation, reasoning, and decision support feel in practice.
 
-Through Build 11 (Executive Conversation Interface), the runtime architecture was validated as sound. Usability review revealed that implementation had drifted toward a traditional web application with form-based interaction. That drift was technically correct but experientially wrong. This document captures the intended executive experience before additional development proceeds.
+Through Build 11 (Executive Conversation Interface) and Build 11A, the runtime architecture was validated as sound. Usability review revealed that implementation had drifted toward a traditional web application with form-based interaction, and that product language still implied ApexOS is selectively invoked rather than continuously present. Those gaps were technically understandable but experientially wrong. This document captures the intended executive experience before additional development proceeds.
 
 **This document exists to:**
 
@@ -102,6 +102,33 @@ The goal is to give conversational AI a better executive brain.
 
 ---
 
+## Design Principle — Ambient Executive Intelligence
+
+ApexOS is never explicitly invoked by the executive.
+
+The executive does not decide when to engage ApexOS, switch into an ApexOS mode, or request executive intelligence as a separate action. They simply converse. ApexOS is continuously present throughout every executive conversation — not activated on demand, not called when executive work is detected, and not something the executive consciously turns on or off.
+
+Every conversational exchange is enriched through:
+
+| Capability | Continuous contribution |
+|------------|-------------------------|
+| **Executive memory** | Prior context and history inform every response |
+| **Organizational context** | Relevance and relationships shape every exchange |
+| **Retrieval** | Knowledge and evidence remain available behind the dialogue |
+| **Governance** | Doctrine and fidelity apply throughout |
+| **Evidence-based reasoning** | Interpretation and judgment improve response quality |
+| **Decision continuity** | Prior choices remain connected to ongoing conversation |
+| **Outcome awareness** | What happened after past decisions informs present dialogue |
+| **Continuous learning** | The system strengthens over time without executive intervention |
+
+The executive should never decide when to "use ApexOS."
+
+The executive simply has a conversation.
+
+ApexOS continuously improves the quality of executive reasoning behind that conversation — ambient executive intelligence operating persistently, invisibly, and without interruption.
+
+---
+
 ## 3. Guiding Principles
 
 ### Conversation is the primary interface
@@ -110,7 +137,7 @@ The executive's entry point, ongoing interaction, and primary mode of work is co
 
 ### The executive never manually creates runtime artifacts
 
-Executives do not create situations, initiate retrieval, assemble evidence packages, or trigger pipeline stages. They describe what they are thinking about, facing, or deciding. ApexOS detects intent and orchestrates the runtime automatically.
+Executives do not create situations, initiate retrieval, assemble evidence packages, or trigger pipeline stages. They describe what they are thinking about, facing, or deciding. Ambient executive intelligence interprets intent and orchestrates the runtime automatically.
 
 ### ApexOS performs invisible intelligence
 
@@ -154,7 +181,7 @@ When the executive wants to understand *why* a recommendation was made, the **Ex
 
 ## 4. Relationship Between ChatGPT and ApexOS
 
-ApexOS is designed to enhance conversational AI — not replace it. The executive experience should feel like a capable executive partner in conversation. ApexOS supplies the executive intelligence that makes that conversation substantive.
+ApexOS is designed to enhance conversational AI — not replace it. The executive experience should feel like a capable executive partner in conversation. ApexOS is the persistent executive intelligence layer that continuously enriches that conversation — not a capability the conversational AI selectively calls when it decides executive work is present.
 
 ### Conversational AI owns
 
@@ -164,6 +191,7 @@ ApexOS is designed to enhance conversational AI — not replace it. The executiv
 | Language understanding | Interpreting what the executive means |
 | Clarifying questions | Asking what is needed to proceed |
 | Conversational flow | Maintaining continuity across turns and topics |
+| Communication | Expressing guidance, recommendations, and responses to the executive |
 
 ### ApexOS owns
 
@@ -171,20 +199,22 @@ ApexOS is designed to enhance conversational AI — not replace it. The executiv
 |------------|-------------|
 | Executive memory | Persistent knowledge of the executive's context and history |
 | Organizational context | Relevance, relationships, and situational framing |
-| Retrieval | Evidence assembly from knowledge, memory, and source material |
-| Evidence | Structured, traceable support for reasoning |
+| Knowledge retrieval | Evidence assembly from knowledge, memory, and source material |
+| Evidence assembly | Structured, traceable support for reasoning |
 | Governance | Doctrine alignment, fidelity, and drift protection |
-| Reasoning | Interpretation, assumptions, confidence, and blind spots |
-| Recommendation | Decision support grounded in evidence and doctrine |
-| Decision tracking | Recording what the executive chose |
-| Outcome tracking | Following through on what happened |
-| Learning | Validation, reinforcement, and memory promotion |
+| Executive reasoning | Interpretation, assumptions, confidence, and blind spots |
+| Recommendations | Decision support grounded in evidence and doctrine |
+| Decision continuity | Recording what the executive chose and connecting decisions across time |
+| Outcome tracking | Following through on what happened after decisions |
+| Continuous learning | Validation, reinforcement, and memory promotion |
 
 ### The combined experience
 
-The conversational AI becomes more capable because ApexOS supplies executive intelligence behind the scenes. ApexOS gives conversational AI a better executive brain rather than replacing the conversational experience.
+The conversational AI and ApexOS operate together continuously. Every exchange benefits from ambient executive intelligence — memory, context, retrieval, governance, reasoning, and learning are always present behind the conversation, not summoned for specific turns or topics.
 
-The executive talks to a conversational partner. That partner is powered by ApexOS when executive work is detected — contextually, invisibly, and continuously.
+ApexOS is **not** a tool invoked only when necessary.
+
+ApexOS is the **persistent executive intelligence layer** supporting every conversation. The executive talks to a conversational partner. That partner is continuously augmented by ApexOS — invisibly, without handoffs, and without the executive ever needing to know that two layers are cooperating.
 
 ---
 
@@ -192,7 +222,7 @@ The executive talks to a conversational partner. That partner is powered by Apex
 
 The executive should simply **think out loud**.
 
-They describe challenges, questions, plans, and reflections in natural language. They do not navigate menus, fill forms, or manage system objects. ApexOS interprets executive intent and invokes the runtime as needed — including multiple times within a single conversation.
+They describe challenges, questions, plans, and reflections in natural language. They do not navigate menus, fill forms, or manage system objects. Persistent executive reasoning interprets intent and orchestrates the runtime as needed — including multiple times within a single conversation — without the executive initiating or directing that process.
 
 ### Typical executive topics
 
@@ -230,7 +260,7 @@ Executive speaks
     → Conversation continues
 ```
 
-Continuity matters. The executive should not feel they are starting over, switching modes, or leaving a conversation to "use the system."
+Continuity matters. The executive should not feel they are starting over, switching modes, or leaving a conversation to operate a separate system.
 
 ---
 
@@ -296,9 +326,9 @@ Clarifying questions are valuable when missing information would meaningfully de
 - No loss of context when the runtime executes
 - Prior topics, decisions, and outcomes remain accessible within the conversational thread
 
-### One conversation may invoke the reasoning pipeline multiple times
+### One conversation may engage the reasoning pipeline multiple times
 
-An executive might discuss a leadership challenge, receive a recommendation, decide, and later in the same conversation ask about a related meeting — triggering additional retrieval and reasoning. Each cycle is invisible; the conversation remains one continuous experience.
+An executive might discuss a leadership challenge, receive a recommendation, decide, and later in the same conversation ask about a related meeting — prompting additional retrieval and reasoning behind the same continuous dialogue. Each cycle is invisible; the conversation remains one uninterrupted experience enriched by ambient executive intelligence.
 
 ### Trust through transparency, not exposure
 
@@ -316,7 +346,7 @@ The interface should resemble a **modern conversational AI experience** — not 
 |---------|-----|
 | **Forms** | Executives describe; they do not fill in fields |
 | **Workflow screens** | Pipelines are automatic, not user-operated |
-| **Manual pipeline creation** | Situations and runtime invocation are detected from conversation |
+| **Manual pipeline creation** | Situations and runtime orchestration emerge from conversation automatically |
 | **Explicit situation management** | Situations exist as runtime artifacts, not executive-managed objects |
 | **Tab-heavy navigation** | Reasoning depth is on demand, not spread across mandatory views |
 | **Technical identifiers as primary labels** | Traceability IDs support governance; human meaning leads the experience |
@@ -345,6 +375,24 @@ The experience design principle is **access pattern**, not **existence**:
 
 ---
 
+## Product Principle — Client Independence
+
+ApexOS is independent of any single conversational AI platform.
+
+The executive experience is defined by continuous conversational augmentation — not by which client delivers the dialogue. ChatGPT is expected to become the primary executive client during initial implementation. Future conversational AI platforms should also be capable of serving as executive clients without changing what the executive experiences.
+
+| Principle | Application |
+|-----------|-------------|
+| **Platform independence** | ApexOS executive intelligence is not bound to one conversational AI vendor or product |
+| **ChatGPT as initial client** | Early implementation prioritizes ChatGPT as the primary executive conversation surface |
+| **Future client portability** | Additional conversational AI platforms may serve as executive clients as the product matures |
+| **Intelligence is the product layer** | The value of ApexOS resides in executive intelligence — memory, context, retrieval, governance, reasoning, decisions, outcomes, and learning — rather than the conversation interface itself |
+| **Experience consistency** | The executive experience remains the same regardless of which conversational client is used: think out loud, receive continuous augmentation, inspect reasoning on demand |
+
+ApexOS should remain portable across conversational AI platforms without changing the executive experience. The conversation interface may vary; ambient executive intelligence does not.
+
+---
+
 ## 9. Product Vision Statement
 
 **ApexOS does not replace conversational AI.**
@@ -353,9 +401,9 @@ The experience design principle is **access pattern**, not **existence**:
 
 **Conversation remains the executive experience.**
 
-**ApexOS becomes the executive brain operating behind that conversation.**
+**ApexOS becomes the persistent executive brain operating continuously behind that conversation.**
 
-The executive thinks out loud. A conversational partner responds with intelligence grounded in their organization, their history, their doctrine, and their evidence. When they want to understand why, the Glass Box opens. When they decide and act, ApexOS remembers, follows up, and learns. The runtime is real, rigorous, and traceable — and entirely invisible until the executive asks to see it.
+The executive thinks out loud. A conversational partner responds with intelligence grounded in their organization, their history, their doctrine, and their evidence — enriched on every turn by ambient executive intelligence, not activated on request. When they want to understand why, the Glass Box opens. When they decide and act, ApexOS remembers, follows up, and learns. The runtime is real, rigorous, and traceable — and entirely invisible until the executive asks to see it.
 
 ---
 
@@ -384,4 +432,4 @@ Changes to this document require explicit product review. Version increments (v1
 
 ---
 
-*Executive Experience Design v1.0 — ApexOS Product Experience Specification*
+*Executive Experience Design v1.1 — ApexOS Product Experience Specification*
