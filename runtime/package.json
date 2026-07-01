@@ -1,0 +1,21 @@
+{
+  "name": "apexos-runtime",
+  "version": "0.13.0",
+  "private": true,
+  "type": "module",
+  "description": "ApexOS Runtime Engine — executive intelligence orchestration (Build 13)",
+  "scripts": {
+    "start": "node run.mjs server/http-server.ts",
+    "execute": "node run.mjs cli/execute.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
