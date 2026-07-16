@@ -113,7 +113,23 @@ The runtime is a standalone Node.js HTTP service. Deploy as:
 2. **Container** — Node 20 Alpine, expose port 3020, mount `.env.local` as secrets
 3. **Environment** — Set all required env vars; never expose service role key to clients
 
-Future Build 14+ will add MCP server integration for ChatGPT direct invocation.
+### MCP server (Build 14)
+
+**stdio** (ChatGPT Desktop local):
+
+```bash
+npm run mcp
+```
+
+**Streamable HTTP** (remote / URL connector):
+
+```bash
+npm run mcp:http
+```
+
+Endpoint: `http://localhost:3021/mcp`
+
+See `docs/MCP.md` for ChatGPT configuration, authentication, and testing workflow.
 
 ## Type Checking
 
@@ -123,6 +139,7 @@ npm run typecheck
 
 ## Related Documents
 
+- `docs/MCP.md` — MCP Integration Layer (Build 14)
 - `technical_architecture/runtime-integration-architecture.md` (TECH-002)
 - `build/build-13-runtime-engine.md`
 - `docs/ARCHITECTURE.md`
