@@ -120,17 +120,48 @@ Restart ChatGPT Desktop after saving.
 
 ## Authentication
 
-Authentication is optional for local development.
+### Local development (OAuth disabled)
 
-| Layer | When `APEXOS_MCP_TOKEN` is unset | When `APEXOS_MCP_TOKEN` is set |
-|-------|----------------------------------|--------------------------------|
-| **stdio tools** | No auth required | Pass `auth_token` in tool arguments |
-| **Streamable HTTP** | No auth required | Send `Authorization: Bearer <token>` header on all `/mcp` requests |
+Set `APEXOS_MCP_OAUTH_ENABLED=false` (default). Optional static Bearer via `APEXOS_MCP_TOKEN`.
 
-Set in repo root `.env.local`:
+| Layer | When token unset | When `APEXOS_MCP_TOKEN` set |
+|-------|------------------|-------------------------------|
+| **stdio tools** | No auth | Pass `auth_token` in tool arguments |
+| **Streamable HTTP** | Open `/mcp` | `Authorization: Bearer <token>` on `/mcp` |
+
+### ChatGPT tunnel (OAuth enabled)
+
+Enable OAuth for OpenAI tunnel / DCR integration:
 
 ```env
-APEXOS_MCP_TOKEN=your-local-dev-token
+APEXOS_MCP_OAUTH_ENABLED=true
+APEXOS_MCP_ISSUER_URL=https://YOUR-PUBLIC-TUNNEL-BASE-URL
+APEXOS_MCP_RESOURCE_URL=https://YOUR-PUBLIC-TUNNEL-BASE-URL/mcp
+APEXOS_MCP_ADMIN_PASSWORD=your-admin-password
+APEXOS_MCP_SESSION_SECRET=your-random-session-secret-at-least-32-chars
+```
+
+`APEXOS_MCP_ISSUER_URL` must be the **public tunnel base URL** (not `127.0.0.1`). Set it to the URL ChatGPT uses to reach your tunnel.
+
+When OAuth is enabled the server exposes:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /.well-known/oauth-protected-resource/mcp` | Protected resource metadata |
+| `GET /.well-known/oauth-authorization-server` | Authorization server metadata |
+| `POST /register` | Dynamic Client Registration |
+| `GET /authorize` | Authorization Code + PKCE |
+| `POST /token` | Token exchange |
+
+`/health` and both well-known endpoints remain public. `/mcp` requires a valid OAuth Bearer token and returns `401` with `WWW-Authenticate` metadata when missing or invalid.
+
+Verify:
+
+```powershell
+curl http://127.0.0.1:3021/.well-known/oauth-protected-resource/mcp
+curl http://127.0.0.1:3021/.well-known/oauth-authorization-server
+cd "C:\Users\Andre\Desktop\ApexOS\runtime\mcp tunnel"
+.\tunnel-client.exe doctor --profile apexos --explain
 ```
 
 ---
@@ -171,7 +202,13 @@ Every execution returns a **runtimeId** (maps to the Runtime Engine `requestId`)
 |----------|---------|-------------|
 | `APEXOS_MCP_SERVER_NAME` | `apexos` | MCP server identifier |
 | `APEXOS_MCP_PORT` | `3021` | Streamable HTTP listen port |
-| `APEXOS_MCP_TOKEN` | _(empty)_ | Optional auth token (Bearer + tool param) |
+| `APEXOS_MCP_OAUTH_ENABLED` | `false` (or `true` when `APEXOS_MCP_ISSUER_URL` is set) | Enable OAuth/DCR for tunnel integration |
+| `APEXOS_MCP_ISSUER_URL` | _(empty)_ | Public OAuth issuer base URL (required when OAuth enabled) |
+| `APEXOS_MCP_RESOURCE_URL` | `{issuer}/mcp` | Protected MCP resource URL |
+| `APEXOS_MCP_ADMIN_PASSWORD` | _(empty)_ | Andrew's login password (required when OAuth enabled) |
+| `APEXOS_MCP_SESSION_SECRET` | _(empty)_ | HMAC secret for admin session cookie (min 32 chars, required when OAuth enabled) |
+| `APEXOS_MCP_SESSION_TTL_SECONDS` | `900` | Admin session lifetime |
+| `APEXOS_MCP_TOKEN` | _(empty)_ | Static Bearer token when OAuth disabled |
 | `APEXOS_MCP_LOG_LEVEL` | `info` | Log level (`info`, `silent`) |
 | `APEXOS_MCP_RUNTIME_MODE` | `library` | How MCP invokes Runtime Engine: `library` or `http` |
 | `APEXOS_MCP_RUNTIME_ENDPOINT` | `http://localhost:3020` | Runtime HTTP API when runtime mode is `http` |
@@ -238,7 +275,8 @@ Add Bearer header if `APEXOS_MCP_TOKEN` is configured.
 | Issue | Resolution |
 |-------|------------|
 | ChatGPT doesn't see tools | Verify config path/URL, restart ChatGPT Desktop |
-| HTTP 401 on `/mcp` | Set or match `Authorization: Bearer` with `APEXOS_MCP_TOKEN` |
+| HTTP 401 on `/mcp` | OAuth enabled: complete DCR/PKCE flow; static mode: match `APEXOS_MCP_TOKEN` |
+| OAuth doctor fails on well-known URLs | Set `APEXOS_MCP_OAUTH_ENABLED=true` and correct public `APEXOS_MCP_ISSUER_URL` |
 | HTTP 404 Session not found | Re-initialize; sessions are in-memory until server restart |
 | `Executive not found` | Confirm `APEXOS_EXECUTIVE_SLUG` and Supabase seed data |
 | `Situation not found` | Run `cd scripts && npm run ingest:scenario` |
