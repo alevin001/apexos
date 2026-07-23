@@ -1,24 +1,17 @@
 import { createServer } from "node:http";
 import { createHttpMcpApp } from "./http/app.js";
 import { mcpConfig } from "./config/mcp-config.js";
+import { assertLoopbackHost, MCP_HTTP_HOST } from "./http/loopback-host.js";
 
 export function startHttpMcpServer(port = mcpConfig.port): void {
-  const { app, config } = createHttpMcpApp();
+  const host = assertLoopbackHost(MCP_HTTP_HOST);
+  const { app } = createHttpMcpApp(host);
 
-  createServer(app).listen(port, "127.0.0.1", () => {
-    console.log(`ApexOS MCP Server listening on http://127.0.0.1:${port}`);
+  createServer(app).listen(port, host, () => {
+    console.log(`ApexOS MCP Server listening on http://${host}:${port}`);
     console.log(`  POST/GET/DELETE /mcp — Streamable HTTP MCP endpoint`);
     console.log(`  GET  /health — health check`);
-    if (config.oauthEnabled) {
-      console.log(`  OAuth issuer: ${config.issuerUrl.href}`);
-      console.log(`  OAuth resource: ${config.resourceUrl.href}`);
-      console.log(`  GET  /.well-known/oauth-protected-resource/mcp`);
-      console.log(`  GET  /.well-known/oauth-authorization-server`);
-    } else {
-      console.log(
-        `  Auth: ${config.staticBearerToken ? "static Bearer token" : "disabled (local dev)"}`
-      );
-    }
+    console.log(`  Auth: disabled (localhost-only, single-user)`);
     console.log(`  Runtime mode: ${mcpConfig.runtimeMode}`);
   });
 }

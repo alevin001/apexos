@@ -1,6 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { validateAuthToken } from "../auth/local-auth.js";
 import { formatToolError, toStructuredError } from "../errors/mcp-errors.js";
 import {
   invokeBuildContext,
@@ -9,17 +8,12 @@ import {
   invokeRuntimeTrace,
 } from "../adapters/runtime-adapter.js";
 
-const authTokenSchema = z.string().optional().describe(
-  "Local development auth token (required when APEXOS_MCP_TOKEN is configured)"
-);
-
 const executiveRequestSchema = {
   message: z.string().describe("Executive message or question"),
   executiveSlug: z.string().optional().describe("Executive identity slug"),
   situationSlug: z.string().optional().describe("Situation context slug"),
   conversationId: z.string().optional().describe("Existing conversation ID for continuity"),
   previousResponseId: z.string().optional().describe("Previous OpenAI response ID for multi-turn"),
-  auth_token: authTokenSchema,
 };
 
 function toolResult(data: unknown) {
@@ -48,9 +42,7 @@ export function registerTools(server: McpServer): void {
     },
     async (args) => {
       try {
-        validateAuthToken(args.auth_token);
-        const { auth_token: _, ...request } = args;
-        const result = await invokeExecuteRuntime(request);
+        const result = await invokeExecuteRuntime(args);
         return toolResult({
           runtimeId: result.runtimeId,
           response: result.response,
@@ -80,9 +72,7 @@ export function registerTools(server: McpServer): void {
     },
     async (args) => {
       try {
-        validateAuthToken(args.auth_token);
-        const { auth_token: _, ...request } = args;
-        const result = await invokeBuildContext(request);
+        const result = await invokeBuildContext(args);
         return toolResult({
           runtimeId: result.runtimeId,
           contextPackage: result.contextPackage,
@@ -100,13 +90,10 @@ export function registerTools(server: McpServer): void {
       title: "Runtime Health Check",
       description:
         "Verify ApexOS Runtime availability. Returns status, version, configuration, and dependency health.",
-      inputSchema: z.object({
-        auth_token: authTokenSchema,
-      }),
+      inputSchema: z.object({}),
     },
-    async (args) => {
+    async () => {
       try {
-        validateAuthToken(args.auth_token);
         const health = await invokeRuntimeHealth();
         return toolResult(health);
       } catch (err) {
@@ -123,12 +110,10 @@ export function registerTools(server: McpServer): void {
         "Retrieve execution trace for a Runtime ID. Returns stage timings, execution metadata, errors, and completion status.",
       inputSchema: z.object({
         runtimeId: z.string().describe("Runtime ID returned from execute_runtime or build_context"),
-        auth_token: authTokenSchema,
       }),
     },
     async (args) => {
       try {
-        validateAuthToken(args.auth_token);
         const trace = await invokeRuntimeTrace(args.runtimeId);
 
         if (!trace) {

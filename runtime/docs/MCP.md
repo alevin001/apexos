@@ -1,6 +1,6 @@
 # ApexOS MCP Integration Layer
 
-**Build 14** — Thin MCP adapter exposing the ApexOS Runtime Engine to ChatGPT.
+**Build 14 / Build 15** — Thin MCP adapter exposing the ApexOS Runtime Engine to ChatGPT.
 
 ```
 Executive → ChatGPT → ApexOS MCP Server → Runtime Engine → Supabase → OpenAI → Response
@@ -26,7 +26,7 @@ npm install
 | Transport | Command | Use case |
 |-----------|---------|----------|
 | **stdio** | `npm run mcp` | ChatGPT Desktop local connector (spawns subprocess) |
-| **Streamable HTTP** | `npm run mcp:http` | Remote clients, MCP Inspector over HTTP, ChatGPT URL connector |
+| **Streamable HTTP** | `npm run mcp:http` | Local HTTP + OpenAI secure tunnel / Personal ChatGPT connector |
 
 Both transports reuse the same `createMcpServer()`, tool registration, runtime adapter, and observability.
 
@@ -71,44 +71,39 @@ Adjust the path to your local ApexOS installation. Restart ChatGPT Desktop after
 npm run mcp:http
 ```
 
+The HTTP MCP server **always binds to `127.0.0.1`**. Startup rejects `0.0.0.0` and any non-loopback host. There is no configuration option for remote binding.
+
 Default listen address:
 
 ```
-http://localhost:3021/mcp
+http://127.0.0.1:3021/mcp
 ```
 
 Health check:
 
 ```
-http://localhost:3021/health
+http://127.0.0.1:3021/health
 ```
 
 Configure port with `APEXOS_MCP_PORT` (default `3021`).
 
-### ChatGPT Desktop — HTTP config
+### ChatGPT Desktop — HTTP / tunnel config
 
-In ChatGPT Desktop MCP settings, add a **URL connector**:
-
-```
-http://localhost:3021/mcp
-```
-
-If `APEXOS_MCP_TOKEN` is set, configure the Bearer header in the connector settings:
+For local URL connectors:
 
 ```
-Authorization: Bearer <your-token>
+http://127.0.0.1:3021/mcp
 ```
 
-Or in `mcp.json`:
+For remote ChatGPT access, use the **authenticated OpenAI secure tunnel** and Andrew’s Personal ChatGPT connector. The tunnel authenticates the remote path; ApexOS itself remains localhost-only and unauthenticated.
+
+Example `mcp.json` URL connector (no Authorization header):
 
 ```json
 {
   "mcpServers": {
     "apexos": {
-      "url": "http://localhost:3021/mcp",
-      "headers": {
-        "Authorization": "Bearer your-token-here"
-      }
+      "url": "http://127.0.0.1:3021/mcp"
     }
   }
 }
@@ -118,50 +113,24 @@ Restart ChatGPT Desktop after saving.
 
 ---
 
-## Authentication
+## Authentication model
 
-### Local development (OAuth disabled)
+ApexOS is intentionally **unauthenticated at the application layer**:
 
-Set `APEXOS_MCP_OAUTH_ENABLED=false` (default). Optional static Bearer via `APEXOS_MCP_TOKEN`.
+- It is a **single-user, local** application bound exclusively to **localhost** (`127.0.0.1`).
+- User authentication is provided by **Andrew’s Personal ChatGPT account** and the **authenticated OpenAI secure tunnel**.
+- ApexOS does **not** implement OAuth, Dynamic Client Registration, login sessions, or static bearer tokens.
+- `/mcp` and `/health` do not require an `Authorization` header.
 
-| Layer | When token unset | When `APEXOS_MCP_TOKEN` set |
-|-------|------------------|-------------------------------|
-| **stdio tools** | No auth | Pass `auth_token` in tool arguments |
-| **Streamable HTTP** | Open `/mcp` | `Authorization: Bearer <token>` on `/mcp` |
+If ApexOS ever supports remote binding or additional users, application-level authentication must be reconsidered before that change ships.
 
-### ChatGPT tunnel (OAuth enabled)
+`/health` reports:
 
-Enable OAuth for OpenAI tunnel / DCR integration:
-
-```env
-APEXOS_MCP_OAUTH_ENABLED=true
-APEXOS_MCP_ISSUER_URL=https://YOUR-PUBLIC-TUNNEL-BASE-URL
-APEXOS_MCP_RESOURCE_URL=https://YOUR-PUBLIC-TUNNEL-BASE-URL/mcp
-APEXOS_MCP_ADMIN_PASSWORD=your-admin-password
-APEXOS_MCP_SESSION_SECRET=your-random-session-secret-at-least-32-chars
-```
-
-`APEXOS_MCP_ISSUER_URL` must be the **public tunnel base URL** (not `127.0.0.1`). Set it to the URL ChatGPT uses to reach your tunnel.
-
-When OAuth is enabled the server exposes:
-
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /.well-known/oauth-protected-resource/mcp` | Protected resource metadata |
-| `GET /.well-known/oauth-authorization-server` | Authorization server metadata |
-| `POST /register` | Dynamic Client Registration |
-| `GET /authorize` | Authorization Code + PKCE |
-| `POST /token` | Token exchange |
-
-`/health` and both well-known endpoints remain public. `/mcp` requires a valid OAuth Bearer token and returns `401` with `WWW-Authenticate` metadata when missing or invalid.
-
-Verify:
-
-```powershell
-curl http://127.0.0.1:3021/.well-known/oauth-protected-resource/mcp
-curl http://127.0.0.1:3021/.well-known/oauth-authorization-server
-cd "C:\Users\Andre\Desktop\ApexOS\runtime\mcp tunnel"
-.\tunnel-client.exe doctor --profile apexos --explain
+```json
+{
+  "oauthEnabled": false,
+  "authRequired": false
+}
 ```
 
 ---
@@ -201,14 +170,7 @@ Every execution returns a **runtimeId** (maps to the Runtime Engine `requestId`)
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `APEXOS_MCP_SERVER_NAME` | `apexos` | MCP server identifier |
-| `APEXOS_MCP_PORT` | `3021` | Streamable HTTP listen port |
-| `APEXOS_MCP_OAUTH_ENABLED` | `false` (or `true` when `APEXOS_MCP_ISSUER_URL` is set) | Enable OAuth/DCR for tunnel integration |
-| `APEXOS_MCP_ISSUER_URL` | _(empty)_ | Public OAuth issuer base URL (required when OAuth enabled) |
-| `APEXOS_MCP_RESOURCE_URL` | `{issuer}/mcp` | Protected MCP resource URL |
-| `APEXOS_MCP_ADMIN_PASSWORD` | _(empty)_ | Andrew's login password (required when OAuth enabled) |
-| `APEXOS_MCP_SESSION_SECRET` | _(empty)_ | HMAC secret for admin session cookie (min 32 chars, required when OAuth enabled) |
-| `APEXOS_MCP_SESSION_TTL_SECONDS` | `900` | Admin session lifetime |
-| `APEXOS_MCP_TOKEN` | _(empty)_ | Static Bearer token when OAuth disabled |
+| `APEXOS_MCP_PORT` | `3021` | Streamable HTTP listen port (host is always `127.0.0.1`) |
 | `APEXOS_MCP_LOG_LEVEL` | `info` | Log level (`info`, `silent`) |
 | `APEXOS_MCP_RUNTIME_MODE` | `library` | How MCP invokes Runtime Engine: `library` or `http` |
 | `APEXOS_MCP_RUNTIME_ENDPOINT` | `http://localhost:3020` | Runtime HTTP API when runtime mode is `http` |
@@ -241,7 +203,7 @@ npm run mcp:http
 ### 2. HTTP health check
 
 ```bash
-curl http://localhost:3021/health
+curl http://127.0.0.1:3021/health
 ```
 
 ### 3. MCP Inspector — stdio
@@ -255,12 +217,18 @@ npx @modelcontextprotocol/inspector node run.mjs mcp/server.ts
 Start the HTTP server, then in MCP Inspector connect to:
 
 ```
-http://localhost:3021/mcp
+http://127.0.0.1:3021/mcp
 ```
 
-Add Bearer header if `APEXOS_MCP_TOKEN` is configured.
+No Authorization header is required.
 
-### 5. End-to-end tool test
+### 5. Automated MCP HTTP tests
+
+```bash
+npm run test:mcp
+```
+
+### 6. End-to-end tool test
 
 1. Call `runtime_health`
 2. Call `build_context` with a message and situation slug
@@ -275,13 +243,12 @@ Add Bearer header if `APEXOS_MCP_TOKEN` is configured.
 | Issue | Resolution |
 |-------|------------|
 | ChatGPT doesn't see tools | Verify config path/URL, restart ChatGPT Desktop |
-| HTTP 401 on `/mcp` | OAuth enabled: complete DCR/PKCE flow; static mode: match `APEXOS_MCP_TOKEN` |
-| OAuth doctor fails on well-known URLs | Set `APEXOS_MCP_OAUTH_ENABLED=true` and correct public `APEXOS_MCP_ISSUER_URL` |
+| Bind / startup error about non-loopback host | Server must listen on `127.0.0.1` only; remote binding is not supported |
+| Tunnel cannot reach MCP | Confirm local server is up on `127.0.0.1:3021` and tunnel profile points at `/mcp` |
 | HTTP 404 Session not found | Re-initialize; sessions are in-memory until server restart |
 | `Executive not found` | Confirm `APEXOS_EXECUTIVE_SLUG` and Supabase seed data |
 | `Situation not found` | Run `cd scripts && npm run ingest:scenario` |
 | TLS / npm install errors | Set `NODE_OPTIONS=--use-system-ca` |
-| stdio auth errors | Pass `auth_token` matching `APEXOS_MCP_TOKEN`, or unset the token |
 | Empty trace | Traces are in-memory; use runtimeId immediately or check Supabase metadata |
 | Runtime HTTP mode failures | Ensure Runtime HTTP server is running on port 3020 |
 
@@ -294,7 +261,7 @@ The MCP layer (`runtime/src/mcp/`) contains:
 - Tool registration and schema validation
 - Transport adapters (stdio, Streamable HTTP)
 - Runtime adapter (library or HTTP invocation)
-- Local authentication
+- Loopback-only HTTP bind enforcement
 - Trace storage for MCP observability
 - Structured error formatting
 

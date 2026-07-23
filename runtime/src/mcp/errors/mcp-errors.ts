@@ -1,8 +1,6 @@
 import { RuntimeError } from "../../shared/errors.js";
-import { AuthError } from "../auth/local-auth.js";
 
 export type ErrorCategory =
-  | "auth"
   | "validation"
   | "runtime"
   | "governance"
@@ -21,15 +19,6 @@ export function toStructuredError(
   err: unknown,
   runtimeId: string | null = null
 ): StructuredMcpError {
-  if (err instanceof AuthError) {
-    return {
-      runtimeId,
-      errorCategory: "auth",
-      message: err.message,
-      recoverable: true,
-    };
-  }
-
   if (err instanceof RuntimeError) {
     const category: ErrorCategory =
       err.code === "GOVERNANCE_VALIDATION_FAILED"

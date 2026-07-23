@@ -11,7 +11,7 @@
     "execute": "node run.mjs cli/execute.ts",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test src/mcp/**/*.test.ts",
-    "test:mcp": "node --import tsx --test src/mcp/oauth.http.test.ts"
+    "test:mcp": "node --import tsx --test src/mcp/http.mcp.test.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

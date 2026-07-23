@@ -1,33 +1,22 @@
 import { randomUUID } from "node:crypto";
 import type { Express, Request, Response } from "express";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
-import {
-  getOAuthProtectedResourceMetadataUrl,
-} from "@modelcontextprotocol/sdk/server/auth/router.js";
-import { requireBearerAuth } from "@modelcontextprotocol/sdk/server/auth/middleware/bearerAuth.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { createMcpServer } from "../create-server.js";
-import { mcpConfig, MCP_VERSION } from "../config/mcp-config.js";
-import { loadOauthHttpConfig, type OauthHttpConfig } from "../auth/oauth-config.js";
-import { ApexOsOAuthProvider } from "../auth/oauth-provider.js";
-import { mountSecureOAuthRoutes } from "../auth/oauth-routes.js";
-import { createStaticBearerMiddleware } from "../auth/static-bearer.js";
-import { clearPendingAuthorizationsForTests } from "../auth/pending-authorization.js";
-import { clearLoginRateLimitsForTests } from "../auth/login-rate-limit.js";
+import { MCP_VERSION } from "../config/mcp-config.js";
+import { assertLoopbackHost, MCP_HTTP_HOST } from "./loopback-host.js";
 
 const sessions = new Map<string, StreamableHTTPServerTransport>();
 
 export interface HttpMcpAppContext {
   app: Express;
-  config: OauthHttpConfig;
-  provider: ApexOsOAuthProvider | null;
+  host: string;
 }
 
-export function createHttpMcpApp(configOverrides: Partial<OauthHttpConfig> = {}): HttpMcpAppContext {
-  const config = loadOauthHttpConfig(configOverrides);
-  const app = createMcpExpressApp({ host: "127.0.0.1" });
-  const provider = config.oauthEnabled ? new ApexOsOAuthProvider(config.resourceUrl) : null;
+export function createHttpMcpApp(host: string = MCP_HTTP_HOST): HttpMcpAppContext {
+  const bindHost = assertLoopbackHost(host);
+  const app = createMcpExpressApp({ host: bindHost });
 
   app.get("/health", (_req, res) => {
     res.json({
@@ -35,33 +24,17 @@ export function createHttpMcpApp(configOverrides: Partial<OauthHttpConfig> = {})
       service: "apexos-mcp",
       version: MCP_VERSION,
       transport: "streamable-http",
-      oauthEnabled: config.oauthEnabled,
-      authRequired: config.oauthEnabled || Boolean(config.staticBearerToken),
+      oauthEnabled: false,
+      authRequired: false,
       activeSessions: sessions.size,
     });
   });
 
-  if (config.oauthEnabled && provider) {
-    mountSecureOAuthRoutes(app, { provider, config });
-  }
+  app.post("/mcp", handleMcpRequest);
+  app.get("/mcp", handleMcpRequest);
+  app.delete("/mcp", handleMcpRequest);
 
-  const authMiddleware = config.oauthEnabled
-    ? requireBearerAuth({
-        verifier: provider!,
-        requiredScopes: [],
-        resourceMetadataUrl: getOAuthProtectedResourceMetadataUrl(config.resourceUrl),
-      })
-    : createStaticBearerMiddleware(config.staticBearerToken);
-
-  const withAuth = authMiddleware
-    ? [authMiddleware, handleMcpRequest]
-    : [handleMcpRequest];
-
-  app.post("/mcp", ...withAuth);
-  app.get("/mcp", ...withAuth);
-  app.delete("/mcp", ...withAuth);
-
-  return { app, config, provider };
+  return { app, host: bindHost };
 }
 
 async function handleMcpRequest(req: Request, res: Response): Promise<void> {
@@ -120,6 +93,4 @@ export function getActiveSessionCount(): number {
 
 export function clearSessionsForTests(): void {
   sessions.clear();
-  clearPendingAuthorizationsForTests();
-  clearLoginRateLimitsForTests();
 }

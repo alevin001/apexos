@@ -121,15 +121,15 @@ The runtime is a standalone Node.js HTTP service. Deploy as:
 npm run mcp
 ```
 
-**Streamable HTTP** (remote / URL connector):
+**Streamable HTTP** (localhost / OpenAI secure tunnel):
 
 ```bash
 npm run mcp:http
 ```
 
-Endpoint: `http://localhost:3021/mcp`
+Endpoint: `http://127.0.0.1:3021/mcp`
 
-See `docs/MCP.md` for ChatGPT configuration, authentication, and testing workflow.
+See `docs/MCP.md` for ChatGPT configuration and testing workflow.
 
 ## Type Checking
 
