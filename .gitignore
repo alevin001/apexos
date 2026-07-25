@@ -1,5 +1,9 @@
-.env.local
+# Local environment files containing secrets
 .env
+.env.*
+!.env.example
+
+.apexos/
 .tools/
 node_modules/
 scripts/node_modules/
