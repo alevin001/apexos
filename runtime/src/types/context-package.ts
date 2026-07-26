@@ -78,6 +78,33 @@ export interface DoctrineReference {
   summary: string;
 }
 
+/** Continuity payload retrieved for an existing conversation (Build 16). */
+export interface ContinuityItem {
+  id: string;
+  table: string;
+  type: string;
+  title: string;
+  summary: string;
+  epistemicType?: string;
+  score?: number;
+}
+
+export interface ContinuityPackage {
+  conversationId: string;
+  priorMessages: Array<{
+    id: string;
+    role: string;
+    content: string;
+    createdAt: string;
+  }>;
+  priorSourceEvidence: ContinuityItem[];
+  savedObservations: ContinuityItem[];
+  findingsHypotheses: ContinuityItem[];
+  recommendations: ContinuityItem[];
+  people: ContinuityItem[];
+  currentMessage: string;
+}
+
 /**
  * Executive Context Package — runtime integration boundary artifact.
  * Extends assembled retrieval context with governance, memory, and continuity.
@@ -99,6 +126,7 @@ export interface ExecutiveContextPackage {
     situationType?: string;
   } | null;
   executiveMessage: string;
+  continuity: ContinuityPackage | null;
   memory: {
     executive: MemoryItem[];
     person: MemoryItem[];
@@ -112,6 +140,8 @@ export interface ExecutiveContextPackage {
   governance: GovernanceConstraints;
   confidence: ConfidenceIndicators;
   doctrine: DoctrineReference[];
+  /** Labeled items actually supplied to the model (audit). */
+  contextItemsSupplied: string[];
   /** Serialized context for LLM instructions — not executive reasoning. */
   llmInstructions: string;
 }

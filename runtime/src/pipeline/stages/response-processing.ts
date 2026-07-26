@@ -29,19 +29,32 @@ export async function responseProcessingStage(ctx: PipelineContext): Promise<Pip
 }
 
 export function buildRuntimeResponse(ctx: PipelineContext): RuntimeResponse {
+  const conversationId = ctx.interactionId ?? ctx.request.conversationId;
+  const captureFailed = ctx.stages.some(
+    (s) => s.stage === "interaction-capture" && s.status === "failed"
+  );
+
   return {
     requestId: ctx.request.requestId,
     response: ctx.llmResponse?.text ?? "",
     responseId: ctx.llmResponse?.responseId,
-    situationSlug: ctx.situation?.slug ?? null,
-    conversationId: ctx.request.conversationId,
+    situationSlug: ctx.situation?.slug ?? ctx.captureAudit?.situationSlug ?? null,
+    // Build 16 handoff fix: return the effective/created conversation UUID.
+    conversationId,
     interactionId: ctx.interactionId,
     contextPackageId: ctx.evidence?.assembledContextPackage?.externalId ?? null,
     stages: ctx.stages,
-  metadata: {
-    model: ctx.llmResponse?.model ?? "none",
-    provider: ctx.llmResponse?.provider ?? "none",
-    dryRun: runtimeConfig.dryRun || !runtimeConfig.openaiApiKey,
-  },
+    metadata: {
+      model: ctx.llmResponse?.model ?? "none",
+      provider: ctx.llmResponse?.provider ?? "none",
+      dryRun: runtimeConfig.dryRun || !runtimeConfig.openaiApiKey,
+      persistenceStatus: captureFailed ? "failed" : conversationId ? "persisted" : "skipped",
+      situationId: ctx.situation?.id ?? ctx.captureAudit?.situationId ?? null,
+      recordsCreated: ctx.captureAudit?.created ?? [],
+      recordsRetrieved: ctx.retrievalAudit?.retrieved ?? [],
+      contextItems: ctx.contextPackage?.contextItemsSupplied ?? [],
+      captureErrors: ctx.captureAudit?.errors ?? [],
+      retrievalErrors: ctx.retrievalAudit?.errors ?? [],
+    },
   };
 }

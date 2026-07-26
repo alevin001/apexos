@@ -22,11 +22,24 @@ Concise, implementation-focused specifications for each runtime module.
 | | |
 |---|---|
 | **Purpose** | Validate and normalize incoming executive requests |
-| **Responsibilities** | Validate message, resolve executive, resolve situation, assign request ID |
+| **Responsibilities** | Validate message, resolve executive (including Andrew aliases), resolve situation, assign request ID |
 | **Inputs** | `ExecutiveRequest` |
 | **Outputs** | `ValidatedRequest`, populated `executive` and `situation` on context |
-| **Dependencies** | Supabase (`executives`, `situations`), config |
-| **Constraints** | Message required; executive must exist in database |
+| **Dependencies** | Supabase (`executives`, `situations`), config, `shared/executive-identity.ts` |
+| **Constraints** | Message required; executive must exist in database; canonical slug `primary-executive` |
+
+---
+
+## Continuity Retrieval (`pipeline/stages/continuity-retrieval.ts`)
+
+| | |
+|---|---|
+| **Purpose** | Load prior conversation messages and structured records for continuity (Build 16) |
+| **Responsibilities** | Resolve conversation → situation; retrieve bounded prior messages, source evidence, observations, interpretive artifacts, people; score relevance |
+| **Inputs** | `PipelineContext` with optional `conversationId` |
+| **Outputs** | `ContinuityPackage` + `RetrievalAudit` |
+| **Dependencies** | Supabase conversation/situation/observation/memory tables |
+| **Constraints** | Skipped without conversationId; relevance-bounded (does not dump full history) |
 
 ---
 
@@ -125,12 +138,12 @@ Concise, implementation-focused specifications for each runtime module.
 
 | | |
 |---|---|
-| **Purpose** | Persist executive request and runtime response |
-| **Responsibilities** | Create/update conversation; insert messages with metadata |
+| **Purpose** | Persist conversation messages and Build 16 structured cold-start records |
+| **Responsibilities** | Create/reuse conversation; return effective conversation ID; insert executive + ApexOS messages; structured capture (situation/persons/observations/interpretive artifacts); durable trace write |
 | **Inputs** | Complete `PipelineContext` |
-| **Outputs** | `interactionId` on context |
-| **Dependencies** | Supabase (`executive_conversations`, `conversation_messages`) |
-| **Constraints** | Uses existing Build 11 schema; capture failure is non-fatal |
+| **Outputs** | `interactionId`, `captureAudit`; response `conversationId` is the effective UUID |
+| **Dependencies** | Supabase (`executive_conversations`, `conversation_messages`, foundations/memory tables, `runtime_interaction_traces`) |
+| **Constraints** | Message persistence failure is explicit (`persistenceStatus=failed`); structured-capture errors are recorded in audit; epistemic types kept distinct |
 
 ---
 

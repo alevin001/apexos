@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { runtimeConfig } from "../../config.js";
 import { RuntimeError } from "../../shared/errors.js";
+import { resolveExecutiveSlug } from "../../shared/executive-identity.js";
 import type { ExecutiveRequest, ValidatedRequest } from "../../types/executive-request.js";
 import type { PipelineContext } from "../../types/pipeline.js";
 import { getSupabase } from "../../shared/supabase.js";
@@ -16,7 +17,9 @@ export async function runtimeEntry(
     throw new RuntimeError("Executive message is required", "INVALID_REQUEST", "runtime-entry");
   }
 
-  const executiveSlug = request.executiveSlug ?? runtimeConfig.executiveSlug;
+  const executiveSlug = resolveExecutiveSlug(
+    request.executiveSlug ?? runtimeConfig.executiveSlug
+  );
   const supabase = getSupabase();
 
   const { data: executive } = await supabase

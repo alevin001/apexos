@@ -1,5 +1,6 @@
 import type {
   ConfidenceIndicators,
+  ContinuityItem,
   DoctrineReference,
   ExecutiveContextPackage,
 } from "../../types/context-package.js";
@@ -20,13 +21,17 @@ export async function contextPackageBuilderStage(ctx: PipelineContext): Promise<
   }));
 
   const confidence: ConfidenceIndicators = {
-    retrievalConfidence: ctx.evidence?.assembledContextPackage ? "medium" : "low",
+    retrievalConfidence: ctx.continuity
+      ? "medium"
+      : ctx.evidence?.assembledContextPackage
+        ? "medium"
+        : "low",
     evidenceGaps: extractGaps(ctx),
     uncertaintyFlags: ctx.evidence?.assembledContextPackage ? [] : ["no_assembled_context_package"],
     assumptions: ["Executive context assembled from available pipeline artifacts"],
   };
 
-  const llmInstructions = buildLLMInstructions(ctx);
+  const { instructions, contextItems } = buildLLMInstructions(ctx);
 
   const pkg: ExecutiveContextPackage = {
     version: "1.0",
@@ -46,6 +51,7 @@ export async function contextPackageBuilderStage(ctx: PipelineContext): Promise<
         }
       : null,
     executiveMessage: ctx.request.message,
+    continuity: ctx.continuity,
     memory: ctx.memory ?? {
       executive: [],
       person: [],
@@ -64,15 +70,20 @@ export async function contextPackageBuilderStage(ctx: PipelineContext): Promise<
     governance: ctx.governance!,
     confidence,
     doctrine,
-    llmInstructions,
+    contextItemsSupplied: contextItems,
+    llmInstructions: instructions,
   };
+
+  if (ctx.retrievalAudit) {
+    ctx.retrievalAudit.contextItems = contextItems;
+  }
 
   ctx.contextPackage = pkg;
   ctx.stages.push({
     stage: "context-package-construction",
     status: "success",
     durationMs: Date.now() - start,
-    detail: `Executive Context Package assembled (${llmInstructions.length} chars instructions)`,
+    detail: `Executive Context Package assembled (${instructions.length} chars; ${contextItems.length} context items)`,
   });
 
   return ctx;
@@ -83,6 +94,7 @@ function extractGaps(ctx: PipelineContext): string[] {
   if (!ctx.contextRelevance) gaps.push("No context relevance specification");
   if (!ctx.evidence?.evidencePackage) gaps.push("No evidence package");
   if (!ctx.evidence?.assembledContextPackage) gaps.push("No assembled context package");
+  if (!ctx.continuity) gaps.push("No continuity package (cold start or no conversationId)");
   const epGaps = ctx.evidence?.evidencePackage?.gaps;
   if (Array.isArray(epGaps)) {
     for (const g of epGaps) {
@@ -92,13 +104,20 @@ function extractGaps(ctx: PipelineContext): string[] {
   return gaps;
 }
 
-function buildLLMInstructions(ctx: PipelineContext): string {
+function buildLLMInstructions(ctx: PipelineContext): {
+  instructions: string;
+  contextItems: string[];
+} {
   const sections: string[] = [];
+  const contextItems: string[] = [];
 
   sections.push("# ApexOS Executive Context Package");
   sections.push("");
   sections.push("You are assisting an executive through ApexOS. Reason over the supplied context.");
   sections.push("Do not fabricate evidence. Recommendations inform — the executive decides.");
+  sections.push(
+    "Distinguish source evidence (executive-stated) from findings, hypotheses, and recommendations."
+  );
   sections.push("");
 
   if (ctx.executive) {
@@ -106,6 +125,7 @@ function buildLLMInstructions(ctx: PipelineContext): string {
     sections.push(`- Name: ${ctx.executive.displayName}`);
     if (ctx.executive.summary) sections.push(`- Summary: ${ctx.executive.summary}`);
     sections.push("");
+    contextItems.push(`executive:${ctx.executive.slug}`);
   }
 
   if (ctx.situation) {
@@ -114,7 +134,46 @@ function buildLLMInstructions(ctx: PipelineContext): string {
     if (ctx.situation.summary) sections.push(`- Summary: ${ctx.situation.summary}`);
     if (ctx.situation.situationType) sections.push(`- Type: ${ctx.situation.situationType}`);
     sections.push("");
+    contextItems.push(`situation:${ctx.situation.id}`);
   }
+
+  if (ctx.continuity) {
+    sections.push("## Continuity — Prior Source Evidence");
+    appendContinuityItems(sections, contextItems, ctx.continuity.priorSourceEvidence, "source");
+
+    sections.push("## Continuity — Saved Observations");
+    appendContinuityItems(sections, contextItems, ctx.continuity.savedObservations, "observation");
+
+    sections.push("## Continuity — Findings / Hypotheses (interpretation — not source evidence)");
+    appendContinuityItems(sections, contextItems, ctx.continuity.findingsHypotheses, "interpretive");
+
+    sections.push("## Continuity — Prior Recommendations (interpretation)");
+    appendContinuityItems(sections, contextItems, ctx.continuity.recommendations, "recommendation");
+
+    if (ctx.continuity.people.length) {
+      sections.push("## Continuity — People");
+      for (const p of ctx.continuity.people.slice(0, 8)) {
+        sections.push(`- **${p.title}** (${p.summary})`);
+        contextItems.push(`persons:${p.id}`);
+      }
+      sections.push("");
+    }
+
+    if (ctx.continuity.priorMessages.length) {
+      sections.push("## Continuity — Prior Conversation Messages (most recent, bounded)");
+      for (const m of ctx.continuity.priorMessages.slice(-6)) {
+        const excerpt = m.content.slice(0, 400);
+        sections.push(`- **${m.role}**: ${excerpt}`);
+        contextItems.push(`conversation_messages:${m.id}`);
+      }
+      sections.push("");
+    }
+  }
+
+  sections.push("## New Information In Current Message");
+  sections.push(ctx.request.message);
+  sections.push("");
+  contextItems.push("current_message");
 
   if (ctx.contextRelevance) {
     sections.push("## Context Relevance");
@@ -125,28 +184,45 @@ function buildLLMInstructions(ctx: PipelineContext): string {
       sections.push(ctx.contextRelevance.bodyMd.slice(0, 4000));
     }
     sections.push("");
+    contextItems.push(`context_relevance:${ctx.contextRelevance.externalId}`);
   }
 
-  appendMemorySection(sections, "Executive Memory", ctx.memory?.executive ?? []);
-  appendMemorySection(sections, "Person Context", ctx.memory?.person ?? []);
-  appendMemorySection(sections, "Relationship Context", ctx.memory?.relationship ?? []);
-  appendMemorySection(sections, "Validated Patterns", ctx.memory?.pattern ?? []);
-  appendMemorySection(sections, "Historical Outcomes", ctx.memory?.outcomes ?? []);
+  appendMemorySection(sections, contextItems, "Executive Memory", ctx.memory?.executive ?? [], "memory_executive");
+  appendMemorySection(sections, contextItems, "Person Context", ctx.memory?.person ?? [], "memory_person");
+  appendMemorySection(
+    sections,
+    contextItems,
+    "Relationship Context",
+    ctx.memory?.relationship ?? [],
+    "memory_relationship"
+  );
+  appendMemorySection(sections, contextItems, "Validated Patterns", ctx.memory?.pattern ?? [], "memory_pattern");
+  appendMemorySection(sections, contextItems, "Historical Outcomes", ctx.memory?.outcomes ?? [], "memory_outcome");
+  appendMemorySection(
+    sections,
+    contextItems,
+    "Situation Observations (memory layer)",
+    ctx.memory?.observations ?? [],
+    "memory_observation"
+  );
 
   if (ctx.evidence?.assembledContextPackage?.bodyMd) {
     sections.push("## Assembled Context Package");
     sections.push(ctx.evidence.assembledContextPackage.bodyMd.slice(0, 8000));
     sections.push("");
+    contextItems.push(`assembled_context:${ctx.evidence.assembledContextPackage.externalId}`);
   } else if (ctx.evidence?.evidencePackage?.bodyMd) {
     sections.push("## Evidence Package");
     sections.push(ctx.evidence.evidencePackage.bodyMd.slice(0, 8000));
     sections.push("");
+    contextItems.push(`evidence_package:${ctx.evidence.evidencePackage.externalId}`);
   }
 
   if (ctx.evidence?.contradictoryEvidence.length) {
     sections.push("## Contradictory Evidence");
     for (const c of ctx.evidence.contradictoryEvidence) {
       sections.push(`- **${c.title}**: ${c.summary}`);
+      contextItems.push(`contradictory:${c.externalId}`);
     }
     sections.push("");
   }
@@ -159,13 +235,35 @@ function buildLLMInstructions(ctx: PipelineContext): string {
     sections.push("");
   }
 
-  return sections.join("\n");
+  return { instructions: sections.join("\n"), contextItems };
+}
+
+function appendContinuityItems(
+  sections: string[],
+  contextItems: string[],
+  items: ContinuityItem[],
+  label: string
+): void {
+  if (!items.length) {
+    sections.push("_None retrieved for this turn._");
+    sections.push("");
+    return;
+  }
+  for (const item of items) {
+    sections.push(
+      `- **[${item.epistemicType ?? item.type}]** ${item.title}: ${item.summary.slice(0, 400)}`
+    );
+    contextItems.push(`${item.table}:${item.id}:${label}`);
+  }
+  sections.push("");
 }
 
 function appendMemorySection(
   sections: string[],
+  contextItems: string[],
   heading: string,
-  items: Array<{ title: string; summary: string; bodyMd?: string }>
+  items: Array<{ externalId?: string; title: string; summary: string; bodyMd?: string }>,
+  prefix: string
 ): void {
   if (!items.length) return;
   sections.push(`## ${heading}`);
@@ -174,6 +272,7 @@ function appendMemorySection(
     if (item.bodyMd) {
       sections.push(`  ${item.bodyMd.slice(0, 500)}`);
     }
+    contextItems.push(`${prefix}:${item.externalId ?? item.title}`);
   }
   sections.push("");
 }

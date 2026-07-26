@@ -10,6 +10,7 @@ import {
   startTrace,
   completeTrace,
   failTrace,
+  getTrace,
   type RuntimeTraceRecord,
 } from "./trace-store.js";
 
@@ -64,6 +65,13 @@ export async function invokeExecuteRuntime(
   request: ExecutiveRequest
 ): Promise<ExecuteRuntimeResult> {
   log("info", "execution started", { tool: "execute_runtime" });
+  const provisionalId = `pending-${Date.now()}`;
+  startTrace(provisionalId, "execute_runtime", {
+    messagePreview: request.message.slice(0, 120),
+    situationSlug: request.situationSlug ?? null,
+    conversationId: request.conversationId ?? null,
+    executiveSlug: request.executiveSlug ?? null,
+  });
 
   try {
     const result =
@@ -72,17 +80,31 @@ export async function invokeExecuteRuntime(
         : await executePipeline(request);
 
     const runtimeId = result.requestId;
-    startTrace(runtimeId, "execute_runtime", {
-      message: request.message,
-      situationSlug: request.situationSlug ?? null,
-    });
+    // Re-key in-memory trace to the real request ID.
+    const pending = getTrace(provisionalId);
+    if (pending) {
+      startTrace(runtimeId, "execute_runtime", {
+        ...pending.metadata,
+        startedAt: pending.startedAt,
+      });
+    }
     completeTrace(runtimeId, result.stages, {
+      conversationId: result.conversationId,
       interactionId: result.interactionId,
       contextPackageId: result.contextPackageId,
+      situationId: result.metadata.situationId,
+      recordsCreated: result.metadata.recordsCreated,
+      recordsRetrieved: result.metadata.recordsRetrieved,
+      contextItems: result.metadata.contextItems,
+      captureErrors: result.metadata.captureErrors,
+      retrievalErrors: result.metadata.retrievalErrors,
+      persistenceStatus: result.metadata.persistenceStatus,
     });
 
     log("info", "execution completed", {
       runtimeId,
+      conversationId: result.conversationId,
+      persistenceStatus: result.metadata.persistenceStatus,
       durationMs: result.stages.reduce((sum, s) => sum + s.durationMs, 0),
     });
 
@@ -99,6 +121,7 @@ export async function invokeExecuteRuntime(
     };
   } catch (err) {
     const structured = toStructuredError(err, null);
+    failTrace(provisionalId, [], structured, {});
     log("error", "execution failed", { error: structured.message });
     throw err;
   }

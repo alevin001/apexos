@@ -26,7 +26,7 @@ $TunnelProfile = "apexos"
 function Write-Header {
   Write-Host ""
   Write-Host "========================================" -ForegroundColor Cyan
-  Write-Host "           Apex OS Launcher" -ForegroundColor Cyan
+  Write-Host "           ApexOS Launcher" -ForegroundColor Cyan
   Write-Host "========================================" -ForegroundColor Cyan
   Write-Host ""
 }

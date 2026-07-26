@@ -2,8 +2,17 @@
 -- Enable in supabase/config.toml: [db.seed] enabled = true
 
 INSERT INTO executives (external_id, slug, display_name, summary, status)
-VALUES ('EXE-001', 'primary-executive', 'Primary Executive', 'ApexOS system operator', 'active')
-ON CONFLICT (external_id) DO NOTHING;
+VALUES (
+  'EXE-001',
+  'primary-executive',
+  'Andrew',
+  'Primary ApexOS executive (Andrew). Canonical slug: primary-executive. Alias: andrew.',
+  'active'
+)
+ON CONFLICT (external_id) DO UPDATE
+SET display_name = EXCLUDED.display_name,
+    summary = EXCLUDED.summary,
+    updated_at = now();
 
 INSERT INTO persons (external_id, slug, display_name, status)
 VALUES ('PER-001', 'jane-smith', 'Jane Smith', 'active')

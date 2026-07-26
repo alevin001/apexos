@@ -1,4 +1,5 @@
 import { getSupabase } from "../../shared/supabase.js";
+import { lookupDurableTrace } from "../../shared/runtime-trace-store.js";
 import type { PipelineStageResult } from "../../types/pipeline.js";
 import { mcpConfig } from "../config/mcp-config.js";
 import type { StructuredMcpError } from "../errors/mcp-errors.js";
@@ -76,16 +77,42 @@ export async function lookupTrace(runtimeId: string): Promise<RuntimeTraceRecord
   const inMemory = traces.get(runtimeId);
   if (inMemory) return inMemory;
 
-  return lookupTraceFromSupabase(runtimeId);
+  const durable = await lookupDurableTrace(runtimeId);
+  if (durable) {
+    return {
+      runtimeId,
+      tool: String(durable.tool ?? "execute_runtime"),
+      startedAt: String(durable.started_at ?? new Date().toISOString()),
+      completedAt: durable.completed_at ? String(durable.completed_at) : undefined,
+      status: (durable.status as TraceStatus) ?? "completed",
+      stages: (durable.stages as PipelineStageResult[]) ?? [],
+      metadata: {
+        conversationId: durable.conversation_id ?? null,
+        situationId: durable.situation_id ?? null,
+        executiveSlug: durable.executive_slug ?? null,
+        recordsCreated: durable.records_created ?? [],
+        recordsRetrieved: durable.records_retrieved ?? [],
+        contextItems: durable.context_items ?? [],
+        captureErrors: durable.capture_errors ?? [],
+        source: "runtime_interaction_traces",
+        ...(typeof durable.metadata === "object" && durable.metadata
+          ? (durable.metadata as Record<string, unknown>)
+          : {}),
+      },
+    };
+  }
+
+  return lookupTraceFromMessages(runtimeId);
 }
 
-async function lookupTraceFromSupabase(runtimeId: string): Promise<RuntimeTraceRecord | null> {
+async function lookupTraceFromMessages(runtimeId: string): Promise<RuntimeTraceRecord | null> {
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase
       .from("conversation_messages")
       .select("metadata, created_at")
       .filter("metadata->>requestId", "eq", runtimeId)
+      .eq("role", "apexos")
       .order("created_at", { ascending: false })
       .limit(1);
 
@@ -104,10 +131,16 @@ async function lookupTraceFromSupabase(runtimeId: string): Promise<RuntimeTraceR
       status: "completed",
       stages,
       metadata: {
+        conversationId: meta.conversationId ?? null,
+        situationId: meta.situationId ?? null,
+        recordsCreated: meta.recordsCreated ?? [],
+        recordsRetrieved: meta.recordsRetrieved ?? [],
+        contextItems: meta.contextItems ?? [],
+        captureErrors: meta.captureErrors ?? [],
         contextPackageId: meta.contextPackageId ?? null,
         model: meta.model ?? null,
         provider: meta.provider ?? null,
-        source: "supabase",
+        source: "conversation_messages",
       },
     };
   } catch {

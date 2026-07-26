@@ -37,7 +37,7 @@ export function registerTools(server: McpServer): void {
     {
       title: "Execute ApexOS Runtime",
       description:
-        "Execute the complete ApexOS Runtime Engine pipeline. Returns runtime ID, response, and execution metadata. Use for full executive intelligence orchestration.",
+        "Execute the complete ApexOS Runtime Engine pipeline. Returns runtime ID, response, conversationId (always the effective/created ID on success), and execution metadata including recordsCreated, recordsRetrieved, and contextItems. Pass conversationId on later turns for continuity.",
       inputSchema: z.object(executiveRequestSchema),
     },
     async (args) => {
