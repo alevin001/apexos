@@ -24,6 +24,8 @@ export interface ExecuteRuntimeResult {
   contextPackageId: string | null;
   stages: RuntimeResponse["stages"];
   metadata: RuntimeResponse["metadata"];
+  /** Build 17 — Context Package for Glass Box grounding. */
+  contextPackage?: ExecutiveContextPackage | null;
 }
 
 export interface BuildContextResult {
@@ -118,6 +120,7 @@ export async function invokeExecuteRuntime(
       contextPackageId: result.contextPackageId,
       stages: result.stages,
       metadata: result.metadata,
+      contextPackage: result.contextPackage ?? null,
     };
   } catch (err) {
     const structured = toStructuredError(err, null);

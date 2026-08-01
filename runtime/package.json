@@ -1,9 +1,9 @@
 {
   "name": "apexos-runtime",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "private": true,
   "type": "module",
-  "description": "ApexOS Runtime Engine — executive intelligence orchestration (Build 16)",
+  "description": "ApexOS Runtime Engine — executive intelligence orchestration (Build 17)",
   "scripts": {
     "start": "node run.mjs server/http-server.ts",
     "mcp": "node run.mjs mcp/server.ts",
@@ -11,7 +11,7 @@
     "execute": "node run.mjs cli/execute.ts",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test src/mcp/**/*.test.ts src/pipeline/**/*.test.ts src/pipeline/**/**/*.test.ts",
-    "test:mcp": "node --import tsx --test src/mcp/http.mcp.test.ts",
+    "test:mcp": "node --import tsx --test src/mcp/**/*.test.ts",
     "test:pipeline": "node --import tsx --test src/pipeline/**/*.test.ts src/pipeline/**/**/*.test.ts"
   },
   "dependencies": {

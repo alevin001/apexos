@@ -113,7 +113,7 @@ The runtime is a standalone Node.js HTTP service. Deploy as:
 2. **Container** — Node 20 Alpine, expose port 3020, mount `.env.local` as secrets
 3. **Environment** — Set all required env vars; never expose service role key to clients
 
-### MCP server (Build 14)
+### MCP server (Build 14–17)
 
 **stdio** (ChatGPT Desktop local):
 
@@ -129,7 +129,7 @@ npm run mcp:http
 
 Endpoint: `http://127.0.0.1:3021/mcp`
 
-See `docs/MCP.md` for ChatGPT configuration and testing workflow.
+See `docs/MCP.md` for ChatGPT configuration, Build 17 `apexosBasis` / `glassBox` behavior, and testing workflow.
 
 ## Type Checking
 
@@ -139,7 +139,8 @@ npm run typecheck
 
 ## Related Documents
 
-- `docs/MCP.md` — MCP Integration Layer (Build 14)
+- `docs/MCP.md` — MCP Integration Layer (Build 14–17)
+- `../build/build-17-executive-interface-glass-box.md`
 - `technical_architecture/runtime-integration-architecture.md` (TECH-002)
 - `build/build-13-runtime-engine.md`
 - `docs/ARCHITECTURE.md`

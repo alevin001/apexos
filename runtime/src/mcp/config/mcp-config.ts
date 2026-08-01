@@ -1,6 +1,6 @@
 import { optionalEnv, runtimeConfig } from "../../config.js";
 
-export const MCP_VERSION = "0.14.0";
+export const MCP_VERSION = "0.17.0";
 
 export const mcpConfig = {
   serverName: optionalEnv("APEXOS_MCP_SERVER_NAME", "apexos"),

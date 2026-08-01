@@ -44,6 +44,8 @@ export function buildRuntimeResponse(ctx: PipelineContext): RuntimeResponse {
     interactionId: ctx.interactionId,
     contextPackageId: ctx.evidence?.assembledContextPackage?.externalId ?? null,
     stages: ctx.stages,
+    // Build 17 — expose package for Glass Box; not used for LLM re-reasoning.
+    contextPackage: ctx.contextPackage,
     metadata: {
       model: ctx.llmResponse?.model ?? "none",
       provider: ctx.llmResponse?.provider ?? "none",

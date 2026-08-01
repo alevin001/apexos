@@ -91,6 +91,11 @@ export interface RuntimeResponse {
   contextPackageId: string | null;
   stages: PipelineStageResult[];
   metadata: RuntimeResponseMetadata;
+  /**
+   * Build 17 — full Context Package for Glass Box / interface grounding.
+   * Additive; Build 16 consumers may ignore it.
+   */
+  contextPackage?: ExecutiveContextPackage | null;
 }
 
 export interface RuntimeResponseMetadata {

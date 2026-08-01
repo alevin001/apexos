@@ -1,12 +1,33 @@
 # ApexOS MCP Integration Layer
 
-**Build 14 / Build 15** — Thin MCP adapter exposing the ApexOS Runtime Engine to ChatGPT.
+**Build 14 / Build 15 / Build 16 / Build 17** — Thin MCP adapter exposing the ApexOS Runtime Engine to ChatGPT.
 
 ```
 Executive → ChatGPT → ApexOS MCP Server → Runtime Engine → Supabase → OpenAI → Response
 ```
 
-The MCP server adapts tool calls. It does not orchestrate. All pipeline logic remains in the Runtime Engine (Build 13).
+The MCP server adapts tool calls. It does not orchestrate. All pipeline logic remains in the Runtime Engine (Build 13+).
+
+## Build 17 — Executive Interface & Glass Box
+
+When ApexOS is selected in ChatGPT, connector instructions and tool metadata guide natural executive messages to `execute_runtime`. This **cannot guarantee** invocation merely because the connector is selected.
+
+| Response field | Purpose |
+|----------------|---------|
+| `apexosBasis` / `apexosBasisDisplay` | Truthful plain-English grounding status (persistence, retrieval, trace) |
+| `glassBox` | Concise auditable chain from Context Package + runtime audit only |
+| `conversationId` | Effective/created UUID; optional on input — reused only from confirmed MCP session/tool state |
+| `executionMetadata.continuitySource` | `explicit` \| `session` \| `new` |
+
+Honest degradation: failed or uninvoked runtime must not be presented as database-grounded. Absent Glass Box stages are `not captured`, never inferred from model prose.
+
+### Manual validation (ChatGPT)
+
+1. Select ApexOS in ChatGPT.
+2. Send a natural executive message (no tool name, no `conversationId`).
+3. Confirm the answer includes a truthful **ApexOS Basis** line.
+4. Continue naturally without pasting a `conversationId`.
+5. Ask for the Glass Box; verify against `runtime_trace` for the returned `runtimeId`.
 
 ## Prerequisites
 
@@ -139,10 +160,10 @@ If ApexOS ever supports remote binding or additional users, application-level au
 
 | Tool | Purpose |
 |------|---------|
-| `execute_runtime` | Full 9-stage pipeline execution |
+| `execute_runtime` | Primary tool for natural executive messages — full pipeline + `apexosBasis` + `glassBox` |
 | `build_context` | Context package assembly only (no LLM) |
 | `runtime_health` | Availability and dependency diagnostics |
-| `runtime_trace` | Execution trace for a Runtime ID |
+| `runtime_trace` | Full execution trace for a Runtime ID (expand Glass Box) |
 
 Every execution returns a **runtimeId** (maps to the Runtime Engine `requestId`).
 
@@ -150,10 +171,11 @@ Every execution returns a **runtimeId** (maps to the Runtime Engine `requestId`)
 
 ```json
 {
-  "message": "What should I consider before my conversation with Jane?",
-  "situationSlug": "leadership-conflict-q2"
+  "message": "Jesse and Drew are stuck on healthy conflict and rotating meeting ownership. What should I establish next?"
 }
 ```
+
+`conversationId` may be omitted. On success the response includes `conversationId`, `apexosBasis`, `apexosBasisDisplay`, and `glassBox`.
 
 ### Example: runtime_trace
 
