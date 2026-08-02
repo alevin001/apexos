@@ -1,9 +1,16 @@
 /**
- * Build 17 — confirmed MCP/session/tool-state continuity only.
- * Never invents continuity across unconfirmed boundaries.
+ * Build 17 — confirmed MCP/session/tool-state continuity, plus ordered resolution
+ * that may consult constrained durable fallback (see durable-continuity.ts).
  */
 
-export type ContinuitySource = "explicit" | "session" | "new" | "unavailable";
+import { lookupDurableActiveConversation } from "./durable-continuity.js";
+
+export type ContinuitySource =
+  | "explicit"
+  | "session"
+  | "durable_fallback"
+  | "new"
+  | "unavailable";
 
 export interface ConversationSessionState {
   conversationId: string;
@@ -34,6 +41,7 @@ export function resolveConversationId(opts: {
   conversationId: string | undefined;
   continuitySource: ContinuitySource;
   reusedFromSession: boolean;
+  lastRuntimeId: string | null;
 } {
   const explicit = opts.explicitConversationId?.trim();
   if (explicit) {
@@ -41,6 +49,7 @@ export function resolveConversationId(opts: {
       conversationId: explicit,
       continuitySource: "explicit",
       reusedFromSession: false,
+      lastRuntimeId: null,
     };
   }
 
@@ -50,6 +59,7 @@ export function resolveConversationId(opts: {
       conversationId: state.conversationId,
       continuitySource: "session",
       reusedFromSession: true,
+      lastRuntimeId: state.lastRuntimeId ?? null,
     };
   }
 
@@ -57,6 +67,61 @@ export function resolveConversationId(opts: {
     conversationId: undefined,
     continuitySource: "new",
     reusedFromSession: false,
+    lastRuntimeId: null,
+  };
+}
+
+/**
+ * Preferred continuity order:
+ * 1. explicit conversationId
+ * 2. confirmed MCP session / process tool state
+ * 3. constrained durable active conversation for the same executive
+ * 4. new conversation (no prior continuity confirmed)
+ */
+export async function resolveContinuity(opts: {
+  explicitConversationId?: string | null;
+  sessionKey: string;
+  executiveSlug?: string | null;
+}): Promise<{
+  conversationId: string | undefined;
+  continuitySource: ContinuitySource;
+  lastRuntimeId: string | null;
+  disclosure: string | null;
+}> {
+  const local = resolveConversationId({
+    explicitConversationId: opts.explicitConversationId,
+    sessionKey: opts.sessionKey,
+  });
+
+  if (local.continuitySource === "explicit" || local.continuitySource === "session") {
+    return {
+      conversationId: local.conversationId,
+      continuitySource: local.continuitySource,
+      lastRuntimeId: local.lastRuntimeId,
+      disclosure: null,
+    };
+  }
+
+  try {
+    const durable = await lookupDurableActiveConversation(opts.executiveSlug);
+    if (durable?.conversationId) {
+      return {
+        conversationId: durable.conversationId,
+        continuitySource: "durable_fallback",
+        lastRuntimeId: durable.lastRuntimeId,
+        disclosure: null,
+      };
+    }
+  } catch {
+    // Durable lookup failure must not invent continuity.
+  }
+
+  return {
+    conversationId: undefined,
+    continuitySource: "new",
+    lastRuntimeId: null,
+    disclosure:
+      "No prior ApexOS conversation was confirmed or reused; a new conversation will be created when persistence succeeds.",
   };
 }
 

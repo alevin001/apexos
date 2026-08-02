@@ -10,9 +10,11 @@ export function startHttpMcpServer(port = mcpConfig.port): void {
   createServer(app).listen(port, host, () => {
     console.log(`ApexOS MCP Server listening on http://${host}:${port}`);
     console.log(`  POST/GET/DELETE /mcp — Streamable HTTP MCP endpoint`);
-    console.log(`  GET  /health — health check`);
-    console.log(`  Auth: disabled (localhost-only, single-user)`);
-    console.log(`  Runtime mode: ${mcpConfig.runtimeMode}`);
+    console.log(`  GET  /health — health check + server identity`);
+  console.log(`  GET  /lifecycle/recent — request lifecycle proof`);
+  console.log(`  GET  /connector-activity/recent — connector path proof (Build 17.4)`);
+  console.log(`  Auth: disabled (localhost-only, single-user)`);
+  console.log(`  Runtime mode: ${mcpConfig.runtimeMode}`);
   });
 }
 

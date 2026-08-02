@@ -70,7 +70,7 @@ test("createHttpMcpApp rejects non-loopback host", () => {
   );
 });
 
-test("/health reports authentication disabled", async () => {
+test("/health reports authentication disabled and server identity", async () => {
   await withServer(async (baseUrl, fetchImpl) => {
     const response = await fetchImpl(`${baseUrl}/health`);
     assert.equal(response.status, 200);
@@ -81,6 +81,9 @@ test("/health reports authentication disabled", async () => {
       transport: string;
       oauthEnabled: boolean;
       authRequired: boolean;
+      instanceId: string;
+      startedAt: string;
+      tunnel: { publicEndpointFingerprint: string | null };
     };
     assert.equal(body.status, "ok");
     assert.equal(body.service, "apexos-mcp");
@@ -88,6 +91,44 @@ test("/health reports authentication disabled", async () => {
     assert.equal(body.transport, "streamable-http");
     assert.equal(body.oauthEnabled, false);
     assert.equal(body.authRequired, false);
+    assert.ok(body.instanceId);
+    assert.ok(body.startedAt);
+    assert.ok("publicEndpointFingerprint" in (body.tunnel ?? {}));
+  });
+});
+
+test("/connector-activity/recent is operator-only and records MCP methods", async () => {
+  await withServer(async (baseUrl, fetchImpl) => {
+    const before = await fetchImpl(`${baseUrl}/connector-activity/recent`);
+    assert.equal(before.status, 200);
+    const baseline = (await before.json()) as { count: number; instanceId: string };
+    assert.ok(baseline.instanceId);
+
+    await fetchImpl(`${baseUrl}/mcp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json, text/event-stream",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        method: "initialize",
+        params: {
+          protocolVersion: "2025-03-26",
+          capabilities: {},
+          clientInfo: { name: "apexos-test", version: "0.0.0" },
+        },
+      }),
+    });
+
+    const after = await fetchImpl(`${baseUrl}/connector-activity/recent`);
+    const body = (await after.json()) as {
+      count: number;
+      events: Array<{ method: string }>;
+    };
+    assert.ok(body.count >= 1);
+    assert.ok(body.events.some((e) => e.method === "initialize"));
   });
 });
 

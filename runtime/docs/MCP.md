@@ -10,24 +10,65 @@ The MCP server adapts tool calls. It does not orchestrate. All pipeline logic re
 
 ## Build 17 — Executive Interface & Glass Box
 
-When ApexOS is selected in ChatGPT, connector instructions and tool metadata guide natural executive messages to `execute_runtime`. This **cannot guarantee** invocation merely because the connector is selected.
+**Primary / sole ChatGPT tool:** `apexos_conversation` (Build 17.2)
+
+`runtime_health`, `build_context`, `runtime_trace`, and legacy `execute_runtime` are **not** exposed in the ChatGPT connector tool catalog (they interfered with routing — e.g. “Evaluating Apex OS Runtime” via health check). Operator health remains at HTTP `GET /health`.
+
+When ApexOS is selected, connector instructions require calling `apexos_conversation` **before answering** executive-work requests — never a health/status preflight. The host still cannot force a tool call — a ChatGPT answer without a real tool result is **not** an ApexOS answer. Never ask the executive for technical IDs.
 
 | Response field | Purpose |
 |----------------|---------|
-| `apexosBasis` / `apexosBasisDisplay` | Truthful plain-English grounding status (persistence, retrieval, trace) |
-| `glassBox` | Concise auditable chain from Context Package + runtime audit only |
-| `conversationId` | Effective/created UUID; optional on input — reused only from confirmed MCP session/tool state |
-| `executionMetadata.continuitySource` | `explicit` \| `session` \| `new` |
+| `invocation.status` | Machine-readable: `invoked` \| `failed` (absence of tool result ⇒ live-test `not_invoked`) |
+| `apexosBasis` / `apexosBasisDisplay` | Two-line status: **ApexOS Basis** + **Glass Box** reminder |
+| `glassBox` | Full auditable chain from Context Package + runtime audit only (on demand) |
+| `conversationId` | Internal UUID; optional on input |
+| `executionMetadata.continuitySource` | `explicit` \| `session` \| `durable_fallback` \| `new` |
 
-Honest degradation: failed or uninvoked runtime must not be presented as database-grounded. Absent Glass Box stages are `not captured`, never inferred from model prose.
+### Deploy / refresh so ChatGPT sees new tool metadata (required)
 
-### Manual validation (ChatGPT)
+Local unit tests do **not** prove the ChatGPT connector refreshed. After code changes:
 
-1. Select ApexOS in ChatGPT.
-2. Send a natural executive message (no tool name, no `conversationId`).
-3. Confirm the answer includes a truthful **ApexOS Basis** line.
-4. Continue naturally without pasting a `conversationId`.
-5. Ask for the Glass Box; verify against `runtime_trace` for the returned `runtimeId`.
+1. **Restart the MCP HTTP process** (loads new tool names/descriptions/instructions):
+   ```powershell
+   # Find listener on 3021, stop it, restart
+   netstat -ano | findstr :3021
+   Stop-Process -Id <PID> -Force
+   cd C:\Users\Andre\Desktop\ApexOS\runtime
+   npm run mcp:http
+   ```
+2. **Confirm freshness** — `GET http://127.0.0.1:3021/health` must report `"version":"0.17.4"` (or newer) and an `instanceId`.
+3. **Confirm tunnel upstream** — OpenAI tunnel profile `apexos` must forward to `http://127.0.0.1:3021/mcp` (`tunnel-client` admin `http://127.0.0.1:8080/ui`, status `mcp_server_url`). ChatGPT does **not** use a classic public `https://…/mcp` URL; it attaches via the OpenAI control-plane tunnel named **ApexOS** (`tunnel_…` id in health `tunnel.tunnelId`).
+4. **Reconnect ChatGPT ApexOS connector** if the tunnel id/name changed or activity stays empty:
+   - Platform tunnels: `https://platform.openai.com/settings/organization/tunnels`
+   - ChatGPT connectors: `https://chatgpt.com/#settings/Connectors`
+   - Prefer reconnect/refresh of the existing **ApexOS** connector to the current tunnel; if the UI only allows a new registration, remove the stale ApexOS connector and add the current tunnel again.
+5. **Force metadata refresh** — toggle ApexOS off/on or start a **new** project-only chat after reconnect.
+6. **Connector-path proof (Build 17.4)** — after a ChatGPT turn compare:
+   - `GET http://127.0.0.1:3021/connector-activity/recent` — expects `initialize` / `tools/list` if ChatGPT is attached to **this** instance
+   - `GET http://127.0.0.1:3021/lifecycle/recent` — expects entries only after `tools/call` for `apexos_conversation`
+   - Empty activity ⇒ wrong/stale connector registration (not an ApexOS routing bug)
+   - Activity with `tools/list` but no `tools/call` ⇒ host-side non-invocation
+   - `tools/call` + lifecycle complete but no Basis in chat ⇒ host-side result handling
+
+### Continuity order
+
+1. Explicit `conversationId` (internal only — never ask the executive)
+2. Confirmed MCP session / long-lived process tool state
+3. Constrained durable fallback: most recent **active** conversation for the same configured executive with a **completed** runtime trace inside a 6-hour window
+4. Otherwise create a new conversation and disclose that no prior ApexOS conversation was confirmed
+
+### Live acceptance test (production gate)
+
+1. Create a **new** project with project-only memory.
+2. Select ApexOS (after deploy/refresh above).
+3. Send: `I need to prepare for a leadership meeting with Drew and Jesse. Help me decide the one conversation we need to have about healthy conflict and execution speed.`
+4. **Pass only if** the answer ends with the two-line ApexOS status (`ApexOS Basis:` + `Glass Box: Available…`) and/or the tool payload has `invocation.status: "invoked"`.
+5. Send: `What should I say first?`
+6. Confirm `continuitySource` is `session` or `durable_fallback` (or a clear new-conversation disclosure).
+7. Send: `Show the Glass Box.`
+8. Verify the returned Glass Box against `runtime_trace` for the returned `runtimeId`.
+
+If step 4 fails (ordinary ChatGPT answer, no Basis/Glass Box), treat as **not_invoked** — Build 17 is not production-ready for that connector session.
 
 ## Prerequisites
 
@@ -160,10 +201,11 @@ If ApexOS ever supports remote binding or additional users, application-level au
 
 | Tool | Purpose |
 |------|---------|
-| `execute_runtime` | Primary tool for natural executive messages — full pipeline + `apexosBasis` + `glassBox` |
-| `build_context` | Context package assembly only (no LLM) |
-| `runtime_health` | Availability and dependency diagnostics |
-| `runtime_trace` | Full execution trace for a Runtime ID (expand Glass Box) |
+| `apexos_conversation` | **Sole** ChatGPT-facing executive conversation tool — pipeline + `invocation` + `apexosBasis` + `glassBox` |
+
+| Local / non-ChatGPT | Purpose |
+|---------------------|---------|
+| `GET /health` | Operator/test health (not an MCP tool) |
 
 Every execution returns a **runtimeId** (maps to the Runtime Engine `requestId`).
 

@@ -3,7 +3,7 @@ import type { AuditRecordRef, PipelineStageResult } from "../../types/pipeline.j
 
 /** Machine-readable + ChatGPT-displayable ApexOS Basis (Build 17). */
 export interface ApexosBasis {
-  /** Brief plain-English status for the end of a normal answer. */
+  /** Brief plain-English status for the first display line. */
   status: string;
   persistenceConfirmed: boolean;
   retrievalConfirmed: boolean;
@@ -14,6 +14,8 @@ export interface ApexosBasis {
   recordsRetrievedCount: number;
   recordsCreatedCount: number;
   degradations: string[];
+  /** Optional continuity disclosure when no prior conversation was reused. */
+  continuityDisclosure?: string | null;
 }
 
 export interface BasisBuildInput {
@@ -28,7 +30,16 @@ export interface BasisBuildInput {
   /** True when a durable or in-memory runtime_trace record was created/completed. */
   traceConfirmed?: boolean;
   runtimeAvailable?: boolean;
+  continuityDisclosure?: string | null;
+  /** Glass Box request path — runtime was not re-invoked for a full answer. */
+  glassBoxOnly?: boolean;
 }
+
+export const GLASS_BOX_REMINDER =
+  'Glass Box: Available. Say “Show the Glass Box” to see the retrieved records, evidence, reasoning stages, and trace.';
+
+export const GLASS_BOX_UNAVAILABLE =
+  "Glass Box: Not available for this response — no confirmed Context Package or runtime trace.";
 
 export function buildUnavailableBasis(
   continuitySource: ContinuitySource = "unavailable"
@@ -101,32 +112,48 @@ export function buildApexosBasis(input: BasisBuildInput): ApexosBasis {
   if (captureErrors.length) degradations.push("capture_errors");
 
   let status: string;
-  if (!persistenceConfirmed && input.persistenceStatus === "failed") {
+
+  if (input.glassBoxOnly) {
+    status = traceConfirmed
+      ? "Runtime trace confirmed for this Glass Box request. Showing only trace-supported stages."
+      : "Glass Box requested, but no confirmed runtime trace or Context Package was available.";
+  } else if (!persistenceConfirmed && input.persistenceStatus === "failed") {
     status =
-      "ApexOS ran, but persistence was not confirmed. Do not treat this as a saved-memory update.";
+      "Runtime invoked, but persistence was not confirmed. Do not treat this as durably saved.";
   } else if (retrievalFailed) {
     status =
-      "ApexOS retrieval was not confirmed. Response is based on your current message only.";
+      "Runtime invoked, but retrieval was not confirmed. Response is based on your current message only.";
+  } else if (groundedInSavedMemory && persistenceConfirmed && traceConfirmed) {
+    status = `Runtime invoked successfully. Retrieved ${retrievedCount} saved ApexOS records and created a trace.`;
+  } else if (groundedInSavedMemory && persistenceConfirmed) {
+    status = `Runtime invoked successfully. Retrieved ${retrievedCount} saved ApexOS records; trace creation was not confirmed.`;
   } else if (groundedInSavedMemory) {
-    status = `Retrieved saved ApexOS memory: ${retrievedCount} relevant records.`;
+    status = `Runtime invoked successfully. Retrieved ${retrievedCount} saved ApexOS records.`;
   } else if (
     persistenceConfirmed &&
     (input.continuitySource === "new" || recordsCreated.length > 0) &&
     retrievedCount === 0
   ) {
-    status = "New situation captured and saved.";
-  } else if (retrievalConfirmed && retrievedCount === 0) {
-    status =
-      "No relevant saved ApexOS records found. Response is based on your current message only.";
+    status = traceConfirmed
+      ? "Runtime invoked successfully. New situation captured and saved; no prior saved records were retrieved."
+      : "Runtime invoked successfully. New situation captured and saved; no prior saved records were retrieved. Trace creation was not confirmed.";
+  } else if (retrievalConfirmed && retrievedCount === 0 && persistenceConfirmed) {
+    status = traceConfirmed
+      ? "Runtime invoked successfully. No relevant saved ApexOS records were retrieved; response is based on your current message. Trace created."
+      : "Runtime invoked successfully. No relevant saved ApexOS records were retrieved; response is based on your current message.";
   } else if (persistenceConfirmed) {
-    status = "New situation captured and saved.";
+    status = "Runtime invoked successfully. Capture persisted; no prior saved records were retrieved.";
   } else {
     status =
-      "No relevant saved ApexOS records found. Response is based on your current message only.";
+      "Runtime invoked, but durable capture was not confirmed. Do not treat this as database-grounded memory.";
   }
 
-  if (degradations.includes("trace_not_confirmed") && persistenceConfirmed) {
-    // Keep primary status; note missing trace in degradations only.
+  if (
+    input.continuitySource === "new" &&
+    input.continuityDisclosure &&
+    !status.includes("No prior ApexOS conversation")
+  ) {
+    // Disclosure stays on basis object; display block can append when needed.
   }
 
   return {
@@ -140,10 +167,32 @@ export function buildApexosBasis(input: BasisBuildInput): ApexosBasis {
     recordsRetrievedCount: retrievedCount,
     recordsCreatedCount: recordsCreated.length,
     degradations,
+    continuityDisclosure: input.continuityDisclosure ?? null,
   };
 }
 
-/** One-line suffix the model should append to executive-facing answers. */
+/** Legacy one-line helper. */
 export function formatBasisDisplayLine(basis: ApexosBasis): string {
   return `ApexOS Basis: ${basis.status}`;
+}
+
+/**
+ * Two-line normal interface status block for ChatGPT to place after the answer.
+ * Line 1 = ApexOS Basis (confirmed facts only).
+ * Line 2 = Glass Box reminder (or unavailability).
+ */
+export function formatInterfaceStatusBlock(
+  basis: ApexosBasis,
+  opts: { glassBoxAvailable: boolean } = { glassBoxAvailable: true }
+): string {
+  const lines = [`ApexOS Basis: ${basis.status}`];
+  if (
+    basis.continuitySource === "new" &&
+    basis.continuityDisclosure &&
+    !basis.status.toLowerCase().includes("no prior apexos conversation")
+  ) {
+    lines[0] = `${lines[0]} ${basis.continuityDisclosure}`;
+  }
+  lines.push(opts.glassBoxAvailable ? GLASS_BOX_REMINDER : GLASS_BOX_UNAVAILABLE);
+  return lines.join("\n");
 }
