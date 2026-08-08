@@ -1,6 +1,6 @@
 # ApexOS MCP Integration Layer
 
-**Build 14 / Build 15 / Build 16 / Build 17** — Thin MCP adapter exposing the ApexOS Runtime Engine to ChatGPT.
+**Build 14 / Build 15 / Build 16 / Build 17 / Build 18** — Thin MCP adapter exposing the ApexOS Runtime Engine to ChatGPT.
 
 ```
 Executive → ChatGPT → ApexOS MCP Server → Runtime Engine → Supabase → OpenAI → Response
@@ -8,9 +8,18 @@ Executive → ChatGPT → ApexOS MCP Server → Runtime Engine → Supabase → 
 
 The MCP server adapts tool calls. It does not orchestrate. All pipeline logic remains in the Runtime Engine (Build 13+).
 
+## Build 18 — Knowledge ingestion (additive)
+
+| Tool | Purpose |
+|------|---------|
+| `apexos_conversation` | Executive conversation (Build 17) |
+| `apexos_ingest_source` | Governed knowledge-base ingestion — ChatGPT file params + “Add this to ApexOS” |
+
+Uploading a file in ChatGPT does **not** make it durable ApexOS knowledge unless `apexos_ingest_source` returns `durableKnowledgeConfirmed=true`. See `build/build-18-knowledge-base-ingestion.md`.
+
 ## Build 17 — Executive Interface & Glass Box
 
-**Primary / sole ChatGPT tool:** `apexos_conversation` (Build 17.2)
+**Primary ChatGPT conversation tool:** `apexos_conversation` (Build 17.2); Build 18 adds `apexos_ingest_source` for knowledge ingestion.
 
 `runtime_health`, `build_context`, `runtime_trace`, and legacy `execute_runtime` are **not** exposed in the ChatGPT connector tool catalog (they interfered with routing — e.g. “Evaluating Apex OS Runtime” via health check). Operator health remains at HTTP `GET /health`.
 
@@ -36,7 +45,7 @@ Local unit tests do **not** prove the ChatGPT connector refreshed. After code ch
    cd C:\Users\Andre\Desktop\ApexOS\runtime
    npm run mcp:http
    ```
-2. **Confirm freshness** — `GET http://127.0.0.1:3021/health` must report `"version":"0.17.4"` (or newer) and an `instanceId`.
+2. **Confirm freshness** — `GET http://127.0.0.1:3021/health` must report `"version":"0.18.0"` (or newer) and an `instanceId`.
 3. **Confirm tunnel upstream** — OpenAI tunnel profile `apexos` must forward to `http://127.0.0.1:3021/mcp` (`tunnel-client` admin `http://127.0.0.1:8080/ui`, status `mcp_server_url`). ChatGPT does **not** use a classic public `https://…/mcp` URL; it attaches via the OpenAI control-plane tunnel named **ApexOS** (`tunnel_…` id in health `tunnel.tunnelId`).
 4. **Reconnect ChatGPT ApexOS connector** if the tunnel id/name changed or activity stays empty:
    - Platform tunnels: `https://platform.openai.com/settings/organization/tunnels`
@@ -201,7 +210,8 @@ If ApexOS ever supports remote binding or additional users, application-level au
 
 | Tool | Purpose |
 |------|---------|
-| `apexos_conversation` | **Sole** ChatGPT-facing executive conversation tool — pipeline + `invocation` + `apexosBasis` + `glassBox` |
+| `apexos_conversation` | ChatGPT-facing executive conversation tool — pipeline + `invocation` + `apexosBasis` + `glassBox` |
+| `apexos_ingest_source` | Governed knowledge ingestion (`openai/fileParams` + text fallback); returns plain-language receipt |
 
 | Local / non-ChatGPT | Purpose |
 |---------------------|---------|

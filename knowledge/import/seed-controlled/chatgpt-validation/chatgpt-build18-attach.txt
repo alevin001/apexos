@@ -1,0 +1,5 @@
+Build 18 ChatGPT attachment validation file.
+
+Controlled token: chatgpt-build18-attach-token
+
+This file is for governed intake proof only. It is not doctrine.

@@ -62,9 +62,13 @@ Ingestion workflow:
 **knowledge-source-material:**
 
 - `application/pdf`
-- `text/plain`, `text/markdown`, `text/vtt`
+- `text/plain`, `text/markdown`, `text/csv`, `text/vtt`
+- `application/json`
 - Word documents (`application/msword`, `.docx`)
+- Spreadsheets (`.xls`, `.xlsx`)
 - Images (`image/png`, `image/jpeg`, `image/webp`)
+
+(Build 18 expanded CSV/JSON/Excel MIME allowlist — see migration `20260802120000_build18_knowledge_ingestion.sql`.)
 
 **apexos-artifacts:**
 

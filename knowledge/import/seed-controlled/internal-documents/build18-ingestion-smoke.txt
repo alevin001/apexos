@@ -1,0 +1,9 @@
+Build 18 ingestion smoke file.
+
+This plain-text source exists so ApexOS can prove:
+- original file persistence
+- text extraction
+- retrieval-unit creation
+- Glass Box source traceability
+
+Keyword for grounded questions: "build18-ingestion-smoke-token".

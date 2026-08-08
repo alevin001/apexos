@@ -139,6 +139,9 @@ function buildLLMInstructions(ctx: PipelineContext): {
 
   if (ctx.continuity) {
     sections.push("## Continuity — Prior Source Evidence");
+    sections.push(
+      "Primary knowledge matches ground the answer. Subordinate matches are lower relevance — mention only if needed; do not let them distort the answer."
+    );
     appendContinuityItems(sections, contextItems, ctx.continuity.priorSourceEvidence, "source");
 
     sections.push("## Continuity — Saved Observations");

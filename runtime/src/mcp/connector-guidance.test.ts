@@ -21,9 +21,12 @@ import {
   buildUnavailableBasis,
 } from "./adapters/apexos-basis.js";
 
-test("ChatGPT catalog exposes only apexos_conversation", () => {
-  assert.deepEqual([...CHATGPT_FACING_TOOL_NAMES], [PRIMARY_TOOL_NAME]);
-  assert.deepEqual([...listRegisteredChatgptToolNames()], [PRIMARY_TOOL_NAME]);
+test("ChatGPT catalog exposes conversation + ingest tools only", () => {
+  assert.deepEqual([...CHATGPT_FACING_TOOL_NAMES], [PRIMARY_TOOL_NAME, "apexos_ingest_source"]);
+  assert.deepEqual(
+    [...listRegisteredChatgptToolNames()],
+    [PRIMARY_TOOL_NAME, "apexos_ingest_source"]
+  );
   for (const name of CONNECTOR_EXCLUDED_DIAGNOSTIC_TOOLS) {
     assert.ok(
       !CHATGPT_FACING_TOOL_NAMES.includes(name as (typeof CHATGPT_FACING_TOOL_NAMES)[number]),
@@ -54,13 +57,14 @@ test("health tools are unavailable for normal executive routing", () => {
   assert.ok(!SERVER_INSTRUCTIONS.includes("runtime_health —"));
 });
 
-test("primary tool metadata is the sole conversational entry point", () => {
+test("primary tool metadata is the conversational entry point", () => {
   assert.equal(PRIMARY_TOOL_NAME, "apexos_conversation");
   assert.match(PRIMARY_TOOL_TITLE, /Executive Conversation/i);
-  assert.match(PRIMARY_TOOL_DESCRIPTION, /ONLY ApexOS TOOL/i);
+  assert.match(PRIMARY_TOOL_DESCRIPTION, /ApexOS TOOL for normal executive conversation/i);
   assert.match(PRIMARY_TOOL_DESCRIPTION, /MUST call this tool BEFORE answering/i);
   assert.match(PRIMARY_TOOL_DESCRIPTION, /no separate preflight/i);
-  assert.match(SERVER_INSTRUCTIONS, /sole conversational entry point/i);
+  assert.match(SERVER_INSTRUCTIONS, /conversational entry point for executive work/i);
+  assert.match(SERVER_INSTRUCTIONS, /apexos_ingest_source/);
 });
 
 test("runtime-unavailable degraded status is returned via apexos_conversation contract", () => {

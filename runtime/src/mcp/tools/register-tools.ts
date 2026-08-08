@@ -20,13 +20,30 @@ import {
 } from "../adapters/glass-box-request.js";
 import { RequestLifecycle } from "../adapters/request-lifecycle.js";
 import { attachApexosRequestIdToLatestCall } from "../adapters/connector-activity.js";
+import {
+  consumeAttachmentReminder,
+  hasUsableFileReference,
+} from "../adapters/attachment-reminder.js";
 import { runtimeConfig } from "../../config.js";
 import {
   PRIMARY_TOOL_DESCRIPTION,
   PRIMARY_TOOL_NAME,
   PRIMARY_TOOL_TITLE,
+  INGEST_TOOL_DESCRIPTION,
+  INGEST_TOOL_NAME,
+  INGEST_TOOL_TITLE,
   CHATGPT_FACING_TOOL_NAMES,
 } from "../connector-guidance.js";
+import { ingestChatGptAttachment } from "../../knowledge/chatgpt-attachment.js";
+
+const chatgptFileSchema = z
+  .object({
+    download_url: z.string(),
+    file_id: z.string(),
+    mime_type: z.string().optional(),
+    file_name: z.string().optional(),
+  })
+  .passthrough();
 
 const executiveRequestSchema = {
   message: z
@@ -52,6 +69,13 @@ const executiveRequestSchema = {
     .string()
     .optional()
     .describe("Optional prior OpenAI response ID for model chaining"),
+  file: z
+    .union([chatgptFileSchema, z.string()])
+    .optional()
+    .nullable()
+    .describe(
+      "Optional ChatGPT-injected attachment reference for this turn. When present, ApexOS may emit a one-time attachment reminder. Does not ingest."
+    ),
 };
 
 type ToolPayload = Record<string, unknown>;
@@ -110,7 +134,38 @@ type ExecutiveArgs = {
   situationSlug?: string;
   conversationId?: string;
   previousResponseId?: string;
+  file?: { download_url?: string; file_id?: string; mime_type?: string; file_name?: string } | string | null;
 };
+
+function withAttachmentReminder(
+  sessionKey: string,
+  file: ExecutiveArgs["file"],
+  payload: ToolPayload
+): ToolPayload {
+  const reminder = consumeAttachmentReminder(sessionKey, file);
+  if (!reminder) {
+    return {
+      ...payload,
+      attachmentReceived: hasUsableFileReference(file),
+      attachmentReminder: null,
+    };
+  }
+  const response =
+    typeof payload.response === "string" && payload.response.trim()
+      ? `${payload.response}\n\n${reminder}`
+      : reminder;
+  const display =
+    typeof payload.apexosBasisDisplay === "string"
+      ? `${payload.apexosBasisDisplay}\n${reminder}`
+      : payload.apexosBasisDisplay;
+  return {
+    ...payload,
+    response,
+    apexosBasisDisplay: display,
+    attachmentReceived: true,
+    attachmentReminder: reminder,
+  };
+}
 
 function sessionKeyKind(sessionKey: string): "mcp_session" | "stdio_process" {
   return sessionKey === STDIO_SESSION_KEY ? "stdio_process" : "mcp_session";
@@ -180,7 +235,7 @@ async function handleExecutiveConversation(
 
       result = finalizeToolResult(
         life,
-        {
+        withAttachmentReminder(sessionKey, args.file, {
           runtimeId: resolved.runtimeId,
           response: glassAvailable
             ? "Glass Box for the most recent confirmed ApexOS runtime response."
@@ -196,7 +251,7 @@ async function handleExecutiveConversation(
             glassBoxSource: resolved.source,
             conversationId: resolved.conversationId,
           },
-        },
+        }),
         "invoked"
       );
     } else {
@@ -256,7 +311,7 @@ async function handleExecutiveConversation(
 
       result = finalizeToolResult(
         life,
-        {
+        withAttachmentReminder(sessionKey, args.file, {
           runtimeId: runtimeResult.runtimeId,
           response: runtimeResult.response,
           conversationId: runtimeResult.conversationId,
@@ -273,7 +328,7 @@ async function handleExecutiveConversation(
             stages: runtimeResult.stages,
             ...runtimeResult.metadata,
           },
-        },
+        }),
         "invoked"
       );
     }
@@ -353,6 +408,94 @@ export function listRegisteredChatgptToolNames(): readonly string[] {
  * Register ChatGPT-facing tools only.
  * Health/diagnostics stay on HTTP GET /health and library APIs — not in tools/list.
  */
+const ingestSourceSchema = {
+  file: z
+    .union([chatgptFileSchema, z.string()])
+    .optional()
+    .nullable()
+    .describe(
+      "ChatGPT-injected file reference ({ download_url, file_id, mime_type?, file_name? }) or file_id string. Prefer host injection via openai/fileParams."
+    ),
+  fileName: z.string().optional().describe("Original filename when known"),
+  mimeType: z.string().optional().describe("MIME type when known"),
+  textContent: z
+    .string()
+    .optional()
+    .describe(
+      "Fallback when the host cannot transfer original bytes — treated as derived text, not the original file"
+    ),
+  title: z.string().optional().describe("Human-readable source title"),
+  sourceOwner: z.string().optional().describe("Owner/origin when known"),
+  scopeClassification: z.string().optional().describe("Topic/scope label when known"),
+  replacesSourceId: z
+    .string()
+    .optional()
+    .describe("Internal only — prior source UUID when correcting/replacing; prior source is preserved"),
+};
+
+async function handleIngestSource(args: {
+  file?: { download_url?: string; file_id?: string; mime_type?: string; file_name?: string } | string | null;
+  fileName?: string;
+  mimeType?: string;
+  textContent?: string;
+  title?: string;
+  sourceOwner?: string;
+  scopeClassification?: string;
+  replacesSourceId?: string;
+}): Promise<McpToolResult> {
+  const life = new RequestLifecycle(INGEST_TOOL_NAME);
+  life.requestReceived({
+    messageLength: args.textContent?.length ?? 0,
+    sessionKeyKind: "mcp_session",
+    glassBoxRequest: false,
+  });
+  attachApexosRequestIdToLatestCall(INGEST_TOOL_NAME, life.requestId);
+
+  try {
+    life.runtimeStarting();
+    const { receipt, display, platformNote } = await ingestChatGptAttachment(args);
+    life.runtimeCompleted({
+      runtimeId: receipt.sourceExternalId ?? null,
+      conversationId: null,
+      captureConfirmed: receipt.durableKnowledgeConfirmed,
+      retrievalConfirmed: receipt.retrievalReady,
+      persistenceConfirmed: receipt.durableKnowledgeConfirmed,
+      traceConfirmed: false,
+    });
+    life.responseAssembled({
+      basisIncluded: false,
+      glassBoxReminderIncluded: display.toLowerCase().includes("glass box"),
+    });
+
+    return finalizeToolResult(
+      life,
+      {
+        response: display,
+        ingestionReceipt: receipt,
+        durableKnowledgeConfirmed: receipt.durableKnowledgeConfirmed,
+        platformNote,
+        glassBoxHint: receipt.glassBoxHint,
+      },
+      receipt.durableKnowledgeConfirmed || receipt.claim === "duplicate" ? "invoked" : "failed",
+      !(receipt.durableKnowledgeConfirmed || receipt.claim === "duplicate")
+    );
+  } catch (err) {
+    life.requestFailed(life.getCurrentStage(), err);
+    const structured = toStructuredError(err, null);
+    return finalizeToolResult(
+      life,
+      {
+        ...structured,
+        durableKnowledgeConfirmed: false,
+        response:
+          "ApexOS could not complete ingestion. The file is not confirmed in the durable knowledge base.",
+      },
+      "failed",
+      true
+    );
+  }
+}
+
 export function registerTools(server: McpServer): void {
   server.registerTool(
     PRIMARY_TOOL_NAME,
@@ -366,7 +509,30 @@ export function registerTools(server: McpServer): void {
         openWorldHint: true,
       },
       inputSchema: z.object(executiveRequestSchema),
+      _meta: {
+        "openai/fileParams": ["file"],
+      },
     },
     async (args, extra) => handleExecutiveConversation(args, extra, PRIMARY_TOOL_NAME)
+  );
+
+  server.registerTool(
+    INGEST_TOOL_NAME,
+    {
+      title: INGEST_TOOL_TITLE,
+      description: INGEST_TOOL_DESCRIPTION,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: true,
+      },
+      inputSchema: z.object(ingestSourceSchema),
+      // ChatGPT host extension — injects uploaded file metadata into `file`
+      _meta: {
+        "openai/fileParams": ["file"],
+      },
+    },
+    async (args) => handleIngestSource(args)
   );
 }

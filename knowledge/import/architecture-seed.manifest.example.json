@@ -1,0 +1,13 @@
+{
+  "description": "Example manifest for deliberate architecture-document seeding. Review dry-run before execute. Do not run silently.",
+  "files": [
+    "Image - 0 - Overview.png",
+    "INDEX.md",
+    "STORAGE-GUIDE.md"
+  ],
+  "notes": [
+    "Point --path at the architecture/ folder and --manifest at this file (copied/edited).",
+    "DOCX extraction is deferred in Build 18 — originals can be stored; text extraction may be deferred.",
+    "Authority should be set with --authority architecture when executing."
+  ]
+}

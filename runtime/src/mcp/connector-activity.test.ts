@@ -6,7 +6,11 @@ import {
   getRecentConnectorActivity,
   recordConnectorActivity,
 } from "./adapters/connector-activity.js";
-import { CHATGPT_FACING_TOOL_NAMES, PRIMARY_TOOL_NAME } from "./connector-guidance.js";
+import {
+  CHATGPT_FACING_TOOL_NAMES,
+  INGEST_TOOL_NAME,
+  PRIMARY_TOOL_NAME,
+} from "./connector-guidance.js";
 import { listRegisteredChatgptToolNames } from "./tools/register-tools.js";
 import {
   getServerIdentity,
@@ -92,7 +96,10 @@ test("server identity exposes version, startedAt, instanceId, tunnel fingerprint
 });
 
 test("connector activity diagnostics are not ChatGPT-facing tools", () => {
-  assert.deepEqual([...listRegisteredChatgptToolNames()], [PRIMARY_TOOL_NAME]);
+  assert.deepEqual(
+    [...listRegisteredChatgptToolNames()],
+    [PRIMARY_TOOL_NAME, INGEST_TOOL_NAME]
+  );
   assert.ok(!CHATGPT_FACING_TOOL_NAMES.includes("connector_activity" as never));
   assert.ok(!listRegisteredChatgptToolNames().includes("runtime_health"));
 });

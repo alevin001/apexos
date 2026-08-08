@@ -158,6 +158,17 @@ Append to existing array; never replace silently (LAD-011).
 - `supabase/seed.sql` — optional foundation seed
 - See `INGESTION-FLOW.md` for pipeline documentation
 
+## Build 18 — Governed knowledge source ingestion
+
+Build 09 syncs repository markdown artifacts into pipeline tables.  
+Build 18 adds a separate governed path for **primary source files** (bulk folder/manifest, single file, ChatGPT attachment):
+
+- Migration: `migrations/20260802120000_build18_knowledge_ingestion.sql`
+- Runtime CLI: `cd runtime && npm run knowledge:ingest -- --dry-run --path <folder>`
+- Spec: `build/build-18-knowledge-base-ingestion.md`
+
+Originals go to Storage bucket `knowledge-source-material`. Extractions text and retrieval units are separate tables — never represented as the original source.
+
 ## Error Handling
 
 | Error | Action |

@@ -4,6 +4,7 @@ import { RuntimeError } from "../shared/errors.js";
 import { runtimeEntry } from "./stages/runtime-entry.js";
 import { runtimeEntryStage } from "./stages/runtime-entry.js";
 import { continuityRetrievalStage } from "./stages/continuity-retrieval.js";
+import { knowledgeRetrievalStage } from "./stages/knowledge-retrieval.js";
 import { memoryRetrievalStage } from "./stages/memory-retrieval.js";
 import { contextRetrievalStage } from "./stages/context-retrieval.js";
 import { evidenceAssemblyStage } from "./stages/evidence-assembly.js";
@@ -19,6 +20,7 @@ import { interactionCaptureStage } from "./stages/interaction-capture.js";
 const STAGES = [
   runtimeEntryStage,
   continuityRetrievalStage,
+  knowledgeRetrievalStage,
   memoryRetrievalStage,
   contextRetrievalStage,
   evidenceAssemblyStage,

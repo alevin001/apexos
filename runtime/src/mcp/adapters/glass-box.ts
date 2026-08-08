@@ -10,6 +10,13 @@ export interface GlassBoxRecordRef {
   title?: string;
   summary?: string;
   epistemicType?: string;
+  /** Build 18 — executive-readable source fields (avoid raw IDs in narrative) */
+  sourceTitle?: string;
+  sourceType?: string;
+  authorityStatus?: string;
+  whyRetrieved?: string;
+  transformationNote?: string;
+  limitation?: string;
 }
 
 export interface GlassBoxStage {
@@ -57,14 +64,29 @@ const AUDITABLE_CHAIN =
   "Situation → retrieved context → source evidence → interpretation → assumptions → alternatives → recommendation → decision → outcome/learning";
 
 function mapContinuity(items: ContinuityItem[] | undefined): GlassBoxRecordRef[] {
-  return (items ?? []).map((item) => ({
-    id: item.id,
-    table: item.table,
-    type: item.type,
-    title: item.title,
-    summary: item.summary.slice(0, 240),
-    epistemicType: item.epistemicType,
-  }));
+  return (items ?? []).map((item) => {
+    const knowledge = item.table === "knowledge_retrieval_units";
+    const authorityMatch = item.summary.match(/Authority:\s*([^.]+)\./i);
+    const whyMatch = item.summary.match(/Matched query terms[\s\S]*?(?=\sExcerpt is from|$)/i);
+    const transformMatch = item.summary.match(/Excerpt is from[\s\S]*$/i);
+    return {
+      id: item.id,
+      table: item.table,
+      type: item.type,
+      title: item.title,
+      summary: item.summary.slice(0, 320),
+      epistemicType: item.epistemicType,
+      ...(knowledge
+        ? {
+            sourceTitle: item.title,
+            sourceType: item.type,
+            authorityStatus: authorityMatch?.[1]?.trim(),
+            whyRetrieved: whyMatch?.[0]?.trim(),
+            transformationNote: transformMatch?.[0]?.trim(),
+          }
+        : {}),
+    };
+  });
 }
 
 function refsFromAudit(refs: AuditRecordRef[] | undefined, types?: string[]): GlassBoxRecordRef[] {
