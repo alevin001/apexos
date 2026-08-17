@@ -169,7 +169,12 @@ function createKnowledgeMock(state: {
         }
         if (table === "knowledge_retrieval_units") {
           const ids = filters[`in:knowledge_source_id`] as string[] | undefined;
-          rows = state.units.filter((u) => !ids || ids.includes(u.knowledge_source_id as string));
+          const oneId = filters.knowledge_source_id as string | undefined;
+          rows = state.units.filter((u) => {
+            if (oneId) return u.knowledge_source_id === oneId;
+            if (ids) return ids.includes(u.knowledge_source_id as string);
+            return true;
+          });
           return resolve({ data: rows, error: null });
         }
         if (table === "ingestion_run_items" && filters.run_id) {
@@ -199,21 +204,30 @@ function createKnowledgeMock(state: {
   return { from, storage } as unknown as SupabaseClient;
 }
 
-test("extraction separates supported text from deferred and failed types", () => {
-  const ok = extractText({
+test("extraction separates supported text from deferred and failed types", async () => {
+  const ok = await extractText({
     filename: "note.md",
     bytes: Buffer.from("# Title\n\nBody"),
   });
   assert.equal(ok.status, "extracted");
   assert.ok(ok.text?.includes("Body"));
 
-  const deferred = extractText({
+  // Minimal PDF without extractable text operators → native extractor runs, may fail/empty
+  const pdf = await extractText({
     filename: "scan.pdf",
-    bytes: Buffer.from("%PDF"),
+    bytes: Buffer.from("%PDF-1.4\n"),
   });
-  assert.equal(deferred.status, "deferred");
+  assert.notEqual(pdf.status, "deferred");
+  assert.ok(["extracted", "failed"].includes(pdf.status));
 
-  const failed = extractText({
+  const legacy = await extractText({
+    filename: "old.doc",
+    // Minimal OLE header so detect does not mark corrupt
+    bytes: Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, ...Buffer.alloc(520)]),
+  });
+  assert.equal(legacy.status, "preserve_only");
+
+  const failed = await extractText({
     filename: "empty.txt",
     bytes: Buffer.from("   "),
   });
@@ -353,6 +367,30 @@ test("receipt never claims ingested without durable confirmation", () => {
   assert.equal(receipt.durableKnowledgeConfirmed, false);
 });
 
+test("extraction alone cannot satisfy durableKnowledgeConfirmed", () => {
+  const receipt = buildReceipt({
+    ingested: true,
+    claim: "partial",
+    title: "text-only",
+    sourceType: "internal-document",
+    originalStored: false,
+    originalAvailable: false,
+    textExtracted: true,
+    retrievalReady: true,
+    authorityClassification: "unverified",
+    extractionStatus: "extracted",
+    processingStatus: "processed",
+    integrityStatus: "ok",
+    sourceExternalId: "SRC-text-only",
+    retrievalUnitCount: 1,
+    originalStorageStatus: "not_applicable",
+    durableSourceRecordStatus: "persisted",
+  });
+  assert.equal(receipt.durableKnowledgeConfirmed, false);
+  assert.equal(receipt.ingested, false);
+  assert.match(receipt.authorityDisplay, /authority unasserted/i);
+});
+
 test("Glass Box source stage shows authority and transformation notes for knowledge units", () => {
   const glass = buildGlassBox({
     runtimeId: "rt-1",
@@ -445,7 +483,7 @@ test("ChatGPT attachment without file/text is not claimed ingested", async () =>
   assert.equal(CHATGPT_FILE_CAPABILITY.automaticIngestionGuaranteed, false);
 });
 
-test("ChatGPT text-only fallback ingests as derived text, not original binary", async () => {
+test("ChatGPT text-only fallback is derived text and not durable-confirmed without original", async () => {
   const state = {
     sources: [] as Row[],
     extractions: [] as Row[],
@@ -463,7 +501,8 @@ test("ChatGPT text-only fallback ingests as derived text, not original binary", 
     textContent: "Notes from the leadership meeting about healthy conflict.",
   });
 
-  assert.equal(receipt.durableKnowledgeConfirmed, true);
+  // Locked Build 19 rule: extraction alone never satisfies durable confirmation
+  assert.equal(receipt.durableKnowledgeConfirmed, false);
   assert.equal(receipt.originalStored, false);
   assert.equal(receipt.textExtracted, true);
   assert.equal(state.sources[0].ingestion_method, "chatgpt_text");

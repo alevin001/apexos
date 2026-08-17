@@ -67,8 +67,13 @@ Ingestion workflow:
 - Word documents (`application/msword`, `.docx`)
 - Spreadsheets (`.xls`, `.xlsx`)
 - Images (`image/png`, `image/jpeg`, `image/webp`)
+- Email (`message/rfc822`, `application/vnd.ms-outlook`)
+- PowerPoint (`application/vnd.ms-powerpoint`, `.pptx` OpenXML)
+- Preserve-only / containers (`application/octet-stream`, outlook pst/ost MIME)
 
-(Build 18 expanded CSV/JSON/Excel MIME allowlist — see migration `20260802120000_build18_knowledge_ingestion.sql`.)
+(Build 18 expanded CSV/JSON/Excel MIME allowlist — see migration `20260802120000_build18_knowledge_ingestion.sql`.  
+Build 19 Checkpoints A/B add email + octet-stream preserve-only — see `20260808120000_build19_knowledge_statuses.sql`.  
+Build 19 Checkpoint C adds PPTX MIME — see `20260809120000_build19_checkpoint_c_pptx.sql`.)
 
 **apexos-artifacts:**
 

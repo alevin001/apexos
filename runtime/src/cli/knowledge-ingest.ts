@@ -1,11 +1,11 @@
 /**
- * Build 18 — knowledge ingestion CLI
+ * Build 18/19 — knowledge ingestion CLI
  *
- * Bulk dry-run:
- *   npm run knowledge:ingest -- --dry-run --path ../knowledge/import/seed-controlled
+ * Zero-write dry-run + local manifest:
+ *   npm run knowledge:ingest -- --dry-run --path ../knowledge/import/seed-controlled --write-manifest ../knowledge/import/seed-controlled.manifest.json
  *
- * Approved bulk execute:
- *   npm run knowledge:ingest -- --execute --path ../knowledge/import/seed-controlled
+ * Authorized execute from reconciled Build 19 manifest:
+ *   npm run knowledge:ingest -- --execute --authorize-execute --path <folder> --manifest <reconciled.json>
  *
  * Single file:
  *   npm run knowledge:ingest-file -- --file ./path/to/file.md
@@ -43,8 +43,11 @@ async function main(): Promise<void> {
       sourceLocation: abs,
       title: argValue(args, "--title") ?? basename(abs),
       sourceOwner: argValue(args, "--owner"),
-      authorityClassification: (argValue(args, "--authority") as AuthorityClassification) ?? "unverified",
+      authorityClassification:
+        (argValue(args, "--authority") as AuthorityClassification) ?? "unverified",
       scopeClassification: argValue(args, "--scope"),
+      documentIdentity: argValue(args, "--document-identity"),
+      replacesSourceId: argValue(args, "--replaces-source-id"),
       ingestionMethod: "single_file",
       tags: ["single-file"],
     });
@@ -59,8 +62,8 @@ async function main(): Promise<void> {
   if (!path) {
     console.error(
       "Usage:\n" +
-        "  npm run knowledge:ingest -- --dry-run --path <import-folder>\n" +
-        "  npm run knowledge:ingest -- --execute --path <import-folder>\n" +
+        "  npm run knowledge:ingest -- --dry-run --path <import-folder> [--write-manifest <file>]\n" +
+        "  npm run knowledge:ingest -- --execute --authorize-execute --path <folder> --manifest <reconciled.json>\n" +
         "  npm run knowledge:ingest-file -- --file <path>"
     );
     process.exit(1);
@@ -71,21 +74,40 @@ async function main(): Promise<void> {
     console.log("Neither --dry-run nor --execute specified; defaulting to --dry-run.\n");
   }
 
+  const providerModeRaw = argValue(args, "--provider-mode");
+  const providerMode =
+    providerModeRaw === "live" ||
+    providerModeRaw === "test_mock" ||
+    providerModeRaw === "disabled"
+      ? providerModeRaw
+      : undefined;
+
   const summary = await runBulkImport({
     rootPath: path,
     dryRun,
     manifestPath: argValue(args, "--manifest"),
+    writeManifestPath: argValue(args, "--write-manifest"),
+    markReconciled: hasFlag(args, "--mark-reconciled"),
+    authorizeExecute: hasFlag(args, "--authorize-execute"),
     resumeRunExternalId: argValue(args, "--resume"),
-    authorityClassification: (argValue(args, "--authority") as AuthorityClassification) ?? "unverified",
+    authorityClassification:
+      (argValue(args, "--authority") as AuthorityClassification) ?? "unverified",
     scopeClassification: argValue(args, "--scope"),
     maxFiles: argValue(args, "--max") ? Number(argValue(args, "--max")) : undefined,
+    providerMode,
   });
 
   console.log(formatBulkSummary(summary));
+  if (summary.batchReceipt) {
+    console.log("\nBatch receipt (operational provenance only — not evidence):");
+    console.log(JSON.stringify(summary.batchReceipt, null, 2));
+  }
   console.log("\nSummary JSON:");
   console.log(JSON.stringify(summary, null, 2));
 
-  if (!dryRun && summary.filesFailed > 0) process.exitCode = 1;
+  if (!dryRun && (summary.filesFailed > 0 || (summary.blockedChanged ?? 0) > 0)) {
+    process.exitCode = 1;
+  }
 }
 
 main().catch((err) => {

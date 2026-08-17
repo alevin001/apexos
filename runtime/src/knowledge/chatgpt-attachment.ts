@@ -1,5 +1,5 @@
 import { ingestSource } from "./ingest.js";
-import { formatReceiptPlainLanguage } from "./receipt.js";
+import { buildReceipt, formatReceiptPlainLanguage } from "./receipt.js";
 import type { ChatGptFileRef, IngestionReceipt } from "./types.js";
 
 export const CHATGPT_FILE_CAPABILITY = {
@@ -115,25 +115,26 @@ export async function ingestChatGptAttachment(
           platformNote,
         };
       }
-      const receipt = {
+      const receipt = buildReceipt({
         ingested: false,
-        claim: "not_ingested" as const,
+        claim: "not_ingested",
         title: args.title ?? file.file_name ?? "uploaded file",
         sourceType: "unknown",
         originalStored: false,
         originalAvailable: false,
         textExtracted: false,
         retrievalReady: false,
-        authorityClassification: "unverified" as const,
-        extractionStatus: "failed" as const,
-        processingStatus: "failed" as const,
-        integrityStatus: "error" as const,
+        authorityClassification: "unverified",
+        extractionStatus: "failed",
+        processingStatus: "failed",
+        integrityStatus: "error",
         limitation: downloaded.error,
-        glassBoxHint:
-          "No durable source was created. Retry with a reachable attachment or paste content and say “Add this to ApexOS.”",
         retrievalUnitCount: 0,
-        durableKnowledgeConfirmed: false,
-      };
+        originalStorageStatus: "failed",
+        durableSourceRecordStatus: "not_created",
+      });
+      receipt.glassBoxHint =
+        "No durable source was created. Retry with a reachable attachment or paste content and say “Add this to ApexOS.”";
       return { receipt, display: formatReceiptPlainLanguage(receipt), platformNote };
     }
 
@@ -175,46 +176,48 @@ export async function ingestChatGptAttachment(
   }
 
   if (file?.file_id && !file.download_url) {
-    const receipt = {
+    const receipt = buildReceipt({
       ingested: false,
-      claim: "not_ingested" as const,
+      claim: "not_ingested",
       title: args.title ?? args.fileName ?? "uploaded file",
       sourceType: "unknown",
       originalStored: false,
       originalAvailable: false,
       textExtracted: false,
       retrievalReady: false,
-      authorityClassification: "unverified" as const,
-      extractionStatus: "failed" as const,
-      processingStatus: "failed" as const,
-      integrityStatus: "error" as const,
+      authorityClassification: "unverified",
+      extractionStatus: "failed",
+      processingStatus: "failed",
+      integrityStatus: "error",
       limitation:
         "ChatGPT provided a file_id without a download_url. ApexOS cannot fetch the original bytes in this path. Ask again with the file attached, or paste the content and say “Add this to ApexOS.”",
-      glassBoxHint: "No durable source was created.",
       retrievalUnitCount: 0,
-      durableKnowledgeConfirmed: false,
-    };
+      originalStorageStatus: "failed",
+      durableSourceRecordStatus: "not_created",
+    });
+    receipt.glassBoxHint = "No durable source was created.";
     return { receipt, display: formatReceiptPlainLanguage(receipt), platformNote };
   }
 
-  const receipt = {
+  const receipt = buildReceipt({
     ingested: false,
-    claim: "not_ingested" as const,
+    claim: "not_ingested",
     title: args.title ?? "uploaded file",
     sourceType: "unknown",
     originalStored: false,
     originalAvailable: false,
     textExtracted: false,
     retrievalReady: false,
-    authorityClassification: "unverified" as const,
-    extractionStatus: "failed" as const,
-    processingStatus: "failed" as const,
-    integrityStatus: "error" as const,
+    authorityClassification: "unverified",
+    extractionStatus: "failed",
+    processingStatus: "failed",
+    integrityStatus: "error",
     limitation:
       "No file reference or text content was provided to the ingestion tool. Uploading in ChatGPT without a successful tool call does not persist knowledge in ApexOS.",
-    glassBoxHint: `Say “${CHATGPT_FILE_CAPABILITY.explicitPhrase}” so ApexOS can attempt governed ingestion.`,
     retrievalUnitCount: 0,
-    durableKnowledgeConfirmed: false,
-  };
+    originalStorageStatus: "not_applicable",
+    durableSourceRecordStatus: "not_created",
+  });
+  receipt.glassBoxHint = `Say “${CHATGPT_FILE_CAPABILITY.explicitPhrase}” so ApexOS can attempt governed ingestion.`;
   return { receipt, display: formatReceiptPlainLanguage(receipt), platformNote };
 }

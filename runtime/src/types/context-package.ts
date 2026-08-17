@@ -87,6 +87,18 @@ export interface ContinuityItem {
   summary: string;
   epistemicType?: string;
   score?: number;
+  /** Build 19 — structured provenance for Glass Box (optional) */
+  sourceExternalId?: string;
+  authorityDisplay?: string;
+  locatorLabel?: string;
+  extractionMethod?: string;
+  materialLimitation?: string;
+  sourceCardInformed?: boolean;
+  /** When a source card nominated the source for candidate recall */
+  sourceCardId?: string;
+  sourceCardRole?: "candidate recall only";
+  transformationNote?: string;
+  whyRetrieved?: string;
 }
 
 export interface ContinuityPackage {

@@ -150,13 +150,17 @@ test("bulk dry-run reports would_ingest without writing knowledge sources", asyn
 
   const summary = await runBulkImport({ rootPath: dir, dryRun: true });
   assert.equal(summary.dryRun, true);
+  assert.equal(summary.zeroWrites, true);
   assert.equal(summary.filesDiscovered, 2);
   assert.equal(summary.filesPending, 2);
   assert.equal(summary.filesIngested, 0);
   assert.equal(state.sources.length, 0);
+  assert.equal(state.runs.length, 0);
+  assert.equal(state.runItems.length, 0);
   assert.equal(state.uploads, 0);
   assert.ok(summary.items.every((i) => i.disposition === "would_ingest"));
   assert.match(formatBulkSummary(summary), /DRY RUN/);
+  assert.match(formatBulkSummary(summary), /zero ApexOS writes/i);
 
   setSupabaseForTests(null);
 });

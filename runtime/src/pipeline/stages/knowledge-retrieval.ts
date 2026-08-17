@@ -24,12 +24,33 @@ export async function knowledgeRetrievalStage(ctx: PipelineContext): Promise<Pip
         u.rankRole === "primary" ? "[PRIMARY SOURCE]" : "[SUBORDINATE — do not distort answer]",
         `Source ID: ${u.sourceExternalId}.`,
         u.contentPreview,
-        `Authority: ${u.authorityClassification}.`,
+        `Authority: ${u.authorityDisplay}.`,
+        u.locator?.label ? `Locator: ${u.locator.label}.` : "",
+        u.extractionMethod ? `Extraction method: ${u.extractionMethod}.` : "",
+        u.materialLimitation ? `Limitation: ${u.materialLimitation}.` : "",
+        u.parentEmailExternalIds?.length
+          ? `Parent email(s) via attachment links: ${u.parentEmailExternalIds.join(", ")}. Attachment relationship: child source (canonical junction).`
+          : "",
+        `Source card informed: ${u.sourceCardInformed ? "yes" : "no"}.`,
+        u.sourceCardId ? `Source-card ID: ${u.sourceCardId}.` : "",
+        u.sourceCardRole ? `Source-card role: ${u.sourceCardRole}.` : "",
         u.whyRetrieved,
         u.transformationNote,
-      ].join(" "),
+      ]
+        .filter(Boolean)
+        .join(" "),
       epistemicType: "source_evidence",
       score: u.score,
+      sourceExternalId: u.sourceExternalId,
+      authorityDisplay: u.authorityDisplay,
+      locatorLabel: u.locator?.label,
+      extractionMethod: u.extractionMethod,
+      materialLimitation: u.materialLimitation,
+      sourceCardInformed: u.sourceCardInformed ?? false,
+      sourceCardId: u.sourceCardId,
+      sourceCardRole: u.sourceCardRole,
+      transformationNote: u.transformationNote,
+      whyRetrieved: u.whyRetrieved,
     }));
 
     if (!ctx.continuity) {

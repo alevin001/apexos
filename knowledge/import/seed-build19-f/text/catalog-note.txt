@@ -1,0 +1,1 @@
+Build19 F catalog note TOKEN-CARD-TEXT describes a synthetic operating note for governed source-card tests.

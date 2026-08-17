@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-08-08T13:15:46.932Z",
+  "spikeRoot": "C:\\Users\\Andre\\Desktop\\ApexOS\\knowledge\\import\\seed-build19-spike",
+  "pdf": {
+    "ok": true,
+    "library": "pdf-parse@2.4.5",
+    "pages": 1,
+    "textPreview": "ApexOS Build19 native PDF spike\n\n-- 1 of 1 --\n\n",
+    "hasExpectedPhrase": true
+  },
+  "msg": {
+    "ok": true,
+    "library": "@kenjiuno/msgreader@1.28.0",
+    "subject": "ApexOS Build19 MSG spike",
+    "bodyPreview": "Synthetic MSG spike body for Build 19. \r\n\r\n",
+    "recipientCount": 1,
+    "attachmentCount": 0
+  },
+  "vision": {
+    "ok": true,
+    "status": 200,
+    "model": "gpt-4o-mini",
+    "processVersion": "build19-vision-spike-1.0",
+    "bodyPreview": "{\n  \"id\": \"resp_0b189ce48fa5b88f006a772c05293c819ca8810453e6f9b4af\",\n  \"object\": \"response\",\n  \"created_at\": 1786194949,\n  \"status\": \"completed\",\n  \"background\": false,\n  \"billing\": {\n    \"payer\": \"developer\"\n  },\n  \"completed_at\": 1786194950,\n  \"error\": null,\n  \"frequency_penalty\": 0.0,\n  \"incomplete_details\": null,\n  \"instructions\": null,\n  \"max_output_tokens\": null,\n  \"max_tool_calls\": null,\n  \"model\": \"gpt-4o-mini-2024-07-18\",\n  \"moderation\": null,\n  \"output\": [\n    {\n      \"id\": \"msg_0b189ce48fa5b88f006a772c0662a8819cb5a62ecb98d3abf4\",\n      \"type\": \"message\",\n      \"status\": \"completed\",\n      \"content\": [\n        {\n          \"type\": \"output_text\",\n          \"annotations\": [],\n          \"logprobs\": [],\n          \"text\": \"**Transcription:**\\n(No visible text)\\n\\n**Visual Description:*"
+  }
+}

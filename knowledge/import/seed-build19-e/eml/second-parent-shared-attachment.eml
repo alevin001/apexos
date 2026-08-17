@@ -1,0 +1,48 @@
+From: sender@example.com
+To: to-user@example.com
+Cc: cc-user@example.com
+Subject: Build19 E second parent TOKEN-EML-2
+Date: Mon, 11 Aug 2025 12:00:00 +0000
+Message-ID: <build19e-2@apexos.test>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_ApexOS_Build19E_Boundary"
+
+------=_ApexOS_Build19E_Boundary
+Content-Type: multipart/alternative; boundary="----=_ApexOS_Build19E_Alt"
+
+------=_ApexOS_Build19E_Alt
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+Build19 E plain body TOKEN-EML-BODY-2
+This is the operator-visible plain text part.
+
+On Mon, 1 Jan 2024, someone@example.com wrote:
+> Quoted prior note TOKEN-QUOTE-EML
+> evidence precedes inference
+
+Do not fetch https://example.com/remote-not-fetched-e
+
+------=_ApexOS_Build19E_Alt
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html><body><p>Build19 E HTML body TOKEN-EML-BODY-2-HTML</p><p>Distinct from plain text.</p><p>Link <a href="https://example.com/html-remote-not-fetched">example</a></p></body></html>
+
+------=_ApexOS_Build19E_Alt--
+
+------=_ApexOS_Build19E_Boundary
+Content-Type: text/plain; name="shared-note.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="shared-note.txt"
+
+QnVpbGQxOSBFIHNoYXJlZCBhdHRhY2htZW50IFRPS0VOLVNIQVJFRC1BVFRBQ0ggZXhhY3QgaGFzaCB0d2luLgo=
+
+------=_ApexOS_Build19E_Boundary
+Content-Type: application/octet-stream; name="unsupported.xyz"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="unsupported.xyz"
+
+bm90LWEtc3VwcG9ydGVkLWZvcm1hdCBUT0tFTi1VTlNVUFBPUlRFRC1BVFQ=
+
+------=_ApexOS_Build19E_Boundary--

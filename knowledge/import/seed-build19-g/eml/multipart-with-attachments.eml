@@ -1,0 +1,30 @@
+From: g-sender@example.com
+To: g-to@example.com
+Subject: Build19 G multipart TOKEN-G-EML-1
+Date: Sun, 9 Aug 2026 12:00:00 +0000
+Message-ID: <build19g-1@apexos.test>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="----=_ApexOS_Build19G_Boundary"
+
+------=_ApexOS_Build19G_Boundary
+Content-Type: text/plain; charset=utf-8
+
+Build19 G plain body TOKEN-G-EML-BODY-1
+Do not fetch https://example.com/g-remote-not-fetched
+
+
+------=_ApexOS_Build19G_Boundary
+Content-Type: text/plain; name="g-shared-note.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="g-shared-note.txt"
+
+QnVpbGQxOSBHIHNoYXJlZCBhdHRhY2htZW50IFRPS0VOLUctU0hBUkVELUFUVEFDSCBleGFjdCBoYXNoIHR3aW4uCg==
+
+------=_ApexOS_Build19G_Boundary
+Content-Type: application/octet-stream; name="g-unsupported.xyz"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="g-unsupported.xyz"
+
+bm90LXN1cHBvcnRlZCBUT0tFTi1HLVVOU1VQUE9SVEVELUFUVA==
+
+------=_ApexOS_Build19G_Boundary--

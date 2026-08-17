@@ -169,6 +169,15 @@ Build 18 adds a separate governed path for **primary source files** (bulk folder
 
 Originals go to Storage bucket `knowledge-source-material`. Extractions text and retrieval units are separate tables — never represented as the original source.
 
+## Build 19 — Checkpoints A/B (statuses + zero-write dry-run)
+
+- Migration: `migrations/20260808120000_build19_knowledge_statuses.sql`
+- Durable confirmation requires **private original storage + durable source record** (extraction alone is insufficient).
+- Dry-run writes **zero** ApexOS rows; use `--write-manifest` for a local hash manifest.
+- Execute from a reconciled Build 19 manifest requires `--authorize-execute`.
+- Preserve-only path for unsupported/encrypted/corrupt/legacy; `.doc`/`.xls` are preserve-only unless separately proven.
+- Source cards table `knowledge_source_cards` is `derived_catalog` — not `source_evidence`.
+
 ## Error Handling
 
 | Error | Action |

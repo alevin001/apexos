@@ -1,0 +1,8 @@
+From: url@example.com
+To: to@example.com
+Subject: Build19 E URL no-fetch TOKEN-URL-EML
+Date: Mon, 11 Aug 2025 13:00:00 +0000
+Message-ID: <build19e-url@apexos.test>
+Content-Type: text/plain; charset=utf-8
+
+Please see https://example.com/must-not-be-fetched-by-apexos TOKEN-URL-BODY

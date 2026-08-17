@@ -10,13 +10,19 @@ export interface GlassBoxRecordRef {
   title?: string;
   summary?: string;
   epistemicType?: string;
-  /** Build 18 — executive-readable source fields (avoid raw IDs in narrative) */
+  /** Build 18/19 — executive-readable source fields (avoid raw IDs in narrative) */
   sourceTitle?: string;
   sourceType?: string;
+  sourceIdentity?: string;
   authorityStatus?: string;
   whyRetrieved?: string;
   transformationNote?: string;
   limitation?: string;
+  locator?: string;
+  extractionMethod?: string;
+  sourceCardInformed?: boolean;
+  sourceCardId?: string;
+  sourceCardRole?: string;
 }
 
 export interface GlassBoxStage {
@@ -69,20 +75,36 @@ function mapContinuity(items: ContinuityItem[] | undefined): GlassBoxRecordRef[]
     const authorityMatch = item.summary.match(/Authority:\s*([^.]+)\./i);
     const whyMatch = item.summary.match(/Matched query terms[\s\S]*?(?=\sExcerpt is from|$)/i);
     const transformMatch = item.summary.match(/Excerpt is from[\s\S]*$/i);
+    const locatorMatch = item.summary.match(/Locator:\s*([^.]+)\./i);
+    const methodMatch = item.summary.match(/Extraction method:\s*([^.]+)\./i);
+    const cardMatch = item.summary.match(/Source card informed:\s*(yes|no)/i);
+    const cardIdMatch = item.summary.match(/Source-card ID:\s*([^\s.]+)/i);
     return {
       id: item.id,
       table: item.table,
       type: item.type,
       title: item.title,
-      summary: item.summary.slice(0, 320),
+      summary: item.summary.slice(0, 400),
       epistemicType: item.epistemicType,
       ...(knowledge
         ? {
             sourceTitle: item.title,
             sourceType: item.type,
-            authorityStatus: authorityMatch?.[1]?.trim(),
-            whyRetrieved: whyMatch?.[0]?.trim(),
-            transformationNote: transformMatch?.[0]?.trim(),
+            sourceIdentity: item.sourceExternalId,
+            authorityStatus:
+              item.authorityDisplay ??
+              authorityMatch?.[1]?.trim() ??
+              "evidence/reference—authority unasserted",
+            whyRetrieved: item.whyRetrieved ?? whyMatch?.[0]?.trim(),
+            transformationNote: item.transformationNote ?? transformMatch?.[0]?.trim(),
+            limitation: item.materialLimitation,
+            locator: item.locatorLabel ?? locatorMatch?.[1]?.trim(),
+            extractionMethod: item.extractionMethod ?? methodMatch?.[1]?.trim(),
+            sourceCardInformed:
+              item.sourceCardInformed ??
+              (cardMatch ? cardMatch[1].toLowerCase() === "yes" : undefined),
+            sourceCardId: item.sourceCardId ?? cardIdMatch?.[1]?.trim(),
+            sourceCardRole: item.sourceCardRole,
           }
         : {}),
     };
