@@ -5,7 +5,6 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { setSupabaseForTests } from "../shared/supabase.js";
-import { runtimeConfig } from "../config.js";
 import { buildGlassBox } from "../mcp/adapters/glass-box.js";
 import { extractText } from "./extract.js";
 import { ingestSource } from "./ingest.js";
@@ -20,6 +19,11 @@ import {
 } from "./vision/provider.js";
 import { VISION_PROCESS_VERSION, VISION_PROMPT_VERSION } from "./vision/versions.js";
 import { hasSufficientNativeText } from "./extractors/pdf-governed.js";
+import {
+  assertLiveCredentialsConfigured,
+  sanitizeLiveFailure,
+  skipUnlessLiveAcceptance,
+} from "./live-acceptance.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_ROOT = resolve(__dirname, "../../../knowledge/import/seed-build19-d");
@@ -614,14 +618,34 @@ test("sufficient native text threshold avoids vision on short noise", () => {
 
 test(
   "controlled live OpenAI vision run (Checkpoint D acceptance)",
-  { skip: !runtimeConfig.openaiApiKey && "OPENAI_API_KEY not configured — Checkpoint D live vision blocker" },
+  { skip: skipUnlessLiveAcceptance() },
   async () => {
-    setVisionProviderForTests(null); // use real OpenAiVisionProvider
+    assertLiveCredentialsConfigured("Checkpoint D");
+    setVisionProviderForTests(null); // use real OpenAiVisionProvider — never mock in live acceptance
     const provider = new OpenAiVisionProvider();
+    const t0 = Date.now();
     const result = await extractText({
       filename: "diagram-with-labels.png",
       bytes: fixture("image/diagram-with-labels.png"),
     });
+    const elapsedMs = Date.now() - t0;
+    if (result.status !== "extracted") {
+      console.error(
+        sanitizeLiveFailure({
+          checkpoint: "D-live-vision",
+          providerMode: "live",
+          stage: "vision_extraction",
+          ok: false,
+          model: result.providerModel ?? provider.name,
+          processVersion: VISION_PROCESS_VERSION,
+          promptVersion: VISION_PROMPT_VERSION,
+          error: result.limitation ?? result.status,
+          limitation: result.limitation,
+          elapsedMs,
+          retryCount: 0,
+        })
+      );
+    }
     assert.equal(result.visionInvoked, true);
     assert.equal(result.status, "extracted");
     assert.ok(
@@ -643,6 +667,7 @@ test(
             model: result.providerModel,
             processVersion: VISION_PROCESS_VERSION,
             promptVersion: VISION_PROMPT_VERSION,
+            elapsedMs,
             transcriptionPreview: result.derivatives
               ?.find((d) => d.representationKind === "vision_transcription")
               ?.text.slice(0, 300),

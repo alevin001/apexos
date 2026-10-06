@@ -149,6 +149,13 @@ export class OpenAiVisionProvider implements VisionExtractionProvider {
       };
     } catch (err) {
       const aborted = err instanceof Error && err.name === "AbortError";
+      const msg = err instanceof Error ? err.message : String(err);
+      const cause =
+        err instanceof Error && err.cause instanceof Error
+          ? `${err.cause.name}:${err.cause.message}`
+          : err instanceof Error && err.cause
+            ? String(err.cause)
+            : undefined;
       return {
         ok: false,
         provider: this.name,
@@ -156,11 +163,11 @@ export class OpenAiVisionProvider implements VisionExtractionProvider {
         processVersion: VISION_PROCESS_VERSION,
         promptVersion: visionPromptVersion(),
         timestamp,
-        error: err instanceof Error ? err.message : String(err),
+        error: cause ? `${msg} [${cause}]` : msg,
         limitation: aborted
           ? "Vision provider timed out. Original preserved; vision extraction blocked."
           : `Vision provider failure. Original preserved; vision extraction blocked. (${
-              err instanceof Error ? err.message : String(err)
+              cause ? `${msg} [${cause}]` : msg
             })`,
       };
     } finally {

@@ -10,7 +10,6 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { setSupabaseForTests } from "../shared/supabase.js";
-import { runtimeConfig } from "../config.js";
 import { buildGlassBox } from "../mcp/adapters/glass-box.js";
 import { runBulkImport } from "./bulk-import.js";
 import {
@@ -41,6 +40,11 @@ import {
   setVisionProviderForTests,
 } from "./vision/provider.js";
 import { contentHash } from "./content-hash.js";
+import {
+  assertLiveCredentialsConfigured,
+  sanitizeLiveFailure,
+  skipUnlessLiveAcceptance,
+} from "./live-acceptance.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_G = resolve(__dirname, "../../../knowledge/import/seed-build19-g");
@@ -648,8 +652,9 @@ test("retrieval + Glass Box: native, vision, email, attachment dual-parent, pres
 
 test(
   "controlled live vision + source-card synthetic proof",
-  { skip: !runtimeConfig.openaiApiKey ? "OPENAI_API_KEY not configured" : false },
+  { skip: skipUnlessLiveAcceptance() },
   async () => {
+    assertLiveCredentialsConfigured("Checkpoint G");
     const state = emptyState();
     setSupabaseForTests(createMock(state));
     setProviderModeForTests("live");
@@ -670,6 +675,31 @@ test(
     });
     const elapsed = Date.now() - t0;
     const counters = getProviderCallCounters();
+    const sourceCardStageReached = counters.sourceCardCalls >= 1;
+
+    if (
+      receipt.providerMode !== "live" ||
+      counters.visionCalls < 1 ||
+      counters.sourceCardCalls < 1
+    ) {
+      console.error(
+        sanitizeLiveFailure({
+          checkpoint: "G-live",
+          providerMode: String(receipt.providerMode ?? "unknown"),
+          stage: sourceCardStageReached ? "source_card" : "vision_or_pre_card",
+          ok: false,
+          error: !sourceCardStageReached
+            ? "source_card_stage_not_reached — likely vision failure left extraction unusable"
+            : "live_acceptance_incomplete",
+          limitation: receipt.limitation,
+          elapsedMs: elapsed,
+          retryCount: 0,
+          visionCalls: counters.visionCalls,
+          sourceCardCalls: counters.sourceCardCalls,
+          sourceCardStageReached,
+        })
+      );
+    }
 
     assert.equal(receipt.providerMode, "live");
     assert.ok(receipt.durableKnowledgeConfirmed);

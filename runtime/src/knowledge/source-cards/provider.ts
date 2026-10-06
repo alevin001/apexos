@@ -171,6 +171,13 @@ export class OpenAiSourceCardProvider implements SourceCardProvider {
       };
     } catch (err) {
       const aborted = err instanceof Error && err.name === "AbortError";
+      const msg = err instanceof Error ? err.message : String(err);
+      const cause =
+        err instanceof Error && err.cause instanceof Error
+          ? `${err.cause.name}:${err.cause.message}`
+          : err instanceof Error && err.cause
+            ? String(err.cause)
+            : undefined;
       return {
         ok: false,
         provider: this.name,
@@ -178,10 +185,12 @@ export class OpenAiSourceCardProvider implements SourceCardProvider {
         processVersion: SOURCE_CARD_PROCESS_VERSION,
         promptVersion: sourceCardPromptVersion(),
         timestamp,
-        error: err instanceof Error ? err.message : String(err),
+        error: cause ? `${msg} [${cause}]` : msg,
         limitation: aborted
           ? "Source-card provider timed out; underlying retrieval readiness is unchanged."
-          : "Source card generation failed; underlying retrieval readiness is unchanged.",
+          : `Source card generation failed; underlying retrieval readiness is unchanged. (${
+              cause ? `${msg} [${cause}]` : msg
+            })`,
       };
     } finally {
       clearTimeout(timer);

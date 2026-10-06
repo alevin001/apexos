@@ -18,9 +18,11 @@
     "knowledge:fixtures-g": "node run.mjs cli/build19-fixtures-g.ts",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test src/mcp/**/*.test.ts src/pipeline/**/*.test.ts src/pipeline/**/**/*.test.ts src/knowledge/**/*.test.ts",
+    "test:live": "node run-live-tests.mjs",
     "test:mcp": "node --import tsx --test src/mcp/**/*.test.ts",
     "test:pipeline": "node --import tsx --test src/pipeline/**/*.test.ts src/pipeline/**/**/*.test.ts",
-    "test:knowledge": "node --import tsx --test src/knowledge/**/*.test.ts"
+    "test:knowledge": "node --import tsx --test src/knowledge/**/*.test.ts",
+    "knowledge:live-probe": "node run.mjs cli/build19-live-probe.ts"
   },
   "dependencies": {
     "@kenjiuno/msgreader": "^1.28.0",

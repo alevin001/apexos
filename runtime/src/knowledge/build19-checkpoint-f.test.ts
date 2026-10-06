@@ -5,7 +5,6 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { setSupabaseForTests } from "../shared/supabase.js";
-import { runtimeConfig } from "../config.js";
 import { buildGlassBox } from "../mcp/adapters/glass-box.js";
 import { extractText } from "./extract.js";
 import { ingestSource } from "./ingest.js";
@@ -26,6 +25,11 @@ import {
   SOURCE_CARD_WITHHELD,
 } from "./source-cards/versions.js";
 import { contentHash } from "./content-hash.js";
+import {
+  assertLiveCredentialsConfigured,
+  sanitizeLiveFailure,
+  skipUnlessLiveAcceptance,
+} from "./live-acceptance.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_E = resolve(__dirname, "../../../knowledge/import/seed-build19-e");
@@ -675,20 +679,37 @@ test("withheld card records exact withhold language", async () => {
 
 test(
   "controlled live OpenAI source-card generation (Checkpoint F acceptance)",
-  {
-    skip:
-      !runtimeConfig.openaiApiKey &&
-      "OPENAI_API_KEY not configured — Checkpoint F live source-card blocker",
-  },
+  { skip: skipUnlessLiveAcceptance() },
   async () => {
+    assertLiveCredentialsConfigured("Checkpoint F");
     setSourceCardProviderForTests(new OpenAiSourceCardProvider());
     const state = emptyState();
     setSupabaseForTests(createMock(state));
+    const t0 = Date.now();
     const receipt = await ingestSource({
       filename: "catalog-note.txt",
       bytes: fx(FIXTURE_F, "text/catalog-note.txt"),
       ingestionMethod: "single_file",
     });
+    const elapsedMs = Date.now() - t0;
+    if (!["generated", "generated_partial"].includes(receipt.sourceCardStatus ?? "")) {
+      console.error(
+        sanitizeLiveFailure({
+          checkpoint: "F-live-source-card",
+          providerMode: "live",
+          stage: "source_card_generation",
+          ok: false,
+          model: undefined,
+          processVersion: SOURCE_CARD_PROCESS_VERSION,
+          promptVersion: SOURCE_CARD_PROMPT_VERSION,
+          error: receipt.sourceCardStatus ?? "missing_status",
+          limitation: receipt.sourceCardLimitation,
+          elapsedMs,
+          retryCount: 0,
+          sourceCardStageReached: true,
+        })
+      );
+    }
     assert.equal(receipt.retrievalReady, true);
     assert.ok(["generated", "generated_partial"].includes(receipt.sourceCardStatus ?? ""));
     assert.ok(receipt.sourceCardExternalId);
@@ -707,6 +728,7 @@ test(
             processVersion: SOURCE_CARD_PROCESS_VERSION,
             promptVersion: SOURCE_CARD_PROMPT_VERSION,
             status: card!.status,
+            elapsedMs,
             summaryPreview: String(card!.catalog_summary || "").slice(0, 240),
           },
         },
