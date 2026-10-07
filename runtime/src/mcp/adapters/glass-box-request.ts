@@ -1,7 +1,11 @@
 /**
  * Build 17 follow-up — natural "Show the Glass Box" detection and resolution.
+ * Glass Box-only routing is for standalone view requests. Mixed executive work
+ * (situation / reason / recommend / capture) must take execute_runtime even when
+ * the message also mentions Glass Box.
  */
 
+import { isMaterialSituation } from "../../pipeline/capture/cold-start-extractor.js";
 import type { AuditRecordRef, PipelineStageResult } from "../../types/pipeline.js";
 import {
   lookupDurableTraceByRuntimeId,
@@ -12,15 +16,75 @@ import { getConversationState } from "./conversation-state.js";
 import { getTrace } from "./trace-store.js";
 import { buildGlassBox, type GlassBoxSummary } from "./glass-box.js";
 
-export function isGlassBoxRequest(message: string): boolean {
-  const m = message.trim().toLowerCase();
-  if (!m) return false;
+export type ExecutiveToolRoute = "glass_box_only" | "execute_runtime";
+
+const GLASS_BOX_VIEW =
+  /\b(?:please\s+|pls\s+)?(?:show|open|expand|display|reveal)\b[\s\S]{0,40}\bglass\s*box\b(?:\s+for\s+this(?:\s+response)?)?/i;
+
+const GLASS_BOX_BARE = /^(?:please\s+|pls\s+)?(?:the\s+)?glass\s*box(?:\s+please|\s+pls)?$/i;
+
+const GLASS_BOX_FLUFF =
+  /^(?:please|pls|thanks|thank you|now|again|for this(?: response)?|the)(?:\s+(?:please|pls|thanks|thank you|now|again|for this(?: response)?|the))*$/i;
+
+/** Signals that the executive wants ApexOS to do substantive work, not only view. */
+const EXECUTIVE_WORK =
+  /\b(help me|i need|we need|prepare|meeting|leadership|conflict|decide|decision|recommend|suggest|capture|reason|retrieve|analyze|what should|how (?:do|should|can) i|drew|jesse|team|execution|align(?:ment)?|conversation|situation|coach|develop|trade-?off|option|outcome|next step|follow-?up)\b/i;
+
+function hasGlassBoxViewPhrase(m: string): boolean {
+  if (GLASS_BOX_BARE.test(m)) return true;
   if (m === "glass box" || m === "show the glass box") return true;
-  if (/\bshow\b[\s\S]{0,40}\bglass\s*box\b/.test(m)) return true;
+  if (GLASS_BOX_VIEW.test(m)) return true;
   if (/\bglass\s*box\b/.test(m) && /\b(show|open|expand|display|reveal|for this)\b/.test(m)) {
     return true;
   }
   return false;
+}
+
+function stripGlassBoxPhrases(message: string): string {
+  return message
+    .replace(GLASS_BOX_VIEW, " ")
+    .replace(/\bglass\s*box\b(?:\s+for\s+this(?:\s+response)?)?/gi, " ")
+    .replace(/[^\w\s'-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function hasSubstantiveExecutiveWork(text: string): boolean {
+  const t = text.trim();
+  if (!t) return false;
+  if (isMaterialSituation(t)) return true;
+  if (EXECUTIVE_WORK.test(t)) return true;
+  // Any non-fluff remainder beyond a short courtesy phrase is treated as work.
+  if (t.length >= 40) return true;
+  return false;
+}
+
+/**
+ * True only for a standalone request to view the Glass Box.
+ * Mixed messages that also ask for executive work return false → execute_runtime.
+ */
+export function isGlassBoxRequest(message: string): boolean {
+  const trimmed = message.trim();
+  if (!trimmed) return false;
+  const m = trimmed.toLowerCase();
+  if (!hasGlassBoxViewPhrase(m)) return false;
+
+  const remainder = stripGlassBoxPhrases(trimmed);
+  if (!remainder) return true;
+  if (GLASS_BOX_FLUFF.test(remainder.toLowerCase())) return true;
+
+  // Executive situation / capture / reason / recommend → full runtime.
+  if (hasSubstantiveExecutiveWork(remainder) || hasSubstantiveExecutiveWork(trimmed)) {
+    return false;
+  }
+
+  // Prefer execute_runtime when anything non-fluff remains (fail toward work).
+  return false;
+}
+
+/** Routing helper for tools + tests. */
+export function routeExecutiveToolMessage(message: string): ExecutiveToolRoute {
+  return isGlassBoxRequest(message) ? "glass_box_only" : "execute_runtime";
 }
 
 function asAuditRefs(value: unknown): AuditRecordRef[] {

@@ -6,6 +6,7 @@ import { runtimeEntryStage } from "./stages/runtime-entry.js";
 import { continuityRetrievalStage } from "./stages/continuity-retrieval.js";
 import { knowledgeRetrievalStage } from "./stages/knowledge-retrieval.js";
 import { memoryRetrievalStage } from "./stages/memory-retrieval.js";
+import { situationBootstrapStage } from "./stages/situation-bootstrap.js";
 import { contextRetrievalStage } from "./stages/context-retrieval.js";
 import { evidenceAssemblyStage } from "./stages/evidence-assembly.js";
 import { governanceValidationStage } from "./stages/governance-validation.js";
@@ -22,6 +23,7 @@ const STAGES = [
   continuityRetrievalStage,
   knowledgeRetrievalStage,
   memoryRetrievalStage,
+  situationBootstrapStage,
   contextRetrievalStage,
   evidenceAssemblyStage,
   governanceValidationStage,
@@ -85,7 +87,8 @@ export async function executePipelineDry(request: ExecutiveRequest): Promise<Pip
   const validated = await runtimeEntry(request);
   const ctx = emptyContext(validated);
 
-  const dryStages = STAGES.slice(0, 7);
+  // Through governance-validation (before LLM).
+  const dryStages = STAGES.slice(0, 8);
   for (const stage of dryStages) {
     await stage(ctx);
   }

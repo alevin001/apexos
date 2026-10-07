@@ -63,9 +63,22 @@ function log(level: string, message: string, data?: Record<string, unknown>): vo
   console.error(`[apexos-mcp:${level}] ${message}${payload}`);
 }
 
+type ExecuteRuntimeInvoker = (request: ExecutiveRequest) => Promise<ExecuteRuntimeResult>;
+
+let executeRuntimeOverride: ExecuteRuntimeInvoker | null = null;
+
+/** Test hook — inject a fake execute_runtime without hitting the live pipeline. */
+export function setInvokeExecuteRuntimeForTests(fn: ExecuteRuntimeInvoker | null): void {
+  executeRuntimeOverride = fn;
+}
+
 export async function invokeExecuteRuntime(
   request: ExecutiveRequest
 ): Promise<ExecuteRuntimeResult> {
+  if (executeRuntimeOverride) {
+    return executeRuntimeOverride(request);
+  }
+
   log("info", "execution started", { tool: "execute_runtime" });
   const provisionalId = `pending-${Date.now()}`;
   startTrace(provisionalId, "execute_runtime", {

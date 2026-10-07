@@ -126,6 +126,9 @@ export async function interactionCaptureStage(ctx: PipelineContext): Promise<Pip
           model: ctx.llmResponse?.model ?? null,
           provider: ctx.llmResponse?.provider ?? null,
           responseId: ctx.llmResponse?.responseId ?? null,
+          contextPackageId: ctx.evidence?.assembledContextPackage?.externalId ?? null,
+          contextRelevanceId: ctx.contextRelevance?.externalId ?? null,
+          evidencePackageId: ctx.evidence?.evidencePackage?.externalId ?? null,
         },
       });
     } catch (traceErr) {

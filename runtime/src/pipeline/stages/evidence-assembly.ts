@@ -1,10 +1,12 @@
 import { getSupabase } from "../../shared/supabase.js";
 import type { EvidenceAssembly } from "../../types/context-package.js";
 import type { PipelineContext } from "../../types/pipeline.js";
+import { ensureAssembledContextForRequest } from "./request-context-assembly.js";
 
 /**
  * Evidence Assembly — loads evidence packages and assembled context packages
  * from the retrieval layer for the current situation's pipeline chain.
+ * When the chain is missing, creates a request-scoped ACP from retrieved refs only.
  */
 export async function evidenceAssemblyStage(ctx: PipelineContext): Promise<PipelineContext> {
   const start = Date.now();
@@ -49,6 +51,8 @@ export async function evidenceAssemblyStage(ctx: PipelineContext): Promise<Pipel
     .from("retrieval_requests")
     .select("*")
     .eq("context_reference_id", crsRow.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (rr) {
@@ -102,13 +106,22 @@ export async function evidenceAssemblyStage(ctx: PipelineContext): Promise<Pipel
     }));
   }
 
+  let createdScoped = false;
+  if (!assembly.assembledContextPackage) {
+    const scoped = await ensureAssembledContextForRequest(ctx, ctx.contextRelevance.externalId);
+    if (scoped.assembledContextPackage) {
+      Object.assign(assembly, scoped);
+      createdScoped = true;
+    }
+  }
+
   ctx.evidence = assembly;
   ctx.stages.push({
     stage: "evidence-assembly",
     status: assembly.assembledContextPackage ? "success" : "skipped",
     durationMs: Date.now() - start,
     detail: assembly.assembledContextPackage
-      ? `Evidence: ${assembly.evidencePackage?.externalId ?? "none"}, Context: ${assembly.assembledContextPackage.externalId}`
+      ? `${createdScoped ? "Request-scoped " : ""}Evidence: ${assembly.evidencePackage?.externalId ?? "none"}, Context: ${assembly.assembledContextPackage.externalId}`
       : "No assembled evidence found",
   });
 

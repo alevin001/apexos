@@ -42,13 +42,43 @@ test("interpretive segments are labeled separately from source evidence", () => 
   const response = [
     "A key finding is that aligned discussion is not the same as aligned execution.",
     "This may indicate passive agreement rather than healthy conflict.",
+    "One option is rotating ownership; an alternative is a shared agenda with explicit tradeoffs.",
     "I recommend rotating leadership-meeting ownership to create accountability.",
+    "The decision to make is who owns the next leadership meeting.",
+    "Success looks like clearer ownership and less passive agreement — track that outcome.",
   ].join(" ");
   const segments = extractInterpretiveSegments(response);
   const types = new Set(segments.map((s) => s.epistemicType));
   assert.ok(types.has("finding") || types.has("hypothesis") || types.has("recommendation"));
   assert.ok(segments.some((s) => s.epistemicType === "recommendation"));
+  assert.ok(segments.some((s) => s.epistemicType === "alternative"));
+  assert.ok(segments.some((s) => s.epistemicType === "proposed_decision"));
+  assert.ok(!segments.some((s) => s.epistemicType === "decision"));
+  assert.ok(segments.some((s) => s.epistemicType === "outcome"));
   assert.ok(!segments.some((s) => (s as { epistemicType: string }).epistemicType === "source_evidence"));
+});
+
+test("recommendation without explicit outcome still yields pending outcome-to-track", () => {
+  const segments = extractInterpretiveSegments(
+    "I recommend rotating leadership-meeting ownership to create accountability for execution."
+  );
+  assert.ok(segments.some((s) => s.epistemicType === "recommendation"));
+  assert.ok(segments.some((s) => s.epistemicType === "outcome" && /pending/i.test(s.text)));
+});
+
+test("leaning toward is proposed_decision never confirmed decision", () => {
+  const segments = extractInterpretiveSegments(
+    "I am leaning toward opening with a direct question about healthy conflict ownership."
+  );
+  assert.ok(segments.some((s) => s.epistemicType === "proposed_decision"));
+  assert.ok(!segments.some((s) => s.epistemicType === "decision"));
+});
+
+test("confirmed I decided is decision", () => {
+  const segments = extractInterpretiveSegments(
+    "I decided we will rotate leadership-meeting ownership starting Monday."
+  );
+  assert.ok(segments.some((s) => s.epistemicType === "decision"));
 });
 
 test("relevanceScore ranks overlapping content higher", () => {

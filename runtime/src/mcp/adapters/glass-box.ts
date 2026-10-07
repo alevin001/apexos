@@ -191,6 +191,8 @@ export function buildGlassBox(input: GlassBoxBuildInput): GlassBoxSummary {
     return true;
   });
 
+  // Source evidence: this-runtime captures + continuity/knowledge units supplied
+  // into the Context Package for this turn (not interpretive stages).
   const sourceEvidence: GlassBoxRecordRef[] = [
     ...mapContinuity(pkg?.continuity?.priorSourceEvidence),
     ...mapContinuity(pkg?.continuity?.savedObservations),
@@ -198,19 +200,14 @@ export function buildGlassBox(input: GlassBoxBuildInput): GlassBoxSummary {
     ...created
       .filter((r) => r.table === "observations")
       .map((r) => ({ id: r.id, table: r.table, type: r.type ?? "source_evidence" })),
+    ...refsFromAudit(retrieved, ["source_evidence", "observation", "knowledge_source"]),
   ];
 
-  const findings: GlassBoxRecordRef[] = [
-    ...mapContinuity(pkg?.continuity?.findingsHypotheses).filter(
-      (r) => (r.epistemicType ?? r.type) !== "hypothesis"
-    ),
-    ...refsFromAudit(created, ["finding"]),
-  ];
+  // Interpretive stages are scoped to THIS runtime's recordsCreated only —
+  // do not borrow older continuity findings/recommendations into these stages.
+  const findings: GlassBoxRecordRef[] = refsFromAudit(created, ["finding", "interpretation"]);
 
   const hypotheses: GlassBoxRecordRef[] = [
-    ...mapContinuity(pkg?.continuity?.findingsHypotheses).filter(
-      (r) => (r.epistemicType ?? r.type) === "hypothesis"
-    ),
     ...refsFromAudit(created, ["hypothesis"]),
     ...(pkg?.confidence?.assumptions ?? []).map((a, i) => ({
       id: `assumption-${i}`,
@@ -220,30 +217,32 @@ export function buildGlassBox(input: GlassBoxBuildInput): GlassBoxSummary {
     })),
   ];
 
+  const proposed = refsFromAudit(created, ["proposed_decision"]).map((r) => ({
+    ...r,
+    type: "proposed_decision",
+    title: r.title ?? "Proposed / pending (not confirmed)",
+    summary: "Proposed/pending — not a confirmed executive decision",
+  }));
   const recommendations: GlassBoxRecordRef[] = [
-    ...mapContinuity(pkg?.continuity?.recommendations),
     ...refsFromAudit(created, ["recommendation"]),
+    ...proposed,
   ];
 
-  // Alternatives / decision / outcome are not fabricated from LLM prose.
   const alternatives: GlassBoxRecordRef[] = refsFromAudit(created, ["alternative"]);
+  // Confirmed executive decisions only — never leanings / proposed_decision.
   const decisions: GlassBoxRecordRef[] = refsFromAudit(created, ["decision"]);
-  const outcomes: GlassBoxRecordRef[] = [
-    ...refsFromAudit(created, ["outcome", "learning"]),
-    ...(pkg?.memory?.outcomes ?? []).map((o) => ({
-      id: o.externalId,
-      table: "memory_artifacts",
-      type: "outcome",
-      title: o.title,
-      summary: o.summary.slice(0, 240),
-    })),
-  ];
+  const outcomes: GlassBoxRecordRef[] = refsFromAudit(created, ["outcome", "learning"]);
 
   const malformedNote = input.contextPackageMalformed
     ? " Context Package data was malformed; stages reflect audit/trace only."
     : !pkg
       ? " Context Package unavailable; stages reflect audit/trace only."
       : "";
+
+  const decisionEmpty =
+    proposed.length > 0
+      ? "not captured — leanings/proposals are pending only; no confirmed executive decision"
+      : "not captured — no confirmed executive decision";
 
   return {
     runtimeId: input.runtimeId,
@@ -273,7 +272,7 @@ export function buildGlassBox(input: GlassBoxBuildInput): GlassBoxSummary {
       stage(
         "findings_interpretations",
         dedupeRefs(findings),
-        `Findings/interpretations: ${dedupeRefs(findings).length} record(s).`,
+        `Findings/interpretations: ${dedupeRefs(findings).length} record(s) from this runtime.`,
         "not captured"
       ),
       stage(
@@ -285,26 +284,28 @@ export function buildGlassBox(input: GlassBoxBuildInput): GlassBoxSummary {
       stage(
         "alternatives",
         dedupeRefs(alternatives),
-        `Alternatives: ${dedupeRefs(alternatives).length} record(s).`,
+        `Alternatives: ${dedupeRefs(alternatives).length} record(s) from this runtime.`,
         "not captured"
       ),
       stage(
         "recommendation",
         dedupeRefs(recommendations),
-        `Recommendations: ${dedupeRefs(recommendations).length} record(s).`,
+        proposed.length > 0
+          ? `Recommendations/proposals: ${dedupeRefs(recommendations).length} record(s) (includes pending proposals).`
+          : `Recommendations: ${dedupeRefs(recommendations).length} record(s) from this runtime.`,
         "not captured"
       ),
       stage(
         "executive_decision",
         dedupeRefs(decisions),
-        `Executive decision: ${dedupeRefs(decisions).length} record(s).`,
-        "not captured"
+        `Confirmed executive decision: ${dedupeRefs(decisions).length} record(s).`,
+        decisionEmpty
       ),
       stage(
         "outcome_learning",
         dedupeRefs(outcomes),
-        `Outcome/learning: ${dedupeRefs(outcomes).length} record(s).`,
-        "not captured"
+        `Outcome/learning: ${dedupeRefs(outcomes).length} record(s) from this runtime.`,
+        "not captured — no outcome-to-track captured for this runtime"
       ),
     ],
   };

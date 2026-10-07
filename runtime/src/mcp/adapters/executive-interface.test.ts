@@ -24,8 +24,15 @@ import {
   glassBoxFromDurableTrace,
   isGlassBoxRequest,
   resolveGlassBoxRequest,
+  routeExecutiveToolMessage,
 } from "./glass-box-request.js";
-import { completeTrace, startTrace } from "./trace-store.js";
+import {
+  setInvokeExecuteRuntimeForTests,
+  type ExecuteRuntimeResult,
+} from "./runtime-adapter.js";
+import { handleExecutiveConversation } from "../tools/register-tools.js";
+import { PRIMARY_TOOL_NAME } from "../connector-guidance.js";
+import { completeTrace, getTrace, startTrace } from "./trace-store.js";
 
 function createDurableMock(opts: {
   executiveId?: string | null;
@@ -398,6 +405,369 @@ test("isGlassBoxRequest detects natural Glass Box phrases", () => {
   assert.equal(isGlassBoxRequest("What should I say first?"), false);
 });
 
+test("executive situation ending with show Glass Box executes runtime and persists a trace", async () => {
+  clearConversationStateForTests();
+  const message =
+    "I need to prepare for a leadership meeting with Drew and Jesse. Help me decide the one conversation we need to have about healthy conflict and execution speed. Show the Glass Box.";
+  assert.equal(isGlassBoxRequest(message), false);
+  assert.equal(routeExecutiveToolMessage(message), "execute_runtime");
+
+  let invoked = false;
+  setInvokeExecuteRuntimeForTests(async (req) => {
+    invoked = true;
+    assert.match(req.message, /Drew and Jesse/i);
+    assert.match(req.message, /Glass Box/i);
+    const runtimeId = "rt-mixed-exec-1";
+    startTrace(runtimeId, "execute_runtime", { conversationId: "conv-mixed-1" });
+    completeTrace(
+      runtimeId,
+      [{ stage: "interaction-capture", status: "success", durationMs: 5 }],
+      {
+        conversationId: "conv-mixed-1",
+        persistenceStatus: "persisted",
+        recordsCreated: [{ table: "situations", id: "sit-1", type: "situation" }],
+        recordsRetrieved: [],
+      }
+    );
+    const result: ExecuteRuntimeResult = {
+      runtimeId,
+      response: "Focus the meeting on healthy conflict and execution speed.",
+      conversationId: "conv-mixed-1",
+      interactionId: "conv-mixed-1",
+      situationSlug: "runtime-mixed",
+      contextPackageId: "ACP-RT-test",
+      stages: [{ stage: "interaction-capture", status: "success", durationMs: 5 }],
+      metadata: {
+        model: "test",
+        provider: "test",
+        dryRun: false,
+        persistenceStatus: "persisted",
+        situationId: "sit-1",
+        recordsCreated: [{ table: "situations", id: "sit-1", type: "situation" }],
+        recordsRetrieved: [],
+        contextItems: ["current_message"],
+        captureErrors: [],
+        retrievalErrors: [],
+      },
+      contextPackage: null,
+    };
+    return result;
+  });
+
+  try {
+    const toolResult = await handleExecutiveConversation(
+      { message },
+      { sessionId: "sess-mixed-glass" },
+      PRIMARY_TOOL_NAME
+    );
+    assert.equal(invoked, true);
+    const payload = toolResult.structuredContent as {
+      runtimeId?: string;
+      glassBoxRequest?: boolean;
+    };
+    assert.equal(payload.glassBoxRequest ?? false, false);
+    assert.equal(payload.runtimeId, "rt-mixed-exec-1");
+    const trace = getTrace("rt-mixed-exec-1");
+    assert.ok(trace);
+    assert.equal(trace?.status, "completed");
+  } finally {
+    setInvokeExecuteRuntimeForTests(null);
+    clearConversationStateForTests();
+  }
+});
+
+test("standalone Show the Glass Box after prior runtime uses read-only Glass Box path", async () => {
+  clearConversationStateForTests();
+  const sessionKey = resolveSessionKey("sess-standalone-glass");
+  rememberConversation(sessionKey, "conv-standalone", "runtime-standalone-1");
+  startTrace("runtime-standalone-1", "execute_runtime", {
+    conversationId: "conv-standalone",
+  });
+  completeTrace(
+    "runtime-standalone-1",
+    [{ stage: "continuity-retrieval", status: "success", durationMs: 2 }],
+    {
+      conversationId: "conv-standalone",
+      recordsCreated: [],
+      recordsRetrieved: [{ table: "observations", id: "obs-standalone", type: "source_evidence" }],
+    }
+  );
+
+  assert.equal(isGlassBoxRequest("Show the Glass Box"), true);
+  assert.equal(routeExecutiveToolMessage("Show the Glass Box"), "glass_box_only");
+
+  let executeCalled = false;
+  setInvokeExecuteRuntimeForTests(async () => {
+    executeCalled = true;
+    throw new Error("execute_runtime must not run for standalone Glass Box");
+  });
+  setSupabaseForTests(createDurableMock({ conversation: null, trace: null }));
+
+  try {
+    const toolResult = await handleExecutiveConversation(
+      { message: "Show the Glass Box" },
+      { sessionId: "sess-standalone-glass" },
+      PRIMARY_TOOL_NAME
+    );
+    assert.equal(executeCalled, false);
+    const payload = toolResult.structuredContent as {
+      glassBoxRequest?: boolean;
+      runtimeId?: string;
+      glassBox?: { runtimeId?: string };
+    };
+    assert.equal(payload.glassBoxRequest, true);
+    assert.equal(payload.runtimeId, "runtime-standalone-1");
+    assert.equal(payload.glassBox?.runtimeId, "runtime-standalone-1");
+  } finally {
+    setInvokeExecuteRuntimeForTests(null);
+    setSupabaseForTests(null);
+    clearConversationStateForTests();
+  }
+});
+
+test("no-runtime Glass Box request remains fail-closed with no prior trace", async () => {
+  clearConversationStateForTests();
+  assert.equal(isGlassBoxRequest("Show the Glass Box"), true);
+
+  let executeCalled = false;
+  setInvokeExecuteRuntimeForTests(async () => {
+    executeCalled = true;
+    throw new Error("execute_runtime must not run");
+  });
+  setSupabaseForTests(createDurableMock({ conversation: null, trace: null, latestTrace: null }));
+
+  try {
+    const toolResult = await handleExecutiveConversation(
+      { message: "Show the Glass Box" },
+      { sessionId: "sess-no-prior-glass" },
+      PRIMARY_TOOL_NAME
+    );
+    assert.equal(executeCalled, false);
+    const payload = toolResult.structuredContent as {
+      glassBoxRequest?: boolean;
+      runtimeId?: string | null;
+      response?: string;
+      glassBox?: unknown;
+    };
+    assert.equal(payload.glassBoxRequest, true);
+    assert.equal(payload.runtimeId ?? null, null);
+    assert.equal(payload.glassBox ?? null, null);
+    assert.match(
+      payload.response ?? "",
+      /No confirmed (Glass Box|runtime trace)|Nothing was reconstructed/i
+    );
+  } finally {
+    setInvokeExecuteRuntimeForTests(null);
+    setSupabaseForTests(null);
+    clearConversationStateForTests();
+  }
+});
+
+test("Drew three-message acceptance: capture truth matches Glass Box for same runtime", async () => {
+  clearConversationStateForTests();
+  const sessionId = "sess-drew-e2e";
+  const conversationId = "conv-drew-e2e";
+  const msg1 =
+    "I need to prepare for a leadership meeting with Drew and Jesse. Help me decide the one conversation we need to have about healthy conflict and execution speed.";
+  const msg2 = "What should I say first?";
+  const msg3 = "Show the Glass Box.";
+
+  const response1 = [
+    "A key finding is that discussion alignment is not the same as execution alignment.",
+    "Option A: open with Drew on healthy conflict. Option B: joint session with Jesse — tradeoff is speed versus shared ownership.",
+    "I recommend focusing the meeting on one conversation about healthy conflict and execution speed.",
+    "Outcome to track: whether ownership clarity and healthy conflict improve after the meeting.",
+  ].join(" ");
+
+  const response2 = [
+    "A key finding is that the first minute sets whether conflict stays healthy.",
+    "Option A: ask what feels unresolved. Alternative: name the execution-speed tension directly.",
+    "I recommend you say first: what healthy conflict would look like for this decision.",
+    "You are leaning toward a direct opening — that is proposed/pending, not a confirmed decision.",
+    "Outcome to track: whether Drew and Jesse respond with specifics rather than passive agreement.",
+  ].join(" ");
+
+  // Prove extractor labeling matches what we will persist for msg2.
+  const { extractInterpretiveSegments } = await import(
+    "../../pipeline/capture/cold-start-extractor.js"
+  );
+  const labeled = extractInterpretiveSegments(response2);
+  assert.ok(labeled.some((s) => s.epistemicType === "finding"));
+  assert.ok(labeled.some((s) => s.epistemicType === "alternative"));
+  assert.ok(labeled.some((s) => s.epistemicType === "recommendation"));
+  assert.ok(labeled.some((s) => s.epistemicType === "proposed_decision"));
+  assert.ok(labeled.some((s) => s.epistemicType === "outcome"));
+  assert.ok(!labeled.some((s) => s.epistemicType === "decision"));
+
+  let turn = 0;
+  setInvokeExecuteRuntimeForTests(async (req) => {
+    turn += 1;
+    if (turn === 1) {
+      assert.equal(req.message, msg1);
+      const runtimeId = "rt-drew-1";
+      const created = [
+        { table: "situations", id: "sit-drew", type: "situation", externalId: "SIT-DREW" },
+        { table: "memory_artifacts", id: "f1", type: "finding", externalId: "MEM-FIN-1" },
+        { table: "memory_artifacts", id: "a1", type: "alternative", externalId: "MEM-ALT-1" },
+        { table: "memory_artifacts", id: "a2", type: "alternative", externalId: "MEM-ALT-2" },
+        { table: "memory_artifacts", id: "r1", type: "recommendation", externalId: "MEM-REC-1" },
+        { table: "memory_artifacts", id: "o1", type: "outcome", externalId: "MEM-OUT-1" },
+      ];
+      startTrace(runtimeId, "execute_runtime", { conversationId });
+      completeTrace(runtimeId, [{ stage: "interaction-capture", status: "success", durationMs: 3 }], {
+        conversationId,
+        recordsCreated: created,
+        recordsRetrieved: [],
+        persistenceStatus: "persisted",
+      });
+      rememberConversation(resolveSessionKey(sessionId), conversationId, runtimeId);
+      return {
+        runtimeId,
+        response: response1,
+        conversationId,
+        interactionId: conversationId,
+        situationSlug: "runtime-drew",
+        contextPackageId: "ACP-DREW-1",
+        stages: [{ stage: "interaction-capture", status: "success", durationMs: 3 }],
+        metadata: {
+          model: "test",
+          provider: "test",
+          dryRun: false,
+          persistenceStatus: "persisted",
+          situationId: "sit-drew",
+          recordsCreated: created,
+          recordsRetrieved: [],
+          contextItems: ["current_message"],
+          captureErrors: [],
+          retrievalErrors: [],
+        },
+        contextPackage: null,
+      } satisfies ExecuteRuntimeResult;
+    }
+
+    if (turn === 2) {
+      assert.equal(req.message, msg2);
+      assert.equal(req.conversationId, conversationId);
+      const runtimeId = "rt-drew-2";
+      // This runtime only — no confirmed decision; leanings are proposed_decision.
+      const createdThisRuntime = [
+        { table: "memory_artifacts", id: "f2", type: "finding", externalId: "MEM-FIN-2" },
+        { table: "memory_artifacts", id: "a3", type: "alternative", externalId: "MEM-ALT-3" },
+        { table: "memory_artifacts", id: "a4", type: "alternative", externalId: "MEM-ALT-4" },
+        { table: "memory_artifacts", id: "r2", type: "recommendation", externalId: "MEM-REC-2" },
+        {
+          table: "memory_artifacts",
+          id: "p2",
+          type: "proposed_decision",
+          externalId: "MEM-PROP-2",
+        },
+        { table: "memory_artifacts", id: "o2", type: "outcome", externalId: "MEM-OUT-2" },
+      ];
+      startTrace(runtimeId, "execute_runtime", { conversationId });
+      completeTrace(
+        runtimeId,
+        [{ stage: "interaction-capture", status: "success", durationMs: 4 }],
+        {
+          conversationId,
+          recordsCreated: createdThisRuntime,
+          recordsRetrieved: [{ table: "observations", id: "obs-drew", type: "source_evidence" }],
+          persistenceStatus: "persisted",
+          contextPackageId: "ACP-DREW-2",
+        }
+      );
+      rememberConversation(resolveSessionKey(sessionId), conversationId, runtimeId);
+      return {
+        runtimeId,
+        response: response2,
+        conversationId,
+        interactionId: conversationId,
+        situationSlug: "runtime-drew",
+        contextPackageId: "ACP-DREW-2",
+        stages: [{ stage: "interaction-capture", status: "success", durationMs: 4 }],
+        metadata: {
+          model: "test",
+          provider: "test",
+          dryRun: false,
+          persistenceStatus: "persisted",
+          situationId: "sit-drew",
+          recordsCreated: createdThisRuntime,
+          recordsRetrieved: [{ table: "observations", id: "obs-drew", type: "source_evidence" }],
+          contextItems: ["current_message", "observations:obs-drew"],
+          captureErrors: [],
+          retrievalErrors: [],
+        },
+        contextPackage: null,
+      } satisfies ExecuteRuntimeResult;
+    }
+
+    throw new Error(`unexpected execute_runtime turn ${turn}`);
+  });
+
+  setSupabaseForTests(createDurableMock({ conversation: null, trace: null }));
+
+  try {
+    const r1 = await handleExecutiveConversation(
+      { message: msg1 },
+      { sessionId },
+      PRIMARY_TOOL_NAME
+    );
+    assert.equal((r1.structuredContent as { runtimeId?: string }).runtimeId, "rt-drew-1");
+
+    const r2 = await handleExecutiveConversation(
+      { message: msg2, conversationId },
+      { sessionId },
+      PRIMARY_TOOL_NAME
+    );
+    const p2 = r2.structuredContent as { runtimeId?: string; conversationId?: string };
+    assert.equal(p2.runtimeId, "rt-drew-2");
+    assert.equal(p2.conversationId, conversationId);
+
+    let executeOnGlass = false;
+    setInvokeExecuteRuntimeForTests(async () => {
+      executeOnGlass = true;
+      throw new Error("Show the Glass Box must not execute_runtime");
+    });
+
+    const r3 = await handleExecutiveConversation(
+      { message: msg3, conversationId },
+      { sessionId },
+      PRIMARY_TOOL_NAME
+    );
+    assert.equal(executeOnGlass, false);
+    const p3 = r3.structuredContent as {
+      glassBoxRequest?: boolean;
+      runtimeId?: string;
+      glassBox?: {
+        runtimeId?: string;
+        stages: Array<{ stage: string; status: string; count: number; ids: string[]; summary: string }>;
+      };
+    };
+    assert.equal(p3.glassBoxRequest, true);
+    assert.equal(p3.runtimeId, "rt-drew-2");
+    assert.equal(p3.glassBox?.runtimeId, "rt-drew-2");
+
+    const byStage = Object.fromEntries((p3.glassBox?.stages ?? []).map((s) => [s.stage, s]));
+    assert.equal(byStage.findings_interpretations.status, "captured");
+    assert.ok(byStage.findings_interpretations.ids.includes("f2"));
+    assert.equal(byStage.alternatives.status, "captured");
+    assert.ok(byStage.alternatives.ids.includes("a3"));
+    assert.equal(byStage.recommendation.status, "captured");
+    assert.ok(byStage.recommendation.ids.includes("r2"));
+    assert.ok(byStage.recommendation.ids.includes("p2")); // proposed/pending leaning
+    assert.equal(byStage.outcome_learning.status, "captured");
+    assert.ok(byStage.outcome_learning.ids.includes("o2"));
+    assert.equal(byStage.executive_decision.status, "not_captured");
+    assert.match(byStage.executive_decision.summary, /pending|not a confirmed|no confirmed/i);
+    // Must not report msg1-only ids as this runtime's interpretive truth.
+    assert.ok(!byStage.findings_interpretations.ids.includes("f1"));
+    assert.ok(!byStage.recommendation.ids.includes("r1"));
+  } finally {
+    setInvokeExecuteRuntimeForTests(null);
+    setSupabaseForTests(null);
+    clearConversationStateForTests();
+  }
+});
+
 test("Show the Glass Box returns only trace-supported data", async () => {
   clearConversationStateForTests();
   const sessionKey = resolveSessionKey("sess-glass");
@@ -539,7 +909,10 @@ test("glassBox accuracy against Context Package and audit fixtures", () => {
     conversationId: "conv-1",
     contextPackageId: "cp-1",
     contextPackage: fixtureContextPackage(),
-    recordsCreated: [],
+    recordsCreated: [
+      { table: "memory_artifacts", id: "rec-1", type: "recommendation", externalId: "MEM-REC-1" },
+      { table: "memory_artifacts", id: "fin-1", type: "finding", externalId: "MEM-FIN-1" },
+    ],
     recordsRetrieved: [{ table: "observations", id: "obs-1", type: "source_evidence" }],
     stages: [{ stage: "continuity-retrieval", status: "success", durationMs: 2 }],
   });
@@ -547,6 +920,7 @@ test("glassBox accuracy against Context Package and audit fixtures", () => {
   const byStage = Object.fromEntries(glass.stages.map((s) => [s.stage, s]));
   assert.equal(byStage.current_executive_message.status, "captured");
   assert.equal(byStage.source_evidence.status, "captured");
+  assert.equal(byStage.findings_interpretations.status, "captured");
   assert.equal(byStage.recommendation.status, "captured");
   assert.equal(byStage.executive_decision.status, "not_captured");
 });

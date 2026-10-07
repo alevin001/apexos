@@ -171,7 +171,8 @@ function sessionKeyKind(sessionKey: string): "mcp_session" | "stdio_process" {
   return sessionKey === STDIO_SESSION_KEY ? "stdio_process" : "mcp_session";
 }
 
-async function handleExecutiveConversation(
+/** Exported for focused Glass Box vs execute_runtime routing tests. */
+export async function handleExecutiveConversation(
   args: ExecutiveArgs,
   extra: { sessionId?: string } | undefined,
   toolName: string

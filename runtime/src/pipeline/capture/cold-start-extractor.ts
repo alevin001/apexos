@@ -9,8 +9,11 @@ export type EpistemicType =
   | "observation"
   | "finding"
   | "hypothesis"
+  | "alternative"
   | "recommendation"
-  | "decision";
+  | "proposed_decision"
+  | "decision"
+  | "outcome";
 
 export interface ExtractedPerson {
   displayName: string;
@@ -24,7 +27,14 @@ export interface ExtractedFact {
 
 export interface InterpretiveSegment {
   text: string;
-  epistemicType: "finding" | "hypothesis" | "recommendation";
+  epistemicType:
+    | "finding"
+    | "hypothesis"
+    | "alternative"
+    | "recommendation"
+    | "proposed_decision"
+    | "decision"
+    | "outcome";
 }
 
 export interface ColdStartExtraction {
@@ -140,28 +150,95 @@ export function extractSourceFacts(text: string): ExtractedFact[] {
   return facts;
 }
 
+const CONFIRMED_DECISION =
+  /\b(I(?:'| ha)?ve decided|I decided|my decision is|we(?:'| ha)?ve decided|we decided|I(?:'| a)m choosing|I choose to)\b/i;
+
+const PROPOSED_OR_LEANING =
+  /\b(lean(?:ing)? toward|inclined to|thinking about|considering|decision to (?:make|take)|the decision (?:to make|ahead)|proposed decision|pending decision)\b/i;
+
+const FINDING_OR_INTERPRETATION =
+  /\b(finding|interpretation|pattern|indicates|shows that|key issue|core problem|real issue|what matters|the tension|misalignment|in short|the gap)\b/i;
+
+const ALTERNATIVE_OR_OPTION =
+  /\b(option|alternative|trade-?off|tradeoff|path(?:way)?|instead|versus| vs\.? |one approach|another approach|either|or else)\b/i;
+
 /**
- * Label interpretive segments from an ApexOS response.
+ * Label interpretive segments from an ApexOS response (or executive message).
  * These are NOT source evidence — stored separately with low confidence.
+ * "Leaning toward" / decision-to-make → proposed_decision (never confirmed decision).
  */
 export function extractInterpretiveSegments(responseText: string): InterpretiveSegment[] {
   const sentences = responseText
-    .split(/(?<=[.!?])\s+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length >= 25);
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((s) => s.trim().replace(/^[-*•\d.)]+\s+/, ""))
+    .filter((s) => s.length >= 18);
 
   const segments: InterpretiveSegment[] = [];
-  for (const sentence of sentences.slice(0, 16)) {
-    if (/\b(recommend|suggest|should|next step|action)\b/i.test(sentence)) {
-      segments.push({ text: sentence, epistemicType: "recommendation" });
-    } else if (/\b(may|might|could|appears|likely|hypothesis|assume|possible)\b/i.test(sentence)) {
-      segments.push({ text: sentence, epistemicType: "hypothesis" });
-    } else if (/\b(finding|pattern|indicates|shows that|key issue|core problem)\b/i.test(sentence)) {
-      segments.push({ text: sentence, epistemicType: "finding" });
+  const pushUnique = (text: string, epistemicType: InterpretiveSegment["epistemicType"]) => {
+    if (segments.some((s) => s.epistemicType === epistemicType && s.text === text)) return;
+    segments.push({ text, epistemicType });
+  };
+
+  for (const sentence of sentences.slice(0, 28)) {
+    if (
+      /\b(outcome to track|success looks like|watch for|follow[- ]up indicator|track whether|measure whether)\b/i.test(
+        sentence
+      )
+    ) {
+      pushUnique(sentence, "outcome");
+    } else if (CONFIRMED_DECISION.test(sentence)) {
+      pushUnique(sentence, "decision");
+    } else if (PROPOSED_OR_LEANING.test(sentence)) {
+      pushUnique(sentence, "proposed_decision");
+    } else if (
+      /\b(recommend|recommends|recommendation|suggest|suggested|suggestion|should|next step|proposed action|I advise|key conversation|focus on|say first)\b/i.test(
+        sentence
+      )
+    ) {
+      pushUnique(sentence, "recommendation");
+    } else if (ALTERNATIVE_OR_OPTION.test(sentence) || /^option\s*[a-d]\b/i.test(sentence)) {
+      pushUnique(sentence, "alternative");
+    } else if (FINDING_OR_INTERPRETATION.test(sentence)) {
+      pushUnique(sentence, "finding");
+    } else if (/\b(may|might|could|appears|likely|hypothesis|assume|possible|uncertain)\b/i.test(sentence)) {
+      pushUnique(sentence, "hypothesis");
     }
   }
 
-  return segments.slice(0, 10);
+  // Numbered / lettered option blocks without the word "option"
+  const optionBlocks = responseText.match(/(?:^|\n)\s*(?:[-*•]|\d+[.)]|[A-D][.)])\s+([^\n]{18,220})/gi) ?? [];
+  if (optionBlocks.length >= 2) {
+    for (const raw of optionBlocks.slice(0, 4)) {
+      const text = raw.replace(/^(?:^|\n)\s*(?:[-*•]|\d+[.)]|[A-D][.)])\s+/i, "").trim();
+      if (text) pushUnique(text, "alternative");
+    }
+  }
+
+  // Proposed decision can co-occur with recommendation wording.
+  for (const sentence of sentences.slice(0, 28)) {
+    if (PROPOSED_OR_LEANING.test(sentence) && !CONFIRMED_DECISION.test(sentence)) {
+      pushUnique(sentence, "proposed_decision");
+    }
+  }
+
+  const recommendation =
+    segments.find((s) => s.epistemicType === "recommendation") ??
+    segments.find((s) => s.epistemicType === "proposed_decision");
+  if (recommendation && !segments.some((s) => s.epistemicType === "outcome")) {
+    pushUnique(
+      `Outcome to track (pending): whether the recommended or proposed action is taken and whether aligned execution improves — derived from displayed recommendation/proposal, not observed evidence. ${recommendation.text.slice(0, 280)}`,
+      "outcome"
+    );
+  }
+
+  return segments.slice(0, 16);
+}
+
+/** Extract proposed/pending leanings from the executive message (never confirmed decisions). */
+export function extractExecutiveProposals(message: string): InterpretiveSegment[] {
+  return extractInterpretiveSegments(message).filter(
+    (s) => s.epistemicType === "proposed_decision" || s.epistemicType === "recommendation"
+  );
 }
 
 export function extractColdStart(message: string): ColdStartExtraction {

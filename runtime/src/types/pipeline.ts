@@ -116,7 +116,9 @@ export type PipelineStage = (ctx: PipelineContext) => Promise<PipelineContext>;
 export const PIPELINE_STAGES = [
   "runtime-entry",
   "continuity-retrieval",
+  "knowledge-retrieval",
   "memory-retrieval",
+  "situation-bootstrap",
   "context-retrieval",
   "evidence-assembly",
   "governance-validation",

@@ -4,6 +4,7 @@ import type { PipelineContext } from "../../types/pipeline.js";
 import type { AuditRecordRef, CaptureAudit } from "../../types/pipeline.js";
 import {
   extractColdStart,
+  extractExecutiveProposals,
   extractInterpretiveSegments,
   type EpistemicType,
 } from "./cold-start-extractor.js";
@@ -22,11 +23,12 @@ function ref(table: string, id: string, type?: string, externalId?: string): Aud
  */
 export async function persistStructuredCapture(ctx: PipelineContext): Promise<CaptureAudit> {
   const supabase = getSupabase();
-  const created: AuditRecordRef[] = [];
-  const errors: string[] = [];
+  // Preserve situation/CRS/ACP refs created earlier in the pipeline (bootstrap + assembly).
+  const created: AuditRecordRef[] = [...(ctx.captureAudit?.created ?? [])];
+  const errors: string[] = [...(ctx.captureAudit?.errors ?? [])];
   const extraction = extractColdStart(ctx.request.message);
-  let situationId = ctx.situation?.id ?? null;
-  let situationSlug = ctx.situation?.slug ?? null;
+  let situationId = ctx.situation?.id ?? ctx.captureAudit?.situationId ?? null;
+  let situationSlug = ctx.situation?.slug ?? ctx.captureAudit?.situationSlug ?? null;
 
   if (!extraction.isMaterialSituation && !situationId) {
     return { created, situationId, situationSlug, errors, extraction };
@@ -216,6 +218,15 @@ export async function persistStructuredCapture(ctx: PipelineContext): Promise<Ca
       else created.push(ref("observations", obs.id, fact.epistemicType, obs.external_id));
     }
 
+    // Executive leanings are proposed/pending — never confirmed decisions.
+    const proposals = extractExecutiveProposals(ctx.request.message);
+    for (const segment of proposals) {
+      const type: EpistemicType =
+        segment.epistemicType === "recommendation" ? "proposed_decision" : segment.epistemicType;
+      if (type === "decision") continue;
+      await insertInterpretiveArtifact(ctx, situationId, type, segment.text, created, errors);
+    }
+
     const interpretive = extractInterpretiveSegments(ctx.llmResponse?.text ?? "");
     for (const segment of interpretive) {
       await insertInterpretiveArtifact(ctx, situationId, segment.epistemicType, segment.text, created, errors);
@@ -257,36 +268,41 @@ async function insertInterpretiveArtifact(
   errors: string[]
 ): Promise<void> {
   const supabase = getSupabase();
+  const pending = epistemicType === "proposed_decision";
+  const label = pending ? "proposed_decision (pending)" : epistemicType;
   const externalId = `MEM-${epistemicType.slice(0, 3).toUpperCase()}-${shortId()}`;
   const { data, error } = await supabase
     .from("memory_artifacts")
     .insert({
       external_id: externalId,
       category: "situation",
-      title: `${epistemicType}: ${text.slice(0, 80)}`,
+      title: `${label}: ${text.slice(0, 80)}`,
       summary: text.slice(0, 500),
       confidence: "low",
       situation_id: situationId,
       review_status: "draft",
-      status: "draft",
-      tags: ["build16", epistemicType, "interpretation"],
+      status: pending ? "pending" : "draft",
+      tags: ["build16", epistemicType, "interpretation", ...(pending ? ["pending", "proposed"] : [])],
       architecture_layer: "memory",
       repository_path: `runtime/capture/memory/${externalId}.md`,
       source_document: "runtime/build-16-interpretation",
       body_md: [
-        `# ${epistemicType}`,
+        `# ${label}`,
         ``,
         `**Epistemic type:** ${epistemicType}`,
-        `**Source:** apexos_response (interpretation — not executive evidence)`,
+        pending
+          ? `**Decision status:** proposed/pending — not a confirmed executive decision`
+          : `**Source:** apexos_response (interpretation — not executive evidence)`,
         `**Request:** ${ctx.request.requestId}`,
         ``,
         text,
       ].join("\n"),
       metadata: {
         epistemic_type: epistemicType,
+        decision_status: pending ? "proposed_pending" : undefined,
         conversation_id: ctx.request.conversationId,
         request_id: ctx.request.requestId,
-        source: "apexos_response",
+        source: pending ? "executive_or_apexos_proposal" : "apexos_response",
       },
     })
     .select("id, external_id")

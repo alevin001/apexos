@@ -1,10 +1,12 @@
 import { getSupabase } from "../../shared/supabase.js";
 import type { ContextRelevanceData } from "../../types/context-package.js";
 import type { PipelineContext } from "../../types/pipeline.js";
+import { ensureContextRelevanceForSituation } from "./request-context-assembly.js";
 
 /**
  * Context Retrieval — loads context relevance specification for the situation.
  * Reads from context_relevance_specs linked to the current situation.
+ * When none exists, creates a request-scoped CRS with explicit limitations.
  */
 export async function contextRetrievalStage(ctx: PipelineContext): Promise<PipelineContext> {
   const start = Date.now();
@@ -44,12 +46,23 @@ export async function contextRetrievalStage(ctx: PipelineContext): Promise<Pipel
     ctx.contextRelevance = mapContextRelevance(crs);
   }
 
+  let createdScoped = false;
+  if (!ctx.contextRelevance) {
+    const scoped = await ensureContextRelevanceForSituation(ctx);
+    if (scoped) {
+      ctx.contextRelevance = scoped;
+      createdScoped = true;
+    }
+  }
+
   ctx.stages.push({
     stage: "context-retrieval",
     status: ctx.contextRelevance ? "success" : "skipped",
     durationMs: Date.now() - start,
     detail: ctx.contextRelevance
-      ? `Context spec: ${ctx.contextRelevance.externalId}`
+      ? createdScoped
+        ? `Request-scoped context spec: ${ctx.contextRelevance.externalId}`
+        : `Context spec: ${ctx.contextRelevance.externalId}`
       : "No context relevance spec found",
   });
 
