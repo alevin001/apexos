@@ -1,0 +1,30 @@
+{
+  "instanceId": "4ea3a42d-e00a-4c65-9b87-7ba64278c6fe",
+  "startedAt": "2026-10-07T11:24:03.372Z",
+  "replacedInstance": "7a093fad-c4e5-4446-baec-f90c631ffa08",
+  "tunnelId": "tunnel_6a5ce65f7268819185c4b7a0e0eb8800",
+  "tunnelUpstream": "http://127.0.0.1:3021/mcp",
+  "message1": {
+    "continuitySource": "new",
+    "conversationId": "874215c8-d365-46ce-a884-383db208ce92",
+    "situationId": "55b6565c-d5cd-4dca-9a97-5344d3b910ce",
+    "situationSlug": "runtime-50794726-leadership-conflict",
+    "runtimeId": "04134edd-98fe-41db-8447-aabb6df2843b"
+  },
+  "message2": {
+    "continuitySource": "session",
+    "conversationId": "874215c8-d365-46ce-a884-383db208ce92",
+    "situationId": "55b6565c-d5cd-4dca-9a97-5344d3b910ce",
+    "situationSlug": "runtime-50794726-leadership-conflict",
+    "runtimeId": "2d34b139-587a-4abb-bf81-a2a04197e1bf"
+  },
+  "message3": {
+    "glassBoxRuntimeId": "2d34b139-587a-4abb-bf81-a2a04197e1bf",
+    "matchesMessage2Runtime": true
+  },
+  "ignoredStaleHostIds": {
+    "conversationId": "243d90a7-116c-4be4-bd43-d2548eb6ec5b",
+    "situationSlug": "runtime-cb668167-leadership-conflict"
+  },
+  "ok": true
+}

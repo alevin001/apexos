@@ -14,8 +14,9 @@ function shortId(): string {
  */
 export async function situationBootstrapStage(ctx: PipelineContext): Promise<PipelineContext> {
   const start = Date.now();
+  const forceNew = ctx.request.metadata?.forceNewSituation === true;
 
-  if (ctx.situation) {
+  if (ctx.situation && !forceNew) {
     ctx.stages.push({
       stage: "situation-bootstrap",
       status: "skipped",
@@ -25,8 +26,14 @@ export async function situationBootstrapStage(ctx: PipelineContext): Promise<Pip
     return ctx;
   }
 
+  if (forceNew && ctx.situation) {
+    // Explicit new-situation request — do not keep a prior active situation.
+    ctx.situation = null;
+    ctx.request.situationSlug = null;
+  }
+
   const extraction = extractColdStart(ctx.request.message);
-  if (!extraction.isMaterialSituation) {
+  if (!extraction.isMaterialSituation && !forceNew) {
     ctx.stages.push({
       stage: "situation-bootstrap",
       status: "skipped",
@@ -34,6 +41,11 @@ export async function situationBootstrapStage(ctx: PipelineContext): Promise<Pip
       detail: "No material situation — bootstrap skipped",
     });
     return ctx;
+  }
+
+  if (!extraction.isMaterialSituation && forceNew) {
+    // Still create a situation shell when the executive demanded a new one.
+    extraction.isMaterialSituation = true;
   }
 
   const supabase = getSupabase();

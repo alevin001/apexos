@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+transfer-encoding: chunked
+X-Powered-By: Express
+cache-control: no-cache
+connection: keep-alive
+content-type: text/event-stream
+mcp-session-id: 3a88593b-7dd1-4483-ad6a-344dfb3bf4f6
+Date: Wed, 07 Oct 2026 11:22:49 GMT
+

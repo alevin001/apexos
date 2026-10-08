@@ -1,0 +1,1753 @@
+{
+  "receipt": {
+    "instanceId": "74d30614-64d1-4757-99b0-c77823d823b2",
+    "startedAt": "2026-10-08T10:06:54.145Z",
+    "tunnelId": "tunnel_6a5ce65f7268819185c4b7a0e0eb8800",
+    "tunnelUpstream": "http://127.0.0.1:3021/mcp",
+    "chatgptSessionBinding": {
+      "note": "Fresh MCP session per ChatGPT tools/call (matches live connector)",
+      "message1SessionId": "86209ffc-158c-40c3-9cf8-8946a2de1b7c",
+      "message2SessionId": "f4d32664-20ba-4881-80e5-21e1b1449e37",
+      "message3SessionId": "f167095f-b26a-4810-b25e-dee0249c3672"
+    },
+    "message1": {
+      "continuitySource": "new",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "situationId": "ae24ccdf-0447-488f-82dd-cedc885a7695",
+      "situationSlug": "runtime-94ba09d9-leadership-conflict",
+      "runtimeId": "9a19d68d-f872-4c34-a947-86ab8feed877",
+      "glassBoxRequest": false
+    },
+    "message2": {
+      "continuitySource": "explicit",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "situationId": "ae24ccdf-0447-488f-82dd-cedc885a7695",
+      "situationSlug": "runtime-94ba09d9-leadership-conflict",
+      "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+      "glassBoxRequest": false
+    },
+    "message3": {
+      "continuitySource": "explicit",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "situationId": "ae24ccdf-0447-488f-82dd-cedc885a7695",
+      "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+      "glassBoxRequest": true,
+      "glassBoxSource": "durable_trace",
+      "readOnly": true,
+      "recordsCreatedCount": 0,
+      "recommendationCaptured": true,
+      "proposedDecisionInRecommendation": true,
+      "outcomeCaptured": false,
+      "decisionNotCaptured": true
+    },
+    "assertions": {
+      "msg1NewSituation": true,
+      "msg2SameSituation": true,
+      "msg3ReadOnlyGlassBox": true,
+      "msg3ShowsMsg2Trace": true
+    },
+    "recentLifecycle": [
+      {
+        "continuitySource": "explicit",
+        "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+        "glassBoxRequest": true,
+        "captureConfirmed": false,
+        "outcome": "completed"
+      },
+      {
+        "continuitySource": "explicit",
+        "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+        "glassBoxRequest": false,
+        "captureConfirmed": true,
+        "outcome": "completed"
+      },
+      {
+        "continuitySource": "new",
+        "runtimeId": "9a19d68d-f872-4c34-a947-86ab8feed877",
+        "glassBoxRequest": false,
+        "captureConfirmed": true,
+        "outcome": "completed"
+      }
+    ]
+  },
+  "msg1": {
+    "runtimeId": "9a19d68d-f872-4c34-a947-86ab8feed877",
+    "response": "### New Executive Situation\n\n- **Title:** Preparation for Leadership Meeting with Drew\n- **Summary:** Andrew needs to prepare for a leadership meeting with Drew focused on the topics of healthy conflict and execution speed. The goal is to harness healthy conflict to surface misalignments, especially when execution speed and product/sales priorities diverge.\n- **Type:** Leadership Conflict\n\n#### Context\nUtilizing insights from the **Healthy Conflict Operating Note**, Andrew aims to emphasize the importance of early identification of misalignments that may impact execution speed and organizational priorities.\n\n### Next Steps\n- Review the **Healthy Conflict Operating Note** for strategies to promote healthy discussions during the meeting.\n- Gather data on current product and sales priorities to identify potential areas of misalignment.\n- Formulate key discussion points to facilitate effective dialogue around conflict and execution.\n\nLet me know if there's anything specific you'd like to add or focus on for this meeting preparation.",
+    "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+    "apexosBasis": {
+      "status": "Runtime invoked successfully. Retrieved 4 saved ApexOS records and created a trace.",
+      "persistenceConfirmed": true,
+      "retrievalConfirmed": true,
+      "traceConfirmed": true,
+      "groundedInSavedMemory": true,
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "continuitySource": "new",
+      "recordsRetrievedCount": 4,
+      "recordsCreatedCount": 16,
+      "degradations": [],
+      "continuityDisclosure": "New executive situation requested — prior ApexOS conversation/situation will not be reused as the active context."
+    },
+    "apexosBasisDisplay": "ApexOS Basis: Runtime invoked successfully. Retrieved 4 saved ApexOS records and created a trace. New executive situation requested — prior ApexOS conversation/situation will not be reused as the active context.\nGlass Box: Available. Say “Show the Glass Box” to see the retrieved records, evidence, reasoning stages, and trace.",
+    "glassBox": {
+      "runtimeId": "9a19d68d-f872-4c34-a947-86ab8feed877",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "contextPackageId": "ACP-RT-cf587828",
+      "source": "context_package_and_runtime_trace",
+      "auditableChain": "Situation → retrieved context → source evidence → interpretation → assumptions → alternatives → recommendation → decision → outcome/learning",
+      "stages": [
+        {
+          "stage": "current_executive_message",
+          "status": "captured",
+          "count": 1,
+          "recordTypes": [
+            "current_message"
+          ],
+          "ids": [],
+          "summary": "Current executive message captured in Context Package.",
+          "records": [
+            {
+              "type": "current_message",
+              "summary": "Capture this as a new executive situation. I need to prepare for a leadership meeting with Drew about healthy conflict and execution speed.",
+              "title": "Current executive message"
+            }
+          ]
+        },
+        {
+          "stage": "retrieved_durable_records",
+          "status": "captured",
+          "count": 4,
+          "recordTypes": [
+            "source_evidence",
+            "knowledge_source"
+          ],
+          "ids": [
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "abad0a00-3090-4573-94bc-19843f9677a9",
+            "2e6e879e-fcb5-4ea4-9288-88187748b493"
+          ],
+          "summary": "Retrieved 4 durable record(s) into context.",
+          "records": [
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_primary",
+              "title": "healthy-conflict-operating-note.md",
+              "summary": "[PRIMARY SOURCE] Source ID: SRC-healthy-conflict-operating-note-eca6fdcbad. # Healthy Conflict Operating Note\n\nSource type: internal operating document (controlled Build 18 seed).\n\n## Intent\n\nUse healthy conflict to surface misalignment early, especially when execution speed and product/sales priorities diverge.\n\n# Authority: evidence/reference—authority unasserted. Source card informed: no. Match",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "healthy-conflict-operating-note.md",
+              "sourceType": "knowledge_source_excerpt_primary",
+              "sourceIdentity": "SRC-healthy-conflict-operating-note-eca6fdcbad",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “healthy-conflict-operating-note.md” (relevance score 1.00). Primary match for this query. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_subordinate",
+              "title": "sample-leadership-meeting.vtt",
+              "summary": "[SUBORDINATE — do not distort answer] Source ID: SRC-sample-leadership-meeting-138e1862ca. WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nExecutive: We need alignment on Q2 priorities before the board review.\n\n00:00:05.000 --> 00:00:12.000\nJane Smith: The product roadmap and sales targets are still misaligned.\n\n00:00:12.000 --> 00:00:20.0 Authority: evidence/reference—authority unasserted. Source card info",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "sample-leadership-meeting.vtt",
+              "sourceType": "knowledge_source_excerpt_subordinate",
+              "sourceIdentity": "SRC-sample-leadership-meeting-138e1862ca",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “sample-leadership-meeting.vtt” (relevance score 0.77). Subordinate match — lower relevance than the primary source; do not let it distort the answer. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "abad0a00-3090-4573-94bc-19843f9677a9",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-healthy-conflict-operating-note-eca6fdcbad"
+            },
+            {
+              "id": "2e6e879e-fcb5-4ea4-9288-88187748b493",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-sample-leadership-meeting-138e1862ca"
+            }
+          ]
+        },
+        {
+          "stage": "source_evidence",
+          "status": "captured",
+          "count": 8,
+          "recordTypes": [
+            "source_evidence",
+            "knowledge_source"
+          ],
+          "ids": [
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+            "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "abad0a00-3090-4573-94bc-19843f9677a9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "2e6e879e-fcb5-4ea4-9288-88187748b493"
+          ],
+          "summary": "Source evidence: 8 record(s).",
+          "records": [
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_primary",
+              "title": "healthy-conflict-operating-note.md",
+              "summary": "[PRIMARY SOURCE] Source ID: SRC-healthy-conflict-operating-note-eca6fdcbad. # Healthy Conflict Operating Note\n\nSource type: internal operating document (controlled Build 18 seed).\n\n## Intent\n\nUse healthy conflict to surface misalignment early, especially when execution speed and product/sales priorities diverge.\n\n# Authority: evidence/reference—authority unasserted. Source card informed: no. Match",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "healthy-conflict-operating-note.md",
+              "sourceType": "knowledge_source_excerpt_primary",
+              "sourceIdentity": "SRC-healthy-conflict-operating-note-eca6fdcbad",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “healthy-conflict-operating-note.md” (relevance score 1.00). Primary match for this query. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_subordinate",
+              "title": "sample-leadership-meeting.vtt",
+              "summary": "[SUBORDINATE — do not distort answer] Source ID: SRC-sample-leadership-meeting-138e1862ca. WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nExecutive: We need alignment on Q2 priorities before the board review.\n\n00:00:05.000 --> 00:00:12.000\nJane Smith: The product roadmap and sales targets are still misaligned.\n\n00:00:12.000 --> 00:00:20.0 Authority: evidence/reference—authority unasserted. Source card info",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "sample-leadership-meeting.vtt",
+              "sourceType": "knowledge_source_excerpt_subordinate",
+              "sourceIdentity": "SRC-sample-leadership-meeting-138e1862ca",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “sample-leadership-meeting.vtt” (relevance score 0.77). Subordinate match — lower relevance than the primary source; do not let it distort the answer. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-38c8dee7"
+            },
+            {
+              "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-72b65648"
+            },
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "source_evidence",
+              "title": "RU-SRC-healthy-conflict-operating-note-eca6fdcbad-0"
+            },
+            {
+              "id": "abad0a00-3090-4573-94bc-19843f9677a9",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-healthy-conflict-operating-note-eca6fdcbad"
+            },
+            {
+              "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+              "table": "knowledge_retrieval_units",
+              "type": "source_evidence",
+              "title": "RU-SRC-sample-leadership-meeting-138e1862ca-0"
+            },
+            {
+              "id": "2e6e879e-fcb5-4ea4-9288-88187748b493",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-sample-leadership-meeting-138e1862ca"
+            }
+          ]
+        },
+        {
+          "stage": "findings_interpretations",
+          "status": "captured",
+          "count": 1,
+          "recordTypes": [
+            "finding"
+          ],
+          "ids": [
+            "c59a2734-b2b4-44fa-8277-1db3b47a06fa"
+          ],
+          "summary": "Findings/interpretations: 1 record(s) from this runtime.",
+          "records": [
+            {
+              "id": "c59a2734-b2b4-44fa-8277-1db3b47a06fa",
+              "table": "memory_artifacts",
+              "type": "finding",
+              "title": "MEM-FIN-732eb2a8"
+            }
+          ]
+        },
+        {
+          "stage": "hypotheses_assumptions",
+          "status": "captured",
+          "count": 2,
+          "recordTypes": [
+            "hypothesis",
+            "assumption"
+          ],
+          "ids": [
+            "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+            "assumption-0"
+          ],
+          "summary": "Hypotheses/assumptions: 2 item(s).",
+          "records": [
+            {
+              "id": "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+              "table": "memory_artifacts",
+              "type": "hypothesis",
+              "title": "MEM-HYP-3549f66e"
+            },
+            {
+              "id": "assumption-0",
+              "type": "assumption",
+              "summary": "Executive context assembled from available pipeline artifacts",
+              "title": "Assumption"
+            }
+          ]
+        },
+        {
+          "stage": "alternatives",
+          "status": "captured",
+          "count": 4,
+          "recordTypes": [
+            "alternative"
+          ],
+          "ids": [
+            "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+            "5999f3ef-d472-4442-a808-90f218e0886c",
+            "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+            "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8"
+          ],
+          "summary": "Alternatives: 4 record(s) from this runtime.",
+          "records": [
+            {
+              "id": "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-a157da86"
+            },
+            {
+              "id": "5999f3ef-d472-4442-a808-90f218e0886c",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-bc331b9e"
+            },
+            {
+              "id": "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-6aeb876d"
+            },
+            {
+              "id": "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-5c94cdc9"
+            }
+          ]
+        },
+        {
+          "stage": "recommendation",
+          "status": "captured",
+          "count": 1,
+          "recordTypes": [
+            "recommendation"
+          ],
+          "ids": [
+            "09453050-984b-4cea-b613-985b2a69706b"
+          ],
+          "summary": "Recommendations: 1 record(s) from this runtime.",
+          "records": [
+            {
+              "id": "09453050-984b-4cea-b613-985b2a69706b",
+              "table": "memory_artifacts",
+              "type": "recommendation",
+              "title": "MEM-REC-8d506542"
+            }
+          ]
+        },
+        {
+          "stage": "executive_decision",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured — no confirmed executive decision",
+          "records": []
+        },
+        {
+          "stage": "outcome_learning",
+          "status": "captured",
+          "count": 1,
+          "recordTypes": [
+            "outcome"
+          ],
+          "ids": [
+            "1696b0b4-2695-4160-ab15-2af8d645ed0f"
+          ],
+          "summary": "Outcome/learning: 1 record(s) from this runtime.",
+          "records": [
+            {
+              "id": "1696b0b4-2695-4160-ab15-2af8d645ed0f",
+              "table": "memory_artifacts",
+              "type": "outcome",
+              "title": "MEM-OUT-037828cf"
+            }
+          ]
+        }
+      ]
+    },
+    "executionMetadata": {
+      "responseId": "resp_022971152fe52d79006ac76b451fa887d1a08aab7984fae448",
+      "situationSlug": "runtime-94ba09d9-leadership-conflict",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "interactionId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "contextPackageId": "ACP-RT-cf587828",
+      "continuitySource": "new",
+      "stages": [
+        {
+          "stage": "runtime-entry",
+          "status": "success",
+          "durationMs": 148,
+          "detail": "Executive: primary-executive, Situation: none"
+        },
+        {
+          "stage": "continuity-retrieval",
+          "status": "skipped",
+          "durationMs": 0,
+          "detail": "No conversationId — cold start"
+        },
+        {
+          "stage": "knowledge-retrieval",
+          "status": "success",
+          "durationMs": 303,
+          "detail": "Retrieved 2 knowledge unit(s) from governed sources"
+        },
+        {
+          "stage": "memory-retrieval",
+          "status": "success",
+          "durationMs": 418,
+          "detail": "Retrieved 0 memory items"
+        },
+        {
+          "stage": "situation-bootstrap",
+          "status": "success",
+          "durationMs": 89,
+          "detail": "Situation bootstrapped: SIT-RT-72a53577"
+        },
+        {
+          "stage": "context-retrieval",
+          "status": "success",
+          "durationMs": 274,
+          "detail": "Request-scoped context spec: CRS-RT-866b7f0b"
+        },
+        {
+          "stage": "evidence-assembly",
+          "status": "success",
+          "durationMs": 777,
+          "detail": "Request-scoped Evidence: EP-RT-265bb6e1, Context: ACP-RT-cf587828"
+        },
+        {
+          "stage": "governance-validation",
+          "status": "success",
+          "durationMs": 0,
+          "detail": "6/6 checks passed"
+        },
+        {
+          "stage": "context-package-construction",
+          "status": "success",
+          "durationMs": 0,
+          "detail": "Executive Context Package assembled (4090 chars; 7 context items)"
+        },
+        {
+          "stage": "llm-invocation",
+          "status": "success",
+          "durationMs": 3577,
+          "detail": "openai/gpt-4o-mini-2024-07-18"
+        },
+        {
+          "stage": "response-processing",
+          "status": "success",
+          "durationMs": 0,
+          "detail": "Response: 1044 chars"
+        },
+        {
+          "stage": "interaction-capture",
+          "status": "success",
+          "durationMs": 1123,
+          "detail": "Conversation: 9a06b0d8-d31c-4b92-a864-8064d0e54fe0; created 16 structured records"
+        }
+      ],
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "dryRun": false,
+      "persistenceStatus": "persisted",
+      "situationId": "ae24ccdf-0447-488f-82dd-cedc885a7695",
+      "recordsCreated": [
+        {
+          "table": "situations",
+          "id": "ae24ccdf-0447-488f-82dd-cedc885a7695",
+          "type": "situation",
+          "externalId": "SIT-RT-72a53577"
+        },
+        {
+          "table": "context_relevance_specs",
+          "id": "26c2ea7d-8d87-4651-9f2f-9e7ccb255ff2",
+          "type": "context_relevance",
+          "externalId": "CRS-RT-866b7f0b"
+        },
+        {
+          "table": "retrieval_requests",
+          "id": "85541110-e06c-41fb-b5b4-1197ea95b687",
+          "type": "retrieval_request",
+          "externalId": "RR-RT-fb50fc29"
+        },
+        {
+          "table": "evidence_packages",
+          "id": "234f6000-a7af-4cdf-809e-b945a9fcbbf4",
+          "type": "evidence_package",
+          "externalId": "EP-RT-265bb6e1"
+        },
+        {
+          "table": "assembled_context_packages",
+          "id": "9b49bf5c-5e81-40e3-8357-d4c243c5bf9f",
+          "type": "assembled_context_package",
+          "externalId": "ACP-RT-cf587828"
+        },
+        {
+          "table": "persons",
+          "id": "563fbbc4-8f0b-47c6-9507-433f137574fd",
+          "type": "person",
+          "externalId": "PER-RT-drew"
+        },
+        {
+          "table": "observations",
+          "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+          "type": "source_evidence",
+          "externalId": "OBS-SRC-38c8dee7"
+        },
+        {
+          "table": "observations",
+          "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+          "type": "source_evidence",
+          "externalId": "OBS-SRC-72b65648"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+          "type": "hypothesis",
+          "externalId": "MEM-HYP-3549f66e"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "c59a2734-b2b4-44fa-8277-1db3b47a06fa",
+          "type": "finding",
+          "externalId": "MEM-FIN-732eb2a8"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "09453050-984b-4cea-b613-985b2a69706b",
+          "type": "recommendation",
+          "externalId": "MEM-REC-8d506542"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+          "type": "alternative",
+          "externalId": "MEM-ALT-a157da86"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "5999f3ef-d472-4442-a808-90f218e0886c",
+          "type": "alternative",
+          "externalId": "MEM-ALT-bc331b9e"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+          "type": "alternative",
+          "externalId": "MEM-ALT-6aeb876d"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8",
+          "type": "alternative",
+          "externalId": "MEM-ALT-5c94cdc9"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "1696b0b4-2695-4160-ab15-2af8d645ed0f",
+          "type": "outcome",
+          "externalId": "MEM-OUT-037828cf"
+        }
+      ],
+      "recordsRetrieved": [
+        {
+          "table": "knowledge_retrieval_units",
+          "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+          "type": "source_evidence",
+          "externalId": "RU-SRC-healthy-conflict-operating-note-eca6fdcbad-0"
+        },
+        {
+          "table": "knowledge_sources",
+          "id": "abad0a00-3090-4573-94bc-19843f9677a9",
+          "type": "knowledge_source",
+          "externalId": "SRC-healthy-conflict-operating-note-eca6fdcbad"
+        },
+        {
+          "table": "knowledge_retrieval_units",
+          "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+          "type": "source_evidence",
+          "externalId": "RU-SRC-sample-leadership-meeting-138e1862ca-0"
+        },
+        {
+          "table": "knowledge_sources",
+          "id": "2e6e879e-fcb5-4ea4-9288-88187748b493",
+          "type": "knowledge_source",
+          "externalId": "SRC-sample-leadership-meeting-138e1862ca"
+        }
+      ],
+      "contextItems": [
+        "executive:primary-executive",
+        "situation:ae24ccdf-0447-488f-82dd-cedc885a7695",
+        "knowledge_retrieval_units:995a7ae1-60c3-4834-a679-49e31e0785d9:source",
+        "knowledge_retrieval_units:b042f29c-637a-4efb-a428-68f0b48ba260:source",
+        "current_message",
+        "context_relevance:CRS-RT-866b7f0b",
+        "assembled_context:ACP-RT-cf587828"
+      ],
+      "captureErrors": [],
+      "retrievalErrors": []
+    },
+    "attachmentReceived": false,
+    "attachmentReminder": null,
+    "invocation": {
+      "status": "invoked",
+      "requestId": "3cf24761-3fff-412a-97d0-8af8118ed987",
+      "runtimeId": "9a19d68d-f872-4c34-a947-86ab8feed877",
+      "responseReturned": true,
+      "tool": "apexos_conversation"
+    },
+    "lifecycle": {
+      "events": [
+        "request_received",
+        "runtime_starting",
+        "continuity_resolved",
+        "runtime_completed",
+        "response_assembled",
+        "mcp_response_sent"
+      ],
+      "continuitySource": "new",
+      "captureConfirmed": true,
+      "retrievalConfirmed": true,
+      "persistenceConfirmed": true,
+      "traceConfirmed": true,
+      "basisIncluded": true,
+      "glassBoxReminderIncluded": true,
+      "failedStage": null,
+      "errorSummary": null,
+      "responseBytes": 23763
+    }
+  },
+  "msg2": {
+    "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+    "response": "For your opening with Drew focused on healthy conflict, consider recommending the following approach:\n\n1. **Set the Stage**: Begin by emphasizing the importance of open communication for the organization's success, specifically highlighting how healthy conflict can lead to better decision-making.\n\n2. **Identify Goals**: Clearly state the purpose of the discussion — to surface any misalignments between product and sales priorities that may impact execution speed.\n\n3. **Invite Honest Feedback**: Encourage Drew to share his perspectives on current projects and any concerns he may have. Frame it as an opportunity to address potential conflicts before they escalate.\n\n4. **Share Your Intent**: Reinforce that the goal is not to assign blame, but to collaboratively find solutions to enhance organizational alignment and execution speed.\n\nBy initiating the conversation in this way, you foster an environment where healthy conflict can flourish, leading to constructive discussions and better outcomes.",
+    "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+    "apexosBasis": {
+      "status": "Runtime invoked successfully. Retrieved 14 saved ApexOS records and created a trace.",
+      "persistenceConfirmed": true,
+      "retrievalConfirmed": true,
+      "traceConfirmed": true,
+      "groundedInSavedMemory": true,
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "continuitySource": "explicit",
+      "recordsRetrievedCount": 14,
+      "recordsCreatedCount": 11,
+      "degradations": [],
+      "continuityDisclosure": null
+    },
+    "apexosBasisDisplay": "ApexOS Basis: Runtime invoked successfully. Retrieved 14 saved ApexOS records and created a trace.\nGlass Box: Available. Say “Show the Glass Box” to see the retrieved records, evidence, reasoning stages, and trace.",
+    "glassBox": {
+      "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "contextPackageId": "ACP-RT-cf587828",
+      "source": "context_package_and_runtime_trace",
+      "auditableChain": "Situation → retrieved context → source evidence → interpretation → assumptions → alternatives → recommendation → decision → outcome/learning",
+      "stages": [
+        {
+          "stage": "current_executive_message",
+          "status": "captured",
+          "count": 1,
+          "recordTypes": [
+            "current_message"
+          ],
+          "ids": [],
+          "summary": "Current executive message captured in Context Package.",
+          "records": [
+            {
+              "type": "current_message",
+              "summary": "I'm leaning toward speaking with Drew first. What should I recommend as the opening for healthy conflict?",
+              "title": "Current executive message"
+            }
+          ]
+        },
+        {
+          "stage": "retrieved_durable_records",
+          "status": "captured",
+          "count": 14,
+          "recordTypes": [
+            "source_evidence",
+            "alternative",
+            "hypothesis",
+            "person",
+            "prior_message",
+            "knowledge_source"
+          ],
+          "ids": [
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+            "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+            "5999f3ef-d472-4442-a808-90f218e0886c",
+            "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8",
+            "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+            "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+            "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+            "563fbbc4-8f0b-47c6-9507-433f137574fd",
+            "156f00ee-6371-4fb6-8c38-5e144417b6f9",
+            "33b94017-43dd-47e8-8af9-5db47cac9fe5",
+            "abad0a00-3090-4573-94bc-19843f9677a9",
+            "2e6e879e-fcb5-4ea4-9288-88187748b493"
+          ],
+          "summary": "Retrieved 14 durable record(s) into context.",
+          "records": [
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_primary",
+              "title": "healthy-conflict-operating-note.md",
+              "summary": "[PRIMARY SOURCE] Source ID: SRC-healthy-conflict-operating-note-eca6fdcbad. # Healthy Conflict Operating Note\n\nSource type: internal operating document (controlled Build 18 seed).\n\n## Intent\n\nUse healthy conflict to surface misalignment early, especially when execution speed and product/sales priorities diverge.\n\n# Authority: evidence/reference—authority unasserted. Source card informed: no. Match",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "healthy-conflict-operating-note.md",
+              "sourceType": "knowledge_source_excerpt_primary",
+              "sourceIdentity": "SRC-healthy-conflict-operating-note-eca6fdcbad",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “healthy-conflict-operating-note.md” (relevance score 0.70). Primary match for this query. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_subordinate",
+              "title": "sample-leadership-meeting.vtt",
+              "summary": "[SUBORDINATE — do not distort answer] Source ID: SRC-sample-leadership-meeting-138e1862ca. WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nExecutive: We need alignment on Q2 priorities before the board review.\n\n00:00:05.000 --> 00:00:12.000\nJane Smith: The product roadmap and sales targets are still misaligned.\n\n00:00:12.000 --> 00:00:20.0 Authority: evidence/reference—authority unasserted. Source card info",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "sample-leadership-meeting.vtt",
+              "sourceType": "knowledge_source_excerpt_subordinate",
+              "sourceIdentity": "SRC-sample-leadership-meeting-138e1862ca",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “sample-leadership-meeting.vtt” (relevance score 0.60). Subordinate match — lower relevance than the primary source; do not let it distort the answer. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "Source evidence 2",
+              "summary": "I need to prepare for a leadership meeting with Drew about healthy conflict and execution speed.",
+              "epistemicType": "source_evidence"
+            },
+            {
+              "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "Source evidence 1",
+              "summary": "Capture this as a new executive situation.",
+              "epistemicType": "source_evidence"
+            },
+            {
+              "id": "5999f3ef-d472-4442-a808-90f218e0886c",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "alternative: **Summary:** Andrew needs to prepare for a leadership meeting with Drew focused ",
+              "summary": "**Summary:** Andrew needs to prepare for a leadership meeting with Drew focused on the topics of healthy conflict and execution speed. The goal is to harness healthy conflict to surface misalignments, especially when exe",
+              "epistemicType": "alternative"
+            },
+            {
+              "id": "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "alternative: Review the **Healthy Conflict Operating Note** for strategies to promote healthy",
+              "summary": "Review the **Healthy Conflict Operating Note** for strategies to promote healthy discussions during the meeting.",
+              "epistemicType": "alternative"
+            },
+            {
+              "id": "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+              "table": "memory_artifacts",
+              "type": "hypothesis",
+              "title": "hypothesis: Utilizing insights from the **Healthy Conflict Operating Note**, Andrew aims to ",
+              "summary": "Utilizing insights from the **Healthy Conflict Operating Note**, Andrew aims to emphasize the importance of early identification of misalignments that may impact execution speed and organizational priorities.",
+              "epistemicType": "hypothesis"
+            },
+            {
+              "id": "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "alternative: **Type:** Leadership Conflict",
+              "summary": "**Type:** Leadership Conflict",
+              "epistemicType": "alternative"
+            },
+            {
+              "id": "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "alternative: **Title:** Preparation for Leadership Meeting with Drew",
+              "summary": "**Title:** Preparation for Leadership Meeting with Drew",
+              "epistemicType": "alternative"
+            },
+            {
+              "id": "563fbbc4-8f0b-47c6-9507-433f137574fd",
+              "table": "persons",
+              "type": "person",
+              "title": "Drew",
+              "summary": "drew"
+            },
+            {
+              "id": "156f00ee-6371-4fb6-8c38-5e144417b6f9",
+              "table": "conversation_messages",
+              "type": "prior_message",
+              "title": "apexos",
+              "summary": "### New Executive Situation\n\n- **Title:** Preparation for Leadership Meeting with Drew\n- **Summary:** Andrew needs to prepare for a leadership meeting with Drew focused on the topics of healthy conflict and execution speed. The goal is to h"
+            },
+            {
+              "id": "33b94017-43dd-47e8-8af9-5db47cac9fe5",
+              "table": "conversation_messages",
+              "type": "prior_message",
+              "title": "executive",
+              "summary": "Capture this as a new executive situation. I need to prepare for a leadership meeting with Drew about healthy conflict and execution speed."
+            }
+          ]
+        },
+        {
+          "stage": "source_evidence",
+          "status": "captured",
+          "count": 12,
+          "recordTypes": [
+            "source_evidence",
+            "knowledge_source"
+          ],
+          "ids": [
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+            "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+            "3bee9102-b84c-49f5-98ed-04be6b750fee",
+            "326b63ea-5829-4ea8-bad6-30b15c65fa19",
+            "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+            "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "abad0a00-3090-4573-94bc-19843f9677a9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "2e6e879e-fcb5-4ea4-9288-88187748b493"
+          ],
+          "summary": "Source evidence: 12 record(s).",
+          "records": [
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_primary",
+              "title": "healthy-conflict-operating-note.md",
+              "summary": "[PRIMARY SOURCE] Source ID: SRC-healthy-conflict-operating-note-eca6fdcbad. # Healthy Conflict Operating Note\n\nSource type: internal operating document (controlled Build 18 seed).\n\n## Intent\n\nUse healthy conflict to surface misalignment early, especially when execution speed and product/sales priorities diverge.\n\n# Authority: evidence/reference—authority unasserted. Source card informed: no. Match",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "healthy-conflict-operating-note.md",
+              "sourceType": "knowledge_source_excerpt_primary",
+              "sourceIdentity": "SRC-healthy-conflict-operating-note-eca6fdcbad",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “healthy-conflict-operating-note.md” (relevance score 0.70). Primary match for this query. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+              "table": "knowledge_retrieval_units",
+              "type": "knowledge_source_excerpt_subordinate",
+              "title": "sample-leadership-meeting.vtt",
+              "summary": "[SUBORDINATE — do not distort answer] Source ID: SRC-sample-leadership-meeting-138e1862ca. WEBVTT\n\n00:00:00.000 --> 00:00:05.000\nExecutive: We need alignment on Q2 priorities before the board review.\n\n00:00:05.000 --> 00:00:12.000\nJane Smith: The product roadmap and sales targets are still misaligned.\n\n00:00:12.000 --> 00:00:20.0 Authority: evidence/reference—authority unasserted. Source card info",
+              "epistemicType": "source_evidence",
+              "sourceTitle": "sample-leadership-meeting.vtt",
+              "sourceType": "knowledge_source_excerpt_subordinate",
+              "sourceIdentity": "SRC-sample-leadership-meeting-138e1862ca",
+              "authorityStatus": "evidence/reference—authority unasserted",
+              "whyRetrieved": "Matched query terms against source “sample-leadership-meeting.vtt” (relevance score 0.60). Subordinate match — lower relevance than the primary source; do not let it distort the answer. Relevance is not authority. Source card informed: no.",
+              "transformationNote": "Excerpt is from extracted/chunked text derived from the original source — not the original file itself. Source cards are not citations.",
+              "sourceCardInformed": false
+            },
+            {
+              "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "Source evidence 2",
+              "summary": "I need to prepare for a leadership meeting with Drew about healthy conflict and execution speed.",
+              "epistemicType": "source_evidence"
+            },
+            {
+              "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "Source evidence 1",
+              "summary": "Capture this as a new executive situation.",
+              "epistemicType": "source_evidence"
+            },
+            {
+              "id": "3bee9102-b84c-49f5-98ed-04be6b750fee",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-6ba4246e"
+            },
+            {
+              "id": "326b63ea-5829-4ea8-bad6-30b15c65fa19",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-35f4dabf"
+            },
+            {
+              "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-72b65648"
+            },
+            {
+              "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-38c8dee7"
+            },
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "source_evidence",
+              "title": "RU-SRC-healthy-conflict-operating-note-eca6fdcbad-0"
+            },
+            {
+              "id": "abad0a00-3090-4573-94bc-19843f9677a9",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-healthy-conflict-operating-note-eca6fdcbad"
+            },
+            {
+              "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+              "table": "knowledge_retrieval_units",
+              "type": "source_evidence",
+              "title": "RU-SRC-sample-leadership-meeting-138e1862ca-0"
+            },
+            {
+              "id": "2e6e879e-fcb5-4ea4-9288-88187748b493",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-sample-leadership-meeting-138e1862ca"
+            }
+          ]
+        },
+        {
+          "stage": "findings_interpretations",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured",
+          "records": []
+        },
+        {
+          "stage": "hypotheses_assumptions",
+          "status": "captured",
+          "count": 3,
+          "recordTypes": [
+            "hypothesis",
+            "assumption"
+          ],
+          "ids": [
+            "3b4ce2eb-4cec-4dee-806d-6d3e286545ba",
+            "8ecde5e4-d66f-4485-aad3-003b0d012e90",
+            "assumption-0"
+          ],
+          "summary": "Hypotheses/assumptions: 3 item(s).",
+          "records": [
+            {
+              "id": "3b4ce2eb-4cec-4dee-806d-6d3e286545ba",
+              "table": "memory_artifacts",
+              "type": "hypothesis",
+              "title": "MEM-HYP-ad6a538a"
+            },
+            {
+              "id": "8ecde5e4-d66f-4485-aad3-003b0d012e90",
+              "table": "memory_artifacts",
+              "type": "hypothesis",
+              "title": "MEM-HYP-60ca4445"
+            },
+            {
+              "id": "assumption-0",
+              "type": "assumption",
+              "summary": "Executive context assembled from available pipeline artifacts",
+              "title": "Assumption"
+            }
+          ]
+        },
+        {
+          "stage": "alternatives",
+          "status": "captured",
+          "count": 4,
+          "recordTypes": [
+            "alternative"
+          ],
+          "ids": [
+            "ea3aa63c-e381-4f38-b4b4-71f81453fd80",
+            "a784b10c-95af-41b1-ae82-d8c2b4c0f70b",
+            "a3f7ef71-501a-4949-a7a2-9ef3edb6a7af",
+            "d1fcc59a-e9c5-4b93-af17-747f722a8a1b"
+          ],
+          "summary": "Alternatives: 4 record(s) from this runtime.",
+          "records": [
+            {
+              "id": "ea3aa63c-e381-4f38-b4b4-71f81453fd80",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-7eea84b1"
+            },
+            {
+              "id": "a784b10c-95af-41b1-ae82-d8c2b4c0f70b",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-6853e8f8"
+            },
+            {
+              "id": "a3f7ef71-501a-4949-a7a2-9ef3edb6a7af",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-45f8b44d"
+            },
+            {
+              "id": "d1fcc59a-e9c5-4b93-af17-747f722a8a1b",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-78e9fe76"
+            }
+          ]
+        },
+        {
+          "stage": "recommendation",
+          "status": "captured",
+          "count": 2,
+          "recordTypes": [
+            "proposed_decision"
+          ],
+          "ids": [
+            "7f0f465b-26fa-4552-a624-30d3f4503245",
+            "60b27cc1-3254-4896-911b-cd414c16c50b"
+          ],
+          "summary": "Recommendations/proposals: 2 record(s) (includes pending proposals).",
+          "records": [
+            {
+              "id": "7f0f465b-26fa-4552-a624-30d3f4503245",
+              "table": "memory_artifacts",
+              "type": "proposed_decision",
+              "title": "MEM-PRO-3ac3774b",
+              "summary": "Proposed/pending — not a confirmed executive decision"
+            },
+            {
+              "id": "60b27cc1-3254-4896-911b-cd414c16c50b",
+              "table": "memory_artifacts",
+              "type": "proposed_decision",
+              "title": "MEM-PRO-b514f9ea",
+              "summary": "Proposed/pending — not a confirmed executive decision"
+            }
+          ]
+        },
+        {
+          "stage": "executive_decision",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured — leanings/proposals are pending only; no confirmed executive decision",
+          "records": []
+        },
+        {
+          "stage": "outcome_learning",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured — no outcome-to-track captured for this runtime",
+          "records": []
+        }
+      ]
+    },
+    "executionMetadata": {
+      "responseId": "resp_019adb0b86ad54ea006ac76b4cd9c887d1aaaf555dda2057a8",
+      "situationSlug": "runtime-94ba09d9-leadership-conflict",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "interactionId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "contextPackageId": "ACP-RT-cf587828",
+      "continuitySource": "explicit",
+      "stages": [
+        {
+          "stage": "runtime-entry",
+          "status": "success",
+          "durationMs": 75,
+          "detail": "Executive: primary-executive, Situation: none"
+        },
+        {
+          "stage": "continuity-retrieval",
+          "status": "success",
+          "durationMs": 903,
+          "detail": "Retrieved 10 records for conversation 9a06b0d8-d31c-4b92-a864-8064d0e54fe0"
+        },
+        {
+          "stage": "knowledge-retrieval",
+          "status": "success",
+          "durationMs": 243,
+          "detail": "Retrieved 2 knowledge unit(s) from governed sources"
+        },
+        {
+          "stage": "memory-retrieval",
+          "status": "success",
+          "durationMs": 431,
+          "detail": "Retrieved 2 memory items"
+        },
+        {
+          "stage": "situation-bootstrap",
+          "status": "skipped",
+          "durationMs": 0,
+          "detail": "Situation already resolved: runtime-94ba09d9-leadership-conflict"
+        },
+        {
+          "stage": "context-retrieval",
+          "status": "success",
+          "durationMs": 93,
+          "detail": "Context spec: CRS-RT-866b7f0b"
+        },
+        {
+          "stage": "evidence-assembly",
+          "status": "success",
+          "durationMs": 349,
+          "detail": "Evidence: EP-RT-265bb6e1, Context: ACP-RT-cf587828"
+        },
+        {
+          "stage": "governance-validation",
+          "status": "success",
+          "durationMs": 0,
+          "detail": "6/6 checks passed"
+        },
+        {
+          "stage": "context-package-construction",
+          "status": "success",
+          "durationMs": 0,
+          "detail": "Executive Context Package assembled (6816 chars; 19 context items)"
+        },
+        {
+          "stage": "llm-invocation",
+          "status": "success",
+          "durationMs": 3301,
+          "detail": "openai/gpt-4o-mini-2024-07-18"
+        },
+        {
+          "stage": "response-processing",
+          "status": "success",
+          "durationMs": 0,
+          "detail": "Response: 1004 chars"
+        },
+        {
+          "stage": "interaction-capture",
+          "status": "success",
+          "durationMs": 1218,
+          "detail": "Conversation: 9a06b0d8-d31c-4b92-a864-8064d0e54fe0; created 11 structured records"
+        }
+      ],
+      "model": "gpt-4o-mini-2024-07-18",
+      "provider": "openai",
+      "dryRun": false,
+      "persistenceStatus": "persisted",
+      "situationId": "ae24ccdf-0447-488f-82dd-cedc885a7695",
+      "recordsCreated": [
+        {
+          "table": "persons",
+          "id": "563fbbc4-8f0b-47c6-9507-433f137574fd",
+          "type": "person",
+          "externalId": "PER-RT-drew"
+        },
+        {
+          "table": "observations",
+          "id": "3bee9102-b84c-49f5-98ed-04be6b750fee",
+          "type": "source_evidence",
+          "externalId": "OBS-SRC-6ba4246e"
+        },
+        {
+          "table": "observations",
+          "id": "326b63ea-5829-4ea8-bad6-30b15c65fa19",
+          "type": "source_evidence",
+          "externalId": "OBS-SRC-35f4dabf"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "7f0f465b-26fa-4552-a624-30d3f4503245",
+          "type": "proposed_decision",
+          "externalId": "MEM-PRO-3ac3774b"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "60b27cc1-3254-4896-911b-cd414c16c50b",
+          "type": "proposed_decision",
+          "externalId": "MEM-PRO-b514f9ea"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "3b4ce2eb-4cec-4dee-806d-6d3e286545ba",
+          "type": "hypothesis",
+          "externalId": "MEM-HYP-ad6a538a"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "8ecde5e4-d66f-4485-aad3-003b0d012e90",
+          "type": "hypothesis",
+          "externalId": "MEM-HYP-60ca4445"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "ea3aa63c-e381-4f38-b4b4-71f81453fd80",
+          "type": "alternative",
+          "externalId": "MEM-ALT-7eea84b1"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "a784b10c-95af-41b1-ae82-d8c2b4c0f70b",
+          "type": "alternative",
+          "externalId": "MEM-ALT-6853e8f8"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "a3f7ef71-501a-4949-a7a2-9ef3edb6a7af",
+          "type": "alternative",
+          "externalId": "MEM-ALT-45f8b44d"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "d1fcc59a-e9c5-4b93-af17-747f722a8a1b",
+          "type": "alternative",
+          "externalId": "MEM-ALT-78e9fe76"
+        }
+      ],
+      "recordsRetrieved": [
+        {
+          "table": "conversation_messages",
+          "id": "156f00ee-6371-4fb6-8c38-5e144417b6f9",
+          "type": "apexos"
+        },
+        {
+          "table": "conversation_messages",
+          "id": "33b94017-43dd-47e8-8af9-5db47cac9fe5",
+          "type": "executive"
+        },
+        {
+          "table": "observations",
+          "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+          "type": "source_evidence",
+          "externalId": "OBS-SRC-72b65648"
+        },
+        {
+          "table": "observations",
+          "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+          "type": "source_evidence",
+          "externalId": "OBS-SRC-38c8dee7"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "5999f3ef-d472-4442-a808-90f218e0886c",
+          "type": "alternative",
+          "externalId": "MEM-ALT-bc331b9e"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8",
+          "type": "alternative",
+          "externalId": "MEM-ALT-5c94cdc9"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+          "type": "hypothesis",
+          "externalId": "MEM-HYP-3549f66e"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+          "type": "alternative",
+          "externalId": "MEM-ALT-6aeb876d"
+        },
+        {
+          "table": "memory_artifacts",
+          "id": "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+          "type": "alternative",
+          "externalId": "MEM-ALT-a157da86"
+        },
+        {
+          "table": "persons",
+          "id": "563fbbc4-8f0b-47c6-9507-433f137574fd",
+          "type": "person",
+          "externalId": "PER-RT-drew"
+        },
+        {
+          "table": "knowledge_retrieval_units",
+          "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+          "type": "source_evidence",
+          "externalId": "RU-SRC-healthy-conflict-operating-note-eca6fdcbad-0"
+        },
+        {
+          "table": "knowledge_sources",
+          "id": "abad0a00-3090-4573-94bc-19843f9677a9",
+          "type": "knowledge_source",
+          "externalId": "SRC-healthy-conflict-operating-note-eca6fdcbad"
+        },
+        {
+          "table": "knowledge_retrieval_units",
+          "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+          "type": "source_evidence",
+          "externalId": "RU-SRC-sample-leadership-meeting-138e1862ca-0"
+        },
+        {
+          "table": "knowledge_sources",
+          "id": "2e6e879e-fcb5-4ea4-9288-88187748b493",
+          "type": "knowledge_source",
+          "externalId": "SRC-sample-leadership-meeting-138e1862ca"
+        }
+      ],
+      "contextItems": [
+        "executive:primary-executive",
+        "situation:ae24ccdf-0447-488f-82dd-cedc885a7695",
+        "knowledge_retrieval_units:995a7ae1-60c3-4834-a679-49e31e0785d9:source",
+        "knowledge_retrieval_units:b042f29c-637a-4efb-a428-68f0b48ba260:source",
+        "observations:5063ba3f-7c7e-472a-897e-20aa5e7d61c8:source",
+        "observations:48953ea8-53f8-4877-bd66-ad2932abd7ce:source",
+        "memory_artifacts:5999f3ef-d472-4442-a808-90f218e0886c:interpretive",
+        "memory_artifacts:918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8:interpretive",
+        "memory_artifacts:893aee77-98fc-4cb0-b105-8a55d0f546e0:interpretive",
+        "memory_artifacts:4db1b80a-7a33-447b-884a-9eff3d0b1f45:interpretive",
+        "memory_artifacts:3113bd23-7172-42f4-9fb0-6633e7d8df14:interpretive",
+        "persons:563fbbc4-8f0b-47c6-9507-433f137574fd",
+        "conversation_messages:156f00ee-6371-4fb6-8c38-5e144417b6f9",
+        "conversation_messages:33b94017-43dd-47e8-8af9-5db47cac9fe5",
+        "current_message",
+        "context_relevance:CRS-RT-866b7f0b",
+        "memory_observation:OBS-SRC-38c8dee7",
+        "memory_observation:OBS-SRC-72b65648",
+        "assembled_context:ACP-RT-cf587828"
+      ],
+      "captureErrors": [],
+      "retrievalErrors": []
+    },
+    "attachmentReceived": false,
+    "attachmentReminder": null,
+    "invocation": {
+      "status": "invoked",
+      "requestId": "21308e86-8241-499c-9b0b-5d21ecc5cc60",
+      "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+      "responseReturned": true,
+      "tool": "apexos_conversation"
+    },
+    "lifecycle": {
+      "events": [
+        "request_received",
+        "runtime_starting",
+        "continuity_resolved",
+        "runtime_completed",
+        "response_assembled",
+        "mcp_response_sent"
+      ],
+      "continuitySource": "explicit",
+      "captureConfirmed": true,
+      "retrievalConfirmed": true,
+      "persistenceConfirmed": true,
+      "traceConfirmed": true,
+      "basisIncluded": true,
+      "glassBoxReminderIncluded": true,
+      "failedStage": null,
+      "errorSummary": null,
+      "responseBytes": 30638
+    }
+  },
+  "msg3": {
+    "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+    "response": "Glass Box for the most recent confirmed ApexOS runtime response.",
+    "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+    "apexosBasis": {
+      "status": "Runtime trace confirmed for this Glass Box request. Showing only trace-supported stages.",
+      "persistenceConfirmed": true,
+      "retrievalConfirmed": false,
+      "traceConfirmed": true,
+      "groundedInSavedMemory": false,
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "continuitySource": "explicit",
+      "recordsRetrievedCount": 0,
+      "recordsCreatedCount": 0,
+      "degradations": [],
+      "continuityDisclosure": null
+    },
+    "apexosBasisDisplay": "ApexOS Basis: Runtime trace confirmed for this Glass Box request. Showing only trace-supported stages.\nGlass Box: Available. Say “Show the Glass Box” to see the retrieved records, evidence, reasoning stages, and trace.",
+    "glassBox": {
+      "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "contextPackageId": "ACP-RT-cf587828",
+      "source": "context_package_and_runtime_trace",
+      "auditableChain": "Situation → retrieved context → source evidence → interpretation → assumptions → alternatives → recommendation → decision → outcome/learning",
+      "stages": [
+        {
+          "stage": "current_executive_message",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured. Context Package unavailable; stages reflect audit/trace only.",
+          "records": []
+        },
+        {
+          "stage": "retrieved_durable_records",
+          "status": "captured",
+          "count": 14,
+          "recordTypes": [
+            "apexos",
+            "executive",
+            "source_evidence",
+            "alternative",
+            "hypothesis",
+            "person",
+            "knowledge_source"
+          ],
+          "ids": [
+            "156f00ee-6371-4fb6-8c38-5e144417b6f9",
+            "33b94017-43dd-47e8-8af9-5db47cac9fe5",
+            "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+            "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+            "5999f3ef-d472-4442-a808-90f218e0886c",
+            "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8",
+            "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+            "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+            "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+            "563fbbc4-8f0b-47c6-9507-433f137574fd",
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "abad0a00-3090-4573-94bc-19843f9677a9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "2e6e879e-fcb5-4ea4-9288-88187748b493"
+          ],
+          "summary": "Retrieved 14 durable record(s) into context.",
+          "records": [
+            {
+              "id": "156f00ee-6371-4fb6-8c38-5e144417b6f9",
+              "table": "conversation_messages",
+              "type": "apexos"
+            },
+            {
+              "id": "33b94017-43dd-47e8-8af9-5db47cac9fe5",
+              "table": "conversation_messages",
+              "type": "executive"
+            },
+            {
+              "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-72b65648"
+            },
+            {
+              "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-38c8dee7"
+            },
+            {
+              "id": "5999f3ef-d472-4442-a808-90f218e0886c",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-bc331b9e"
+            },
+            {
+              "id": "918fd5ee-fd8c-4e1f-bf27-8dc0ec04e7b8",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-5c94cdc9"
+            },
+            {
+              "id": "893aee77-98fc-4cb0-b105-8a55d0f546e0",
+              "table": "memory_artifacts",
+              "type": "hypothesis",
+              "title": "MEM-HYP-3549f66e"
+            },
+            {
+              "id": "4db1b80a-7a33-447b-884a-9eff3d0b1f45",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-6aeb876d"
+            },
+            {
+              "id": "3113bd23-7172-42f4-9fb0-6633e7d8df14",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-a157da86"
+            },
+            {
+              "id": "563fbbc4-8f0b-47c6-9507-433f137574fd",
+              "table": "persons",
+              "type": "person",
+              "title": "PER-RT-drew"
+            },
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "source_evidence",
+              "title": "RU-SRC-healthy-conflict-operating-note-eca6fdcbad-0"
+            },
+            {
+              "id": "abad0a00-3090-4573-94bc-19843f9677a9",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-healthy-conflict-operating-note-eca6fdcbad"
+            }
+          ]
+        },
+        {
+          "stage": "source_evidence",
+          "status": "captured",
+          "count": 8,
+          "recordTypes": [
+            "source_evidence",
+            "knowledge_source"
+          ],
+          "ids": [
+            "3bee9102-b84c-49f5-98ed-04be6b750fee",
+            "326b63ea-5829-4ea8-bad6-30b15c65fa19",
+            "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+            "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+            "995a7ae1-60c3-4834-a679-49e31e0785d9",
+            "abad0a00-3090-4573-94bc-19843f9677a9",
+            "b042f29c-637a-4efb-a428-68f0b48ba260",
+            "2e6e879e-fcb5-4ea4-9288-88187748b493"
+          ],
+          "summary": "Source evidence: 8 record(s).",
+          "records": [
+            {
+              "id": "3bee9102-b84c-49f5-98ed-04be6b750fee",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-6ba4246e"
+            },
+            {
+              "id": "326b63ea-5829-4ea8-bad6-30b15c65fa19",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-35f4dabf"
+            },
+            {
+              "id": "5063ba3f-7c7e-472a-897e-20aa5e7d61c8",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-72b65648"
+            },
+            {
+              "id": "48953ea8-53f8-4877-bd66-ad2932abd7ce",
+              "table": "observations",
+              "type": "source_evidence",
+              "title": "OBS-SRC-38c8dee7"
+            },
+            {
+              "id": "995a7ae1-60c3-4834-a679-49e31e0785d9",
+              "table": "knowledge_retrieval_units",
+              "type": "source_evidence",
+              "title": "RU-SRC-healthy-conflict-operating-note-eca6fdcbad-0"
+            },
+            {
+              "id": "abad0a00-3090-4573-94bc-19843f9677a9",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-healthy-conflict-operating-note-eca6fdcbad"
+            },
+            {
+              "id": "b042f29c-637a-4efb-a428-68f0b48ba260",
+              "table": "knowledge_retrieval_units",
+              "type": "source_evidence",
+              "title": "RU-SRC-sample-leadership-meeting-138e1862ca-0"
+            },
+            {
+              "id": "2e6e879e-fcb5-4ea4-9288-88187748b493",
+              "table": "knowledge_sources",
+              "type": "knowledge_source",
+              "title": "SRC-sample-leadership-meeting-138e1862ca"
+            }
+          ]
+        },
+        {
+          "stage": "findings_interpretations",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured",
+          "records": []
+        },
+        {
+          "stage": "hypotheses_assumptions",
+          "status": "captured",
+          "count": 2,
+          "recordTypes": [
+            "hypothesis"
+          ],
+          "ids": [
+            "3b4ce2eb-4cec-4dee-806d-6d3e286545ba",
+            "8ecde5e4-d66f-4485-aad3-003b0d012e90"
+          ],
+          "summary": "Hypotheses/assumptions: 2 item(s).",
+          "records": [
+            {
+              "id": "3b4ce2eb-4cec-4dee-806d-6d3e286545ba",
+              "table": "memory_artifacts",
+              "type": "hypothesis",
+              "title": "MEM-HYP-ad6a538a"
+            },
+            {
+              "id": "8ecde5e4-d66f-4485-aad3-003b0d012e90",
+              "table": "memory_artifacts",
+              "type": "hypothesis",
+              "title": "MEM-HYP-60ca4445"
+            }
+          ]
+        },
+        {
+          "stage": "alternatives",
+          "status": "captured",
+          "count": 4,
+          "recordTypes": [
+            "alternative"
+          ],
+          "ids": [
+            "ea3aa63c-e381-4f38-b4b4-71f81453fd80",
+            "a784b10c-95af-41b1-ae82-d8c2b4c0f70b",
+            "a3f7ef71-501a-4949-a7a2-9ef3edb6a7af",
+            "d1fcc59a-e9c5-4b93-af17-747f722a8a1b"
+          ],
+          "summary": "Alternatives: 4 record(s) from this runtime.",
+          "records": [
+            {
+              "id": "ea3aa63c-e381-4f38-b4b4-71f81453fd80",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-7eea84b1"
+            },
+            {
+              "id": "a784b10c-95af-41b1-ae82-d8c2b4c0f70b",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-6853e8f8"
+            },
+            {
+              "id": "a3f7ef71-501a-4949-a7a2-9ef3edb6a7af",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-45f8b44d"
+            },
+            {
+              "id": "d1fcc59a-e9c5-4b93-af17-747f722a8a1b",
+              "table": "memory_artifacts",
+              "type": "alternative",
+              "title": "MEM-ALT-78e9fe76"
+            }
+          ]
+        },
+        {
+          "stage": "recommendation",
+          "status": "captured",
+          "count": 2,
+          "recordTypes": [
+            "proposed_decision"
+          ],
+          "ids": [
+            "7f0f465b-26fa-4552-a624-30d3f4503245",
+            "60b27cc1-3254-4896-911b-cd414c16c50b"
+          ],
+          "summary": "Recommendations/proposals: 2 record(s) (includes pending proposals).",
+          "records": [
+            {
+              "id": "7f0f465b-26fa-4552-a624-30d3f4503245",
+              "table": "memory_artifacts",
+              "type": "proposed_decision",
+              "title": "MEM-PRO-3ac3774b",
+              "summary": "Proposed/pending — not a confirmed executive decision"
+            },
+            {
+              "id": "60b27cc1-3254-4896-911b-cd414c16c50b",
+              "table": "memory_artifacts",
+              "type": "proposed_decision",
+              "title": "MEM-PRO-b514f9ea",
+              "summary": "Proposed/pending — not a confirmed executive decision"
+            }
+          ]
+        },
+        {
+          "stage": "executive_decision",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured — leanings/proposals are pending only; no confirmed executive decision",
+          "records": []
+        },
+        {
+          "stage": "outcome_learning",
+          "status": "not_captured",
+          "count": 0,
+          "recordTypes": [],
+          "ids": [],
+          "summary": "not captured — no outcome-to-track captured for this runtime",
+          "records": []
+        }
+      ]
+    },
+    "glassBoxRequest": true,
+    "executionMetadata": {
+      "continuitySource": "explicit",
+      "glassBoxSource": "durable_trace",
+      "conversationId": "9a06b0d8-d31c-4b92-a864-8064d0e54fe0",
+      "recordsCreated": [],
+      "readOnly": true
+    },
+    "attachmentReceived": false,
+    "attachmentReminder": null,
+    "invocation": {
+      "status": "invoked",
+      "requestId": "bc90429f-f310-4cf7-9cf4-f7184e090019",
+      "runtimeId": "e40184df-fd9e-4ed6-9eed-aa66c9d83087",
+      "responseReturned": true,
+      "tool": "apexos_conversation"
+    },
+    "lifecycle": {
+      "events": [
+        "request_received",
+        "runtime_starting",
+        "continuity_resolved",
+        "runtime_completed",
+        "response_assembled",
+        "mcp_response_sent"
+      ],
+      "continuitySource": "explicit",
+      "captureConfirmed": false,
+      "retrievalConfirmed": true,
+      "persistenceConfirmed": true,
+      "traceConfirmed": true,
+      "basisIncluded": true,
+      "glassBoxReminderIncluded": true,
+      "failedStage": null,
+      "errorSummary": null,
+      "responseBytes": 12446
+    }
+  }
+}

@@ -3,6 +3,8 @@ import { z } from "zod";
 import { toStructuredError } from "../errors/mcp-errors.js";
 import { invokeExecuteRuntime } from "../adapters/runtime-adapter.js";
 import {
+  clearSessionConversation,
+  getConversationState,
   rememberConversation,
   resolveContinuity,
   resolveSessionKey,
@@ -192,24 +194,29 @@ export async function handleExecutiveConversation(
 
   try {
     if (glassBoxRequest) {
+      // Read-only path: never create conversation / situation / runtime.
       life.runtimeStarting();
-      const continuity = await resolveContinuity({
-        explicitConversationId: args.conversationId,
-        sessionKey,
-        executiveSlug,
-      });
-      life.continuityResolved(continuity.continuitySource);
+      const sessionState = getConversationState(sessionKey);
+      const boundConversationId =
+        sessionState?.conversationId ?? args.conversationId?.trim() ?? undefined;
+      const continuitySource = sessionState?.conversationId
+        ? "session"
+        : boundConversationId
+          ? "explicit"
+          : "unavailable";
+      life.continuityResolved(continuitySource);
 
       const resolved = await resolveGlassBoxRequest({
         sessionKey,
         executiveSlug,
-        runtimeIdHint: continuity.lastRuntimeId,
+        runtimeIdHint: sessionState?.lastRuntimeId ?? null,
+        conversationId: boundConversationId ?? null,
       });
 
       const glassAvailable = Boolean(resolved.glassBox);
       const apexosBasis = buildApexosBasis({
         conversationId: resolved.conversationId,
-        continuitySource: continuity.continuitySource,
+        continuitySource,
         persistenceStatus: glassAvailable ? "persisted" : "skipped",
         recordsCreated: [],
         recordsRetrieved: [],
@@ -217,7 +224,10 @@ export async function handleExecutiveConversation(
         traceConfirmed: glassAvailable,
         runtimeAvailable: true,
         glassBoxOnly: true,
-        continuityDisclosure: continuity.disclosure,
+        continuityDisclosure: glassAvailable
+          ? null
+          : (resolved.reason ??
+            "No confirmed runtime trace is bound to this chat/session. Glass Box is read-only and did not create a conversation."),
       });
 
       life.runtimeCompleted({
@@ -248,9 +258,11 @@ export async function handleExecutiveConversation(
           glassBox: resolved.glassBox,
           glassBoxRequest: true,
           executionMetadata: {
-            continuitySource: continuity.continuitySource,
+            continuitySource,
             glassBoxSource: resolved.source,
             conversationId: resolved.conversationId,
+            recordsCreated: [],
+            readOnly: true,
           },
         }),
         "invoked"
@@ -261,12 +273,25 @@ export async function handleExecutiveConversation(
         explicitConversationId: args.conversationId,
         sessionKey,
         executiveSlug,
+        message: args.message,
       });
       life.continuityResolved(continuity.continuitySource);
 
+      if (continuity.forceNewSituation) {
+        clearSessionConversation(sessionKey);
+      }
+
       const runtimeResult = await invokeExecuteRuntime({
-        ...args,
-        conversationId: continuity.conversationId,
+        message: args.message,
+        executiveSlug: args.executiveSlug,
+        conversationId: continuity.forceNewSituation ? undefined : continuity.conversationId,
+        // Never carry a host situationSlug into a forced-new situation.
+        situationSlug: continuity.forceNewSituation ? undefined : args.situationSlug,
+        previousResponseId: args.previousResponseId,
+        metadata: {
+          forceNewSituation: continuity.forceNewSituation,
+          continuitySource: continuity.continuitySource,
+        },
       });
 
       if (runtimeResult.conversationId) {

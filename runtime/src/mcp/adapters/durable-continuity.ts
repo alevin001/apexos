@@ -85,6 +85,47 @@ export async function lookupDurableActiveConversation(
   };
 }
 
+/** Latest completed durable trace for a specific ApexOS conversation. */
+export async function lookupLatestDurableTraceForConversation(
+  conversationId: string | null | undefined,
+  nowMs: number = Date.now()
+): Promise<DurableTraceMatch | null> {
+  const id = conversationId?.trim();
+  if (!id) return null;
+  const supabase = getSupabase();
+  const cutoff = new Date(nowMs - DURABLE_CONTINUITY_MAX_AGE_MS).toISOString();
+
+  const { data: trace, error } = await supabase
+    .from("runtime_interaction_traces")
+    .select(
+      "request_id, conversation_id, executive_slug, status, stages, records_created, records_retrieved, context_items, capture_errors, metadata, started_at"
+    )
+    .eq("conversation_id", id)
+    .eq("status", "completed")
+    .gte("started_at", cutoff)
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !trace?.request_id) return null;
+
+  return {
+    runtimeId: String(trace.request_id),
+    conversationId: trace.conversation_id ? String(trace.conversation_id) : id,
+    executiveSlug: trace.executive_slug ? String(trace.executive_slug) : null,
+    status: String(trace.status),
+    stages: trace.stages,
+    recordsCreated: trace.records_created,
+    recordsRetrieved: trace.records_retrieved,
+    contextItems: trace.context_items,
+    captureErrors: trace.capture_errors,
+    metadata:
+      typeof trace.metadata === "object" && trace.metadata
+        ? (trace.metadata as Record<string, unknown>)
+        : {},
+  };
+}
+
 /** Latest completed durable trace for an executive (Glass Box on demand). */
 export async function lookupLatestDurableTraceForExecutive(
   executiveSlug?: string | null,

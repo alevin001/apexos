@@ -12,6 +12,7 @@ import {
 import {
   clearConversationStateForTests,
   getConversationState,
+  isNewSituationRequest,
   rememberConversation,
   resolveContinuity,
   resolveConversationId,
@@ -151,7 +152,7 @@ test("confirmed session continuity reuses conversation", () => {
   assert.equal(resolved.lastRuntimeId, "runtime-1");
 });
 
-test("explicit conversationId wins over session state", () => {
+test("resolveConversationId still surfaces explicit IDs (legacy helper)", () => {
   clearConversationStateForTests();
   const sessionKey = resolveSessionKey("sess-explicit");
   rememberConversation(sessionKey, "conv-session", "runtime-1");
@@ -163,6 +164,29 @@ test("explicit conversationId wins over session state", () => {
   assert.equal(resolved.continuitySource, "explicit");
 });
 
+test("isNewSituationRequest detects capture-as-new phrasing", () => {
+  assert.equal(
+    isNewSituationRequest(
+      "Capture this as a new executive situation. I need to prepare for a leadership meeting."
+    ),
+    true
+  );
+  assert.equal(isNewSituationRequest("What should I say to Drew?"), false);
+});
+
+test("mismatched host conversationId does not override session binding", async () => {
+  clearConversationStateForTests();
+  const sessionKey = resolveSessionKey("sess-keep-session");
+  rememberConversation(sessionKey, "conv-session", "runtime-1");
+  const resolved = await resolveContinuity({
+    explicitConversationId: "conv-stale-from-host",
+    sessionKey,
+    message: "Follow up on the conflict discussion.",
+  });
+  assert.equal(resolved.conversationId, "conv-session");
+  assert.equal(resolved.continuitySource, "session");
+});
+
 test("stdio without mcp-session-id uses process-scoped tool state key", () => {
   clearConversationStateForTests();
   assert.equal(resolveSessionKey(undefined), STDIO_SESSION_KEY);
@@ -170,7 +194,7 @@ test("stdio without mcp-session-id uses process-scoped tool state key", () => {
   assert.equal(getConversationState(STDIO_SESSION_KEY)?.conversationId, "conv-stdio");
 });
 
-test("durable fallback continuity when host session state is absent", async () => {
+test("fresh chat does not auto-bind durable conversation as active situation", async () => {
   clearConversationStateForTests();
   const now = Date.now();
   const updatedAt = new Date(now - 60_000).toISOString();
@@ -199,11 +223,99 @@ test("durable fallback continuity when host session state is absent", async () =
       explicitConversationId: undefined,
       sessionKey: resolveSessionKey("brand-new-host-session"),
       executiveSlug: "andrew",
+      message:
+        "I need to prepare for a leadership meeting with Drew and Jesse about healthy conflict.",
+    });
+    assert.equal(resolved.conversationId, undefined);
+    assert.equal(resolved.continuitySource, "new");
+    assert.equal(resolved.forceNewSituation, false);
+    assert.match(resolved.disclosure ?? "", /No prior ApexOS conversation was confirmed/);
+  } finally {
+    setSupabaseForTests(null);
+  }
+});
+
+test("explicit new-situation request ignores host conversationId and durable state", async () => {
+  clearConversationStateForTests();
+  const sessionKey = resolveSessionKey("sess-stale-host-id");
+  rememberConversation(sessionKey, "conv-old-session", "runtime-old");
+
+  setSupabaseForTests(
+    createDurableMock({
+      conversation: {
+        id: "conv-durable-old",
+        executive_id: "exec-1",
+        status: "active",
+        updated_at: new Date().toISOString(),
+      },
+      trace: {
+        request_id: "runtime-durable-old",
+        conversation_id: "conv-durable-old",
+        status: "completed",
+        started_at: new Date().toISOString(),
+      },
+    })
+  );
+
+  try {
+    const resolved = await resolveContinuity({
+      explicitConversationId: "243d90a7-116c-4be4-bd43-d2548eb6ec5b",
+      sessionKey,
+      executiveSlug: "primary-executive",
+      message:
+        "Capture this as a new executive situation. I need to prepare for a leadership meeting with Drew and Jesse about healthy conflict and execution speed.",
+    });
+    assert.equal(resolved.conversationId, undefined);
+    assert.equal(resolved.continuitySource, "new");
+    assert.equal(resolved.forceNewSituation, true);
+    assert.match(resolved.disclosure ?? "", /New executive situation requested/i);
+  } finally {
+    setSupabaseForTests(null);
+    clearConversationStateForTests();
+  }
+});
+
+test("host conversationId is honored for same-chat continuation across fresh MCP sessions", async () => {
+  clearConversationStateForTests();
+  const resolved = await resolveContinuity({
+    explicitConversationId: "874215c8-d365-46ce-a884-383db208ce92",
+    sessionKey: resolveSessionKey("fresh-mcp-session-turn-2"),
+    executiveSlug: "primary-executive",
+    message: "What should I say first about healthy conflict with Drew?",
+  });
+  assert.equal(resolved.conversationId, "874215c8-d365-46ce-a884-383db208ce92");
+  assert.equal(resolved.continuitySource, "explicit");
+});
+
+test("explicit continue may use durable fallback", async () => {
+  clearConversationStateForTests();
+  setSupabaseForTests(
+    createDurableMock({
+      conversation: {
+        id: "conv-durable-1",
+        executive_id: "exec-1",
+        status: "active",
+        updated_at: new Date().toISOString(),
+      },
+      trace: {
+        request_id: "runtime-durable-1",
+        conversation_id: "conv-durable-1",
+        status: "completed",
+        started_at: new Date().toISOString(),
+        executive_slug: "primary-executive",
+      },
+    })
+  );
+
+  try {
+    const resolved = await resolveContinuity({
+      sessionKey: resolveSessionKey("new-session-continue"),
+      executiveSlug: "primary-executive",
+      message: "Please continue the prior situation about Drew and Jesse.",
     });
     assert.equal(resolved.conversationId, "conv-durable-1");
     assert.equal(resolved.continuitySource, "durable_fallback");
     assert.equal(resolved.lastRuntimeId, "runtime-durable-1");
-    assert.equal(resolved.disclosure, null);
   } finally {
     setSupabaseForTests(null);
   }
@@ -402,6 +514,13 @@ test("unavailable runtime basis", () => {
 test("isGlassBoxRequest detects natural Glass Box phrases", () => {
   assert.equal(isGlassBoxRequest("Show the Glass Box"), true);
   assert.equal(isGlassBoxRequest("Show the Glass Box for this response"), true);
+  assert.equal(isGlassBoxRequest("@ApexOS show the glass box"), true);
+  assert.equal(
+    isGlassBoxRequest(
+      "@ApexOS show the glass box. Prior turn mentioned Drew, a recommendation about speaking with Drew, and a pending proposed decision."
+    ),
+    true
+  );
   assert.equal(isGlassBoxRequest("What should I say first?"), false);
 });
 
@@ -556,6 +675,241 @@ test("no-runtime Glass Box request remains fail-closed with no prior trace", asy
       payload.response ?? "",
       /No confirmed (Glass Box|runtime trace)|Nothing was reconstructed/i
     );
+  } finally {
+    setInvokeExecuteRuntimeForTests(null);
+    setSupabaseForTests(null);
+    clearConversationStateForTests();
+  }
+});
+
+test("fresh MCP sessions per turn: Glass Box reads msg2 via host conversationId without creating", async () => {
+  // Live ChatGPT opens a new MCP session on every tools/call. Continuity for
+  // Glass Box must use the host-bound conversationId, never execute_runtime.
+  clearConversationStateForTests();
+  const conversationId = "conv-live-gb-bind";
+  const situationId = "sit-live-gb";
+  const msg1 =
+    "Capture this as a new executive situation. I need to prepare for a leadership meeting with Drew about healthy conflict.";
+  const msg2 =
+    "I'm leaning toward speaking with Drew first about healthy conflict. What should I recommend as the opening?";
+  const msg3 =
+    "@ApexOS show the glass box. Prior context: Drew, recommendation about speaking with Drew, pending proposed decision, outcome to track.";
+
+  assert.equal(isNewSituationRequest(msg1), true);
+  assert.equal(isGlassBoxRequest(msg3), true);
+  assert.equal(routeExecutiveToolMessage(msg3), "glass_box_only");
+
+  let executeCalls = 0;
+  setInvokeExecuteRuntimeForTests(async (req) => {
+    executeCalls += 1;
+    if (executeCalls === 1) {
+      assert.equal(req.conversationId == null || req.conversationId === undefined, true);
+      const runtimeId = "rt-live-1";
+      const created = [
+        { table: "situations", id: situationId, type: "situation", externalId: "SIT-RT-08b7df90" },
+      ];
+      startTrace(runtimeId, "execute_runtime", { conversationId });
+      completeTrace(runtimeId, [{ stage: "interaction-capture", status: "success", durationMs: 2 }], {
+        conversationId,
+        recordsCreated: created,
+        recordsRetrieved: [],
+        persistenceStatus: "persisted",
+        situationId,
+      });
+      return {
+        runtimeId,
+        response: "New situation captured.",
+        conversationId,
+        interactionId: conversationId,
+        situationSlug: "runtime-live-drew",
+        contextPackageId: "ACP-RT-a52c0b7e",
+        stages: [{ stage: "interaction-capture", status: "success", durationMs: 2 }],
+        metadata: {
+          model: "test",
+          provider: "test",
+          dryRun: false,
+          persistenceStatus: "persisted",
+          situationId,
+          recordsCreated: created,
+          recordsRetrieved: [],
+          contextItems: ["current_message"],
+          captureErrors: [],
+          retrievalErrors: [],
+        },
+        contextPackage: null,
+      } satisfies ExecuteRuntimeResult;
+    }
+
+    if (executeCalls === 2) {
+      assert.equal(req.conversationId, conversationId);
+      const runtimeId = "rt-live-2";
+      const created = [
+        { table: "memory_artifacts", id: "rec-2", type: "recommendation", externalId: "MEM-REC-2" },
+        {
+          table: "memory_artifacts",
+          id: "prop-2",
+          type: "proposed_decision",
+          externalId: "MEM-PROP-2",
+        },
+        { table: "memory_artifacts", id: "out-2", type: "outcome", externalId: "MEM-OUT-2" },
+      ];
+      startTrace(runtimeId, "execute_runtime", {
+        conversationId,
+        contextPackageId: "ACP-RT-msg2",
+      });
+      completeTrace(runtimeId, [{ stage: "interaction-capture", status: "success", durationMs: 3 }], {
+        conversationId,
+        recordsCreated: created,
+        recordsRetrieved: Array.from({ length: 12 }, (_, i) => ({
+          table: "observations",
+          id: `obs-${i}`,
+          type: "source_evidence",
+        })),
+        persistenceStatus: "persisted",
+        situationId,
+        contextPackageId: "ACP-RT-msg2",
+      });
+      return {
+        runtimeId,
+        response:
+          "Recommend speaking with Drew first. Leaning toward that opening is pending, not a confirmed decision. Outcome to track: Drew's response.",
+        conversationId,
+        interactionId: conversationId,
+        situationSlug: "runtime-live-drew",
+        contextPackageId: "ACP-RT-msg2",
+        stages: [{ stage: "interaction-capture", status: "success", durationMs: 3 }],
+        metadata: {
+          model: "test",
+          provider: "test",
+          dryRun: false,
+          persistenceStatus: "persisted",
+          situationId,
+          recordsCreated: created,
+          recordsRetrieved: Array.from({ length: 12 }, (_, i) => ({
+            table: "observations",
+            id: `obs-${i}`,
+            type: "source_evidence",
+          })),
+          contextItems: ["current_message"],
+          captureErrors: [],
+          retrievalErrors: [],
+        },
+        contextPackage: null,
+      } satisfies ExecuteRuntimeResult;
+    }
+
+    throw new Error("Glass Box must not call execute_runtime");
+  });
+
+  setSupabaseForTests(
+    createDurableMock({
+      conversation: {
+        id: conversationId,
+        executive_id: "exec-1",
+        status: "active",
+        updated_at: new Date().toISOString(),
+      },
+      trace: {
+        request_id: "rt-live-2",
+        conversation_id: conversationId,
+        status: "completed",
+        started_at: new Date().toISOString(),
+        executive_slug: "primary-executive",
+        stages: [{ stage: "interaction-capture", status: "success", durationMs: 3 }],
+        records_created: [
+          { table: "memory_artifacts", id: "rec-2", type: "recommendation" },
+          { table: "memory_artifacts", id: "prop-2", type: "proposed_decision" },
+          { table: "memory_artifacts", id: "out-2", type: "outcome" },
+        ],
+        records_retrieved: [{ table: "observations", id: "obs-0", type: "source_evidence" }],
+        metadata: { situationId, contextPackageId: "ACP-RT-msg2" },
+      },
+      // Older executive-wide trace must NOT be selected for Glass Box.
+      latestTrace: {
+        request_id: "rt-old-4records",
+        conversation_id: "conv-other",
+        status: "completed",
+        executive_slug: "primary-executive",
+        records_created: [
+          { table: "situations", id: "sit-old", type: "situation" },
+          { table: "observations", id: "o1", type: "source_evidence" },
+          { table: "observations", id: "o2", type: "source_evidence" },
+          { table: "observations", id: "o3", type: "source_evidence" },
+        ],
+        metadata: {},
+      },
+    })
+  );
+
+  try {
+    const r1 = await handleExecutiveConversation(
+      { message: msg1 },
+      { sessionId: "chatgpt-turn-1" },
+      PRIMARY_TOOL_NAME
+    );
+    const p1 = r1.structuredContent as {
+      runtimeId?: string;
+      conversationId?: string;
+      executionMetadata?: { situationId?: string; continuitySource?: string };
+    };
+    assert.equal(p1.runtimeId, "rt-live-1");
+    assert.equal(p1.conversationId, conversationId);
+    assert.equal(p1.executionMetadata?.situationId, situationId);
+    assert.equal(p1.executionMetadata?.continuitySource, "new");
+    assert.equal(executeCalls, 1);
+
+    const r2 = await handleExecutiveConversation(
+      { message: msg2, conversationId },
+      { sessionId: "chatgpt-turn-2" },
+      PRIMARY_TOOL_NAME
+    );
+    const p2 = r2.structuredContent as {
+      runtimeId?: string;
+      conversationId?: string;
+      executionMetadata?: { situationId?: string };
+    };
+    assert.equal(p2.runtimeId, "rt-live-2");
+    assert.equal(p2.conversationId, conversationId);
+    assert.equal(p2.executionMetadata?.situationId, situationId);
+    assert.equal(executeCalls, 2);
+
+    const r3 = await handleExecutiveConversation(
+      { message: msg3, conversationId },
+      { sessionId: "chatgpt-turn-3" },
+      PRIMARY_TOOL_NAME
+    );
+    assert.equal(executeCalls, 2, "message 3 must not create a runtime");
+    const p3 = r3.structuredContent as {
+      glassBoxRequest?: boolean;
+      runtimeId?: string;
+      conversationId?: string;
+      glassBox?: {
+        runtimeId?: string;
+        stages: Array<{ stage: string; status: string; ids: string[]; summary: string }>;
+      };
+      executionMetadata?: {
+        readOnly?: boolean;
+        glassBoxSource?: string;
+        recordsCreated?: unknown[];
+      };
+      apexosBasisDisplay?: string;
+    };
+    assert.equal(p3.glassBoxRequest, true);
+    assert.equal(p3.runtimeId, "rt-live-2");
+    assert.equal(p3.conversationId, conversationId);
+    assert.equal(p3.glassBox?.runtimeId, "rt-live-2");
+    assert.equal(p3.executionMetadata?.readOnly, true);
+    assert.equal(p3.executionMetadata?.recordsCreated?.length ?? 0, 0);
+    assert.notEqual(p3.runtimeId, "rt-old-4records");
+    assert.ok(!(p3.apexosBasisDisplay ?? "").includes("new conversation will be created"));
+
+    const byStage = Object.fromEntries((p3.glassBox?.stages ?? []).map((s) => [s.stage, s]));
+    assert.equal(byStage.recommendation.status, "captured");
+    assert.ok(byStage.recommendation.ids.includes("rec-2"));
+    assert.ok(byStage.recommendation.ids.includes("prop-2"));
+    assert.equal(byStage.outcome_learning.status, "captured");
+    assert.ok(byStage.outcome_learning.ids.includes("out-2"));
+    assert.equal(byStage.executive_decision.status, "not_captured");
   } finally {
     setInvokeExecuteRuntimeForTests(null);
     setSupabaseForTests(null);

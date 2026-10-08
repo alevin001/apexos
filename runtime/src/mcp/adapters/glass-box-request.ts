@@ -3,13 +3,17 @@
  * Glass Box-only routing is for standalone view requests. Mixed executive work
  * (situation / reason / recommend / capture) must take execute_runtime even when
  * the message also mentions Glass Box.
+ *
+ * Standalone Glass Box is always read-only: never create conversation/situation/runtime.
+ * ChatGPT may open a fresh MCP session per turn — resolve via session state or the
+ * host-bound ApexOS conversationId from the active chat.
  */
 
 import { isMaterialSituation } from "../../pipeline/capture/cold-start-extractor.js";
 import type { AuditRecordRef, PipelineStageResult } from "../../types/pipeline.js";
 import {
   lookupDurableTraceByRuntimeId,
-  lookupLatestDurableTraceForExecutive,
+  lookupLatestDurableTraceForConversation,
   type DurableTraceMatch,
 } from "./durable-continuity.js";
 import { getConversationState } from "./conversation-state.js";
@@ -26,9 +30,13 @@ const GLASS_BOX_BARE = /^(?:please\s+|pls\s+)?(?:the\s+)?glass\s*box(?:\s+please
 const GLASS_BOX_FLUFF =
   /^(?:please|pls|thanks|thank you|now|again|for this(?: response)?|the)(?:\s+(?:please|pls|thanks|thank you|now|again|for this(?: response)?|the))*$/i;
 
-/** Signals that the executive wants ApexOS to do substantive work, not only view. */
-const EXECUTIVE_WORK =
-  /\b(help me|i need|we need|prepare|meeting|leadership|conflict|decide|decision|recommend|suggest|capture|reason|retrieve|analyze|what should|how (?:do|should|can) i|drew|jesse|team|execution|align(?:ment)?|conversation|situation|coach|develop|trade-?off|option|outcome|next step|follow-?up)\b/i;
+/**
+ * Imperatives that mean the executive wants new ApexOS work, not only a view.
+ * Names/topics alone (Drew, conflict) must not force execute_runtime when the
+ * host wraps a standalone Glass Box request with prior-chat context.
+ */
+const COMPETING_EXECUTIVE_WORK =
+  /\b(?:capture\s+this\s+as\s+a\s+new|new\s+executive\s+situation|help\s+me\s+(?:prepare|decide|reason)|i\s+need\s+to\s+prepare|we\s+need\s+to\s+prepare|what\s+should\s+i\s+say|how\s+(?:do|should|can)\s+i|help\s+me\s+decide|analyze|retrieve\s+(?:prior|saved)|coach\s+me)\b/i;
 
 function hasGlassBoxViewPhrase(m: string): boolean {
   if (GLASS_BOX_BARE.test(m)) return true;
@@ -44,24 +52,16 @@ function stripGlassBoxPhrases(message: string): string {
   return message
     .replace(GLASS_BOX_VIEW, " ")
     .replace(/\bglass\s*box\b(?:\s+for\s+this(?:\s+response)?)?/gi, " ")
+    .replace(/@apexos\b/gi, " ")
+    .replace(/\bapexos\b/gi, " ")
     .replace(/[^\w\s'-]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
-function hasSubstantiveExecutiveWork(text: string): boolean {
-  const t = text.trim();
-  if (!t) return false;
-  if (isMaterialSituation(t)) return true;
-  if (EXECUTIVE_WORK.test(t)) return true;
-  // Any non-fluff remainder beyond a short courtesy phrase is treated as work.
-  if (t.length >= 40) return true;
-  return false;
-}
-
 /**
  * True only for a standalone request to view the Glass Box.
- * Mixed messages that also ask for executive work return false → execute_runtime.
+ * Mixed messages that also ask for new executive work return false → execute_runtime.
  */
 export function isGlassBoxRequest(message: string): boolean {
   const trimmed = message.trim();
@@ -73,13 +73,19 @@ export function isGlassBoxRequest(message: string): boolean {
   if (!remainder) return true;
   if (GLASS_BOX_FLUFF.test(remainder.toLowerCase())) return true;
 
-  // Executive situation / capture / reason / recommend → full runtime.
-  if (hasSubstantiveExecutiveWork(remainder) || hasSubstantiveExecutiveWork(trimmed)) {
+  // Competing work imperative (prepare / decide / what should I say / capture new)
+  // → full runtime even if Glass Box is also mentioned.
+  if (COMPETING_EXECUTIVE_WORK.test(remainder) || COMPETING_EXECUTIVE_WORK.test(trimmed)) {
+    return false;
+  }
+  if (isMaterialSituation(remainder) && COMPETING_EXECUTIVE_WORK.test(trimmed)) {
     return false;
   }
 
-  // Prefer execute_runtime when anything non-fluff remains (fail toward work).
-  return false;
+  // Clear Glass Box view phrase without a competing work imperative.
+  // Residual prior-turn names/context (Drew, conflict, recommendation…) are
+  // common ChatGPT wrappers and must not demote a standalone view request.
+  return true;
 }
 
 /** Routing helper for tools + tests. */
@@ -123,14 +129,74 @@ export function glassBoxFromDurableTrace(trace: DurableTraceMatch): GlassBoxSumm
   });
 }
 
+function glassBoxFromInMemoryTrace(
+  runtimeId: string,
+  conversationId: string | null,
+  inMemory: NonNullable<ReturnType<typeof getTrace>>
+): GlassBoxSummary {
+  return buildGlassBox({
+    runtimeId,
+    conversationId:
+      conversationId ??
+      (typeof inMemory.metadata.conversationId === "string"
+        ? inMemory.metadata.conversationId
+        : null),
+    contextPackageId:
+      typeof inMemory.metadata.contextPackageId === "string"
+        ? inMemory.metadata.contextPackageId
+        : null,
+    contextPackage: null,
+    recordsCreated: asAuditRefs(inMemory.metadata.recordsCreated),
+    recordsRetrieved: asAuditRefs(inMemory.metadata.recordsRetrieved),
+    stages: inMemory.stages,
+  });
+}
+
+async function resolveByRuntimeId(
+  runtimeId: string,
+  conversationIdFallback: string | null
+): Promise<{
+  glassBox: GlassBoxSummary;
+  runtimeId: string;
+  conversationId: string | null;
+  source: "session_runtime" | "durable_trace";
+} | null> {
+  const inMemory = getTrace(runtimeId);
+  if (inMemory && inMemory.status === "completed") {
+    return {
+      glassBox: glassBoxFromInMemoryTrace(runtimeId, conversationIdFallback, inMemory),
+      runtimeId: inMemory.runtimeId,
+      conversationId:
+        conversationIdFallback ??
+        (typeof inMemory.metadata.conversationId === "string"
+          ? inMemory.metadata.conversationId
+          : null),
+      source: "session_runtime",
+    };
+  }
+  const durable = await lookupDurableTraceByRuntimeId(runtimeId);
+  if (durable) {
+    return {
+      glassBox: glassBoxFromDurableTrace(durable),
+      runtimeId: durable.runtimeId,
+      conversationId: durable.conversationId ?? conversationIdFallback,
+      source: "durable_trace",
+    };
+  }
+  return null;
+}
+
 /**
  * Resolve Glass Box for a natural request using confirmed session/process
- * lastRuntimeId, then durable completed traces — never chat prose.
+ * lastRuntimeId or the host-bound conversation's latest completed trace.
+ * Never reconstructs from chat prose. Never creates records.
+ * Does not fall back to an unrelated executive-wide "latest" trace.
  */
 export async function resolveGlassBoxRequest(opts: {
   sessionKey: string;
   executiveSlug?: string | null;
   runtimeIdHint?: string | null;
+  conversationId?: string | null;
 }): Promise<{
   glassBox: GlassBoxSummary | null;
   runtimeId: string | null;
@@ -138,101 +204,38 @@ export async function resolveGlassBoxRequest(opts: {
   source: "session_runtime" | "durable_trace" | "none";
   reason: string | null;
 }> {
-  const hint = opts.runtimeIdHint?.trim();
-  if (hint) {
-    const inMemory = getTrace(hint);
-    if (inMemory && inMemory.status === "completed") {
-      const glassBox = buildGlassBox({
-        runtimeId: inMemory.runtimeId,
-        conversationId:
-          typeof inMemory.metadata.conversationId === "string"
-            ? inMemory.metadata.conversationId
-            : null,
-        contextPackageId:
-          typeof inMemory.metadata.contextPackageId === "string"
-            ? inMemory.metadata.contextPackageId
-            : null,
-        contextPackage: null,
-        recordsCreated: asAuditRefs(inMemory.metadata.recordsCreated),
-        recordsRetrieved: asAuditRefs(inMemory.metadata.recordsRetrieved),
-        stages: inMemory.stages,
-      });
-      return {
-        glassBox,
-        runtimeId: inMemory.runtimeId,
-        conversationId:
-          typeof inMemory.metadata.conversationId === "string"
-            ? inMemory.metadata.conversationId
-            : null,
-        source: "session_runtime",
-        reason: null,
-      };
-    }
-    const durable = await lookupDurableTraceByRuntimeId(hint);
-    if (durable) {
-      return {
-        glassBox: glassBoxFromDurableTrace(durable),
-        runtimeId: durable.runtimeId,
-        conversationId: durable.conversationId,
-        source: "durable_trace",
-        reason: null,
-      };
-    }
-  }
-
   const session = getConversationState(opts.sessionKey);
-  if (session?.lastRuntimeId) {
-    const inMemory = getTrace(session.lastRuntimeId);
-    if (inMemory && inMemory.status === "completed") {
-      const glassBox = buildGlassBox({
-        runtimeId: inMemory.runtimeId,
-        conversationId: session.conversationId,
-        contextPackageId:
-          typeof inMemory.metadata.contextPackageId === "string"
-            ? inMemory.metadata.contextPackageId
-            : null,
-        contextPackage: null,
-        recordsCreated: asAuditRefs(inMemory.metadata.recordsCreated),
-        recordsRetrieved: asAuditRefs(inMemory.metadata.recordsRetrieved),
-        stages: inMemory.stages,
-      });
-      return {
-        glassBox,
-        runtimeId: inMemory.runtimeId,
-        conversationId: session.conversationId,
-        source: "session_runtime",
-        reason: null,
-      };
+  const boundConversationId =
+    session?.conversationId?.trim() || opts.conversationId?.trim() || null;
+
+  const hint = opts.runtimeIdHint?.trim() || session?.lastRuntimeId?.trim() || null;
+  if (hint) {
+    const byHint = await resolveByRuntimeId(hint, boundConversationId);
+    if (byHint) {
+      return { ...byHint, reason: null };
     }
-    const durableBySession = await lookupDurableTraceByRuntimeId(session.lastRuntimeId);
-    if (durableBySession) {
+  }
+
+  if (boundConversationId) {
+    const byConv = await lookupLatestDurableTraceForConversation(boundConversationId);
+    if (byConv) {
       return {
-        glassBox: glassBoxFromDurableTrace(durableBySession),
-        runtimeId: durableBySession.runtimeId,
-        conversationId: durableBySession.conversationId ?? session.conversationId,
+        glassBox: glassBoxFromDurableTrace(byConv),
+        runtimeId: byConv.runtimeId,
+        conversationId: byConv.conversationId ?? boundConversationId,
         source: "durable_trace",
         reason: null,
       };
     }
   }
 
-  const latest = await lookupLatestDurableTraceForExecutive(opts.executiveSlug);
-  if (latest) {
-    return {
-      glassBox: glassBoxFromDurableTrace(latest),
-      runtimeId: latest.runtimeId,
-      conversationId: latest.conversationId,
-      source: "durable_trace",
-      reason: null,
-    };
-  }
-
+  // Fail closed — do not invent a Glass Box from another conversation/situation.
   return {
     glassBox: null,
     runtimeId: null,
-    conversationId: null,
+    conversationId: boundConversationId,
     source: "none",
     reason:
-      "No confirmed runtime trace or Context Package was available for a Glass Box. Nothing was reconstructed from chat prose.",
+      "No confirmed runtime trace is bound to this chat/session or conversation. Glass Box is read-only and will not create a replacement conversation.",
   };
 }
